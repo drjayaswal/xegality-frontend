@@ -1,30 +1,34 @@
 "use client";
 
-import { useState } from "react";
+import type React from "react";
+
+import { useEffect, useState } from "react";
 import { motion } from "motion/react";
 import { cn } from "@/lib/utils";
-
-import { Sidebar } from "@/components/sidebar";
-import { Button } from "@/components/ui/button";
-// import { Card, Cardfourth, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import {
-  BarChart3,
-  ChevronDown,
-  Globe,
-  GraduationCap,
-  Info,
-  PlusCircle,
-  Settings,
-  Sparkles,
-} from "lucide-react";
 import Link from "next/link";
+import {
+  Bell,
+  CreditCard,
+  DoorOpen,
+  HelpCircle,
+  LinkIcon,
+  Moon,
+  ReceiptText,
+  Settings,
+  Shield,
+  Sparkles,
+  Sun,
+  User,
+  Users,
+} from "lucide-react";
 
 type Tab = {
   title: string;
   value: string;
-  fourth?: string | React.ReactNode | any;
+  content?: string | React.ReactNode | any;
+  category: "services" | "account";
 };
+
 interface NavItemProps {
   icon: React.ReactNode;
   label: string;
@@ -35,6 +39,7 @@ interface NavItemProps {
   onMouseEnter?: () => void;
   onMouseLeave?: () => void;
 }
+
 const NavItem = ({
   icon,
   label,
@@ -70,69 +75,193 @@ const NavItem = ({
 );
 
 export default function LawyerDashboard() {
-  const dashboardTabs: Tab[] = [
+  // Combine all tabs into one array with categories
+  const allTabs: Tab[] = [
     {
-      title: "one",
-      value: "one",
-      fourth: (
-        <div className="w-full overflow-hidden relative rounded-lg h-full p-10 text-xl md:text-4xl font-bold text-white bg-gradient-to-br from-purple-700 to-violet-900">
-          <p>one Tab</p>
+      title: "Xegality AI",
+      value: "xegality-ai",
+      category: "services",
+      content: (
+        <div className="w-full overflow-hidden relative rounded-lg h-full p-10 text-xl md:text-4xl font-bold text-white bg-gradient-to-br from-blue-600 to-blue-900">
+          <p>Xegality AI</p>
         </div>
       ),
     },
     {
-      title: "two",
-      value: "two",
-      fourth: (
-        <div className="w-full overflow-hidden relative rounded-lg h-full p-10 text-xl md:text-4xl font-bold text-white bg-gradient-to-br from-purple-700 to-violet-900">
-          <p>two tab</p>
+      title: "Clients",
+      value: "clients",
+      category: "services",
+      content: (
+        <div className="w-full overflow-hidden relative rounded-lg h-full p-10 text-xl md:text-4xl font-bold text-white bg-gradient-to-br from-green-600 to-green-900">
+          <p>Clients</p>
         </div>
       ),
     },
     {
-      title: "third",
-      value: "third",
-      fourth: (
-        <div className="w-full overflow-hidden relative rounded-lg h-full p-10 text-xl md:text-4xl font-bold text-white bg-gradient-to-br from-purple-700 to-violet-900">
-          <p>third tab</p>
+      title: "Appointments",
+      value: "appointments",
+      category: "services",
+      content: (
+        <div className="w-full overflow-hidden relative rounded-lg h-full p-10 text-xl md:text-4xl font-bold text-white bg-gradient-to-br from-orange-600 to-orange-900">
+          <p>Appointments</p>
         </div>
       ),
     },
     {
-      title: "fourth",
-      value: "fourth",
-      fourth: (
-        <div className="w-full overflow-hidden relative rounded-lg h-full p-10 text-xl md:text-4xl font-bold text-white bg-gradient-to-br from-purple-700 to-violet-900">
-          <p>fourth tab</p>
+      title: "Case Management",
+      value: "case-management",
+      category: "services",
+      content: (
+        <div className="w-full overflow-hidden relative rounded-lg h-full p-10 text-xl md:text-4xl font-bold text-white bg-gradient-to-br from-purple-600 to-purple-900">
+          <p>Case Management</p>
         </div>
       ),
     },
     {
-      title: "five",
-      value: "five",
-      fourth: (
-        <div className="w-full overflow-hidden relative rounded-lg h-full p-10 text-xl md:text-4xl font-bold text-white bg-gradient-to-br from-purple-700 to-violet-900">
-          <p>five tab</p>
+      title: "Billing & Payments",
+      value: "billing-payments",
+      category: "services",
+      content: (
+        <div className="w-full overflow-hidden relative rounded-lg h-full p-10 text-xl md:text-4xl font-bold text-white bg-gradient-to-br from-red-600 to-red-900">
+          <p>Billing & Payments</p>
+        </div>
+      ),
+    },
+    {
+      title: "Profile Settings",
+      value: "profile-settings",
+      category: "account",
+      content: (
+        <div className="w-full overflow-hidden relative rounded-lg h-full p-10 text-xl md:text-4xl font-bold text-white bg-gradient-to-br from-indigo-600 to-indigo-900">
+          <p>Profile Settings</p>
+        </div>
+      ),
+    },
+    {
+      title: "Notifications",
+      value: "notifications",
+      category: "account",
+      content: (
+        <div className="w-full overflow-hidden relative rounded-lg h-full p-10 text-xl md:text-4xl font-bold text-white bg-gradient-to-br from-teal-600 to-teal-900">
+          <p>Notifications</p>
+        </div>
+      ),
+    },
+    {
+      title: "Security",
+      value: "security",
+      category: "account",
+      content: (
+        <div className="w-full overflow-hidden relative rounded-lg h-full p-10 text-xl md:text-4xl font-bold text-white bg-gradient-to-br from-gray-700 to-gray-900">
+          <p>Security</p>
+        </div>
+      ),
+    },
+    {
+      title: "Subscription",
+      value: "subscription",
+      category: "account",
+      content: (
+        <div className="w-full overflow-hidden relative rounded-lg h-full p-10 text-xl md:text-4xl font-bold text-white bg-gradient-to-br from-yellow-600 to-yellow-900">
+          <p>Subscription</p>
+        </div>
+      ),
+    },
+    {
+      title: "Help & Support",
+      value: "help-support",
+      category: "account",
+      content: (
+        <div className="w-full overflow-hidden relative rounded-lg h-full p-10 text-xl md:text-4xl font-bold text-white bg-gradient-to-br from-pink-600 to-pink-900">
+          <p>Help & Support</p>
+        </div>
+      ),
+    },
+    {
+      title: "Settings",
+      value: "settings",
+      category: "account",
+      content: (
+        <div className="w-full overflow-hidden relative rounded-lg h-full p-10 text-xl md:text-4xl font-bold text-white bg-gradient-to-br from-gray-700 to-gray-900">
+          <h2 className="text-2xl md:text-3xl font-bold mb-6">Settings</h2>
         </div>
       ),
     },
   ];
-  const [active, setActive] = useState<Tab>(dashboardTabs[0]);
-  const [tabs, setTabs] = useState<Tab[]>(dashboardTabs);
 
-  const moveSelectedTabToTop = (idx: number) => {
-    const newTabs = tabs;
-    const selectedTab = newTabs.splice(idx, 1);
-    newTabs.unshift(selectedTab[0]);
-    setTabs(newTabs);
-    setActive(newTabs[0]);
+  // Separate tabs by category for sidebar display
+  const servicesTabs = allTabs.filter((tab) => tab.category === "services");
+  const accountTabs = allTabs.filter((tab) => tab.category === "account");
+
+  const [active, setActive] = useState<Tab>(allTabs[0]);
+  const [tabs, setTabs] = useState<Tab[]>(allTabs);
+
+  const moveSelectedTabToTop = (tabValue: string) => {
+    const clickedTab = allTabs.find((tab) => tab.value === tabValue);
+    if (!clickedTab || clickedTab.value === active.value) {
+      return; // Do nothing if tab not found or already active
+    }
+
+    const newTabs = [...tabs];
+    const tabIndex = newTabs.findIndex((tab) => tab.value === tabValue);
+    if (tabIndex > -1) {
+      const selectedTab = newTabs.splice(tabIndex, 1)[0];
+      newTabs.unshift(selectedTab);
+      setTabs(newTabs);
+      setActive(selectedTab);
+    }
   };
-
+  const [isDarkMode, setIsDarkMode] = useState(false);
   const [hovering, setHovering] = useState(false);
 
-  const isActive = (tab: Tab) => {
-    return tab.value === tabs[0].value;
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const savedTheme = localStorage.getItem("theme");
+      if (savedTheme === "dark") {
+        setIsDarkMode(true);
+        document.documentElement.classList.add("dark");
+      }
+    }
+  }, []);
+
+  const toggleTheme = () => {
+    setIsDarkMode((prev) => {
+      const newTheme = !prev ? "dark" : "light";
+      localStorage.setItem("theme", newTheme);
+      document.documentElement.classList.toggle("dark", newTheme === "dark");
+      return !prev;
+    });
   };
+
+  const getTabIcon = (title: string) => {
+    switch (title) {
+      case "Xegality AI":
+        return <Sparkles className="h-4 w-4" />;
+      case "Clients":
+        return <Users className="h-4 w-4" />;
+      case "Appointments":
+        return <LinkIcon className="h-4 w-4" />;
+      case "Case Management":
+        return <DoorOpen className="h-4 w-4" />;
+      case "Billing & Payments":
+        return <ReceiptText className="h-4 w-4" />;
+      case "Profile Settings":
+        return <User className="h-4 w-4" />;
+      case "Notifications":
+        return <Bell className="h-4 w-4" />;
+      case "Security":
+        return <Shield className="h-4 w-4" />;
+      case "Subscription":
+        return <CreditCard className="h-4 w-4" />;
+      case "Help & Support":
+        return <HelpCircle className="h-4 w-4" />;
+      case "Settings":
+        return <Settings className="h-4 w-4" />;
+      default:
+        return <></>;
+    }
+  };
+
   return (
     <div className="flex h-screen bg-white/10 backdrop-blur-[2px] gap-1 justify-center dark:bg-gray-900">
       {/* Sidebar */}
@@ -141,24 +270,65 @@ export default function LawyerDashboard() {
           <h1 className="text-lg font-semibold">Dashboard</h1>
         </div>
         <div className="flex-1 overflow-auto py-4">
+          {/* Services Section */}
           <div className="px-3 py-2">
             <h2 className="mb-2 px-3 text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">
-              Sections
+              Services
             </h2>
             <div className="space-y-1">
-              {dashboardTabs.map((tab, idx) => (
+              {servicesTabs.map((tab) => (
                 <NavItem
-                  key={tab.title}
-                  onClick={() => moveSelectedTabToTop(idx)}
+                  key={tab.value}
+                  onClick={() => moveSelectedTabToTop(tab.value)}
                   onMouseEnter={() => setHovering(true)}
                   onMouseLeave={() => setHovering(false)}
-                  icon={<Info className="h-4 w-4" />}
+                  icon={getTabIcon(tab.title)}
                   label={tab.title}
                   href="#"
                   active={active.value === tab.value}
                 />
               ))}
             </div>
+          </div>
+
+          {/* Account Section */}
+          <div className="px-3 py-2 mt-6">
+            <h2 className="mb-2 px-3 text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">
+              Account
+            </h2>
+            <div className="space-y-1">
+              {accountTabs.map((tab) => (
+                <NavItem
+                  key={tab.value}
+                  onClick={() => moveSelectedTabToTop(tab.value)}
+                  onMouseEnter={() => setHovering(true)}
+                  onMouseLeave={() => setHovering(false)}
+                  icon={getTabIcon(tab.title)}
+                  label={tab.title}
+                  href="#"
+                  active={active.value === tab.value}
+                />
+              ))}
+            </div>
+          </div>
+        </div>
+        <div className="m-20">
+          <div
+            className="relative w-20 h-8 flex items-center bg-indigo-600 rounded-full p-2 cursor-pointer"
+            onClick={toggleTheme}
+            aria-label="Toggle theme"
+          >
+            <div
+              className={cn(
+                "absolute w-11 h-10 bg-white border-none dark:bg-black rounded-full transform transition-transform duration-300",
+                {
+                  "-translate-x-3": !isDarkMode,
+                  "translate-x-8": isDarkMode,
+                }
+              )}
+            />
+            <Sun className="absolute left-2 w-6 h-6 text-yellow-600 dark:text-white" />
+            <Moon className="absolute right-2 w-6 h-6 text-white dark:text-blue-500" />
           </div>
         </div>
       </div>
@@ -173,6 +343,7 @@ export default function LawyerDashboard() {
         <FadeInDiv
           tabs={tabs}
           active={active}
+          key={active.value}
           hovering={hovering}
           className="mt-2"
         />
@@ -183,6 +354,7 @@ export default function LawyerDashboard() {
 
 export const FadeInDiv = ({
   tabs,
+  active,
   className,
   hovering,
 }: {
@@ -191,7 +363,7 @@ export const FadeInDiv = ({
   className?: string;
   hovering?: boolean;
 }) => {
-  const isActive = (tab: Tab) => tab.value === tabs[0].value;
+  const isActive = (tab: Tab) => tab.value === active.value;
 
   return (
     <div className="relative w-full h-full">
@@ -202,7 +374,7 @@ export const FadeInDiv = ({
           style={{
             scale: 1 - idx * 0.1,
             top: hovering ? idx * -50 : 0,
-            zIndex: -idx,
+            zIndex: isActive(tab) ? 10 : -idx,
             opacity: idx < 3 ? 1 - idx * 0.1 : 0,
           }}
           animate={{
@@ -210,7 +382,7 @@ export const FadeInDiv = ({
           }}
           className={cn("w-full h-full absolute top-0 left-0", className)}
         >
-          {tab.fourth}
+          {tab.content}
         </motion.div>
       ))}
     </div>
