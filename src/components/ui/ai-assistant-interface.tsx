@@ -28,8 +28,20 @@ import { cn } from "@/lib/utils";
 import { Button } from "./button";
 import { AdvancedSearch } from "../advanced-seach";
 
-export function AIAssistantInterface() {
-  const [isListening, setIsListening] = useState(false)
+type AIAssistantInterfaceProps = {
+  onFocus?: React.FocusEventHandler<HTMLInputElement>;
+  onBlur?: React.FocusEventHandler<HTMLInputElement>;
+  onDashboard?: Boolean;
+  // ...any other props you might want to pass, like value, onChange, etc.
+};
+
+export function AIAssistantInterface({
+  onFocus,
+  onBlur,
+  onDashboard,
+}: // ...other props
+AIAssistantInterfaceProps) {
+  const [isListening, setIsListening] = useState(false);
   const [inputValue, setInputValue] = useState("");
   const [searchEnabled, setSearchEnabled] = useState(false);
   const [researchEnabled, setDeepResearchEnabled] = useState(false);
@@ -70,34 +82,34 @@ export function AIAssistantInterface() {
   const handleVoiceSearch = () => {
     // Check if the browser supports the Web Speech API
     if (typeof window !== "undefined" && window.webkitSpeechRecognition) {
-      const SpeechRecognition = window.webkitSpeechRecognition
-      const recognition = new SpeechRecognition()
-      recognition.continuous = false
-      recognition.interimResults = false
-      recognition.lang = "en-US"
+      const SpeechRecognition = window.webkitSpeechRecognition;
+      const recognition = new SpeechRecognition();
+      recognition.continuous = false;
+      recognition.interimResults = false;
+      recognition.lang = "en-US";
 
-      setIsListening(true)
+      setIsListening(true);
 
       recognition.onresult = (event: any) => {
-        const transcript = event.results[0][0].transcript
-        setInputValue(transcript)
-        console.log(transcript)
-        setIsListening(false)
-      }
+        const transcript = event.results[0][0].transcript;
+        setInputValue(transcript);
+        console.log(transcript);
+        setIsListening(false);
+      };
 
       recognition.onerror = () => {
-        setIsListening(false)
-      }
+        setIsListening(false);
+      };
 
       recognition.onend = () => {
-        setIsListening(false)
-      }
+        setIsListening(false);
+      };
 
-      recognition.start()
+      recognition.start();
     } else {
-      alert("Voice search is not supported in your browser")
+      alert("Voice search is not supported in your browser");
     }
-  }
+  };
   const handleUploadFile = () => {
     setShowUploadAnimation(true);
 
@@ -132,6 +144,8 @@ export function AIAssistantInterface() {
           <div className="flex items-center gap-4">
             <Sparkles className="h-5 w-5 text-indigo-600 mt-5 ml-6" />
             <input
+              onFocus={onFocus}
+              onBlur={onBlur}
               ref={inputRef}
               type="text"
               placeholder="Ask me anything..."
@@ -185,20 +199,22 @@ export function AIAssistantInterface() {
             <div className="flex items-center gap-2">
               <button
                 onClick={() => setSearchEnabled(!searchEnabled)}
-                className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${searchEnabled
-                  ? "bg-indigo-200 text-indigo-600"
-                  : "bg-white-10 text-black/40"
-                  }`}
+                className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${
+                  searchEnabled
+                    ? "bg-indigo-200 text-indigo-600"
+                    : "bg-white-10 text-black/40"
+                }`}
               >
                 <Scale className="w-4 h-4" />
                 <span>Consulting</span>
               </button>
               <button
                 onClick={() => setDeepResearchEnabled(!researchEnabled)}
-                className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${researchEnabled
-                  ? "bg-indigo-200 text-indigo-600"
-                  : "bg-white-10 text-black/40"
-                  }`}
+                className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${
+                  researchEnabled
+                    ? "bg-indigo-200 text-indigo-600"
+                    : "bg-white-10 text-black/40"
+                }`}
               >
                 <svg
                   width="16"
@@ -223,38 +239,41 @@ export function AIAssistantInterface() {
               </button>
               <button
                 onClick={() => setReasonEnabled(!reasonEnabled)}
-                className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${reasonEnabled
-                  ? "bg-indigo-200 text-indigo-600"
-                  : "bg-white-10 text-black/40"
-                  }`}
+                className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${
+                  reasonEnabled
+                    ? "bg-indigo-200 text-indigo-600"
+                    : "bg-white-10 text-black/40"
+                }`}
               >
                 <BrainCircuit
-                  className={`w-4 h-4 ${reasonEnabled ? "text-indigo-600" : "text-gray-400"
-                    }`}
+                  className={`w-4 h-4 ${
+                    reasonEnabled ? "text-indigo-600" : "text-gray-400"
+                  }`}
                 />
                 <span>Reasoning</span>
               </button>
             </div>
             <div className="flex items-center gap-2">
               <button className="h-8 w-8 mr-1" onClick={handleVoiceSearch}>
-                {isListening
-                  ?
+                {isListening ? (
                   <>
                     <EarIcon className="animate-pulse text-indigo-700" />
                   </>
-                  :
+                ) : (
                   <>
                     <Mic className="h-6 w-6 hover:scale-110 text-indigo-800" />
                   </>
-                }
+                )}
               </button>
               <button
                 onClick={handleSendMessage}
                 disabled={!inputValue.trim()}
-                className={`w-8 h-8 flex items-center justify-center rounded-full transition-all ${inputValue.trim()
-                  ? "text-white animate-gradient"
-                  : "border-2 border-indigo-600 text-indigo-600 cursor-not-allowed"
-                  }`}              >
+                className={`w-8 h-8 flex items-center justify-center rounded-full transition-all ${
+                  inputValue.trim()
+                    ? "text-white animate-gradient"
+                    : "border-2 border-indigo-600 text-indigo-600 cursor-not-allowed"
+                }`}
+              >
                 <ArrowUp className="w-4 h-4 stroke-3" />
               </button>
             </div>
@@ -303,90 +322,96 @@ export function AIAssistantInterface() {
               ) : (
                 <Paperclip className="w-4 h-4" />
               )}
-              {showUploadAnimation ? <>
-                <span>Attaching...</span>
-              </> :
+              {showUploadAnimation ? (
+                <>
+                  <span>Attaching...</span>
+                </>
+              ) : (
                 <span>Attach</span>
-              }
+              )}
             </Button>
           </div>
         </div>
-
-        {/* Command categories */}
-        <div className="w-full grid grid-cols-3 gap-4 mb-4">
-          <CommandButton
-            icon={<BookOpen className="w-5 h-5" />}
-            label="Learn"
-            isActive={activeCommandCategory === "learn"}
-            onClick={() =>
-              setActiveCommandCategory(
-                activeCommandCategory === "learn" ? null : "learn"
-              )
-            }
-          />
-          <CommandButton
-            icon={<PenTool className="w-5 h-5" />}
-            label="Write"
-            isActive={activeCommandCategory === "write"}
-            onClick={() =>
-              setActiveCommandCategory(
-                activeCommandCategory === "write" ? null : "write"
-              )
-            }
-          />
-          <CommandButton
-            icon={<Scale className="w-5 h-5" />}
-            label="Legal"
-            isActive={activeCommandCategory === "legal"}
-            onClick={() =>
-              setActiveCommandCategory(
-                activeCommandCategory === "legal" ? null : "legal"
-              )
-            }
-          />
-        </div>
-
-        {/* Command suggestions */}
-        <AnimatePresence>
-          {activeCommandCategory && (
-            <motion.div
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: "auto" }}
-              exit={{ opacity: 0, height: 0 }}
-              className="w-full mb-6 overflow-hidden"
-            >
-              <div className="bg-white/10 backdrop-blur-[2px] rounded-xl border-2 border-indigo-600 shadow-sm overflow-hidden">
-                <ul className="divide-y divide-gray-100">
-                  {commandSuggestions[
-                    activeCommandCategory as keyof typeof commandSuggestions
-                  ].map((suggestion, index) => (
-                    <motion.li
-                      key={index}
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      transition={{ delay: index * 0.03 }}
-                      onClick={() => handleCommandSelect(suggestion)}
-                      className="hover:bg-indigo-400/20 px-8 py-5 cursor-pointer transition-colors duration-75"
-                    >
-                      <div className="flex items-center gap-3">
-                        {activeCommandCategory === "learn" ? (
-                          <BookOpen className="w-4 h-4 text-indigo-600" />
-                        ) : activeCommandCategory === "write" ? (
-                          <PenTool className="w-4 h-4 text-indigo-600" />
-                        ) : (
-                          <Scale className="w-4 h-4 text-indigo-600" />
-                        )}
-                        <span className="text-sm text-gray-700">
-                          {suggestion}
-                        </span>
-                      </div>
-                    </motion.li>
-                  ))}
-                </ul>
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
+        {onDashboard ? (
+          <>
+            {/* Command categories */}
+            <div className="w-full grid grid-cols-3 gap-4 mb-4">
+              <CommandButton
+                icon={<BookOpen className="w-5 h-5" />}
+                label="Learn"
+                isActive={activeCommandCategory === "learn"}
+                onClick={() =>
+                  setActiveCommandCategory(
+                    activeCommandCategory === "learn" ? null : "learn"
+                  )
+                }
+              />
+              <CommandButton
+                icon={<PenTool className="w-5 h-5" />}
+                label="Write"
+                isActive={activeCommandCategory === "write"}
+                onClick={() =>
+                  setActiveCommandCategory(
+                    activeCommandCategory === "write" ? null : "write"
+                  )
+                }
+              />
+              <CommandButton
+                icon={<Scale className="w-5 h-5" />}
+                label="Legal"
+                isActive={activeCommandCategory === "legal"}
+                onClick={() =>
+                  setActiveCommandCategory(
+                    activeCommandCategory === "legal" ? null : "legal"
+                  )
+                }
+              />
+            </div>
+            {/* Command suggestions */}
+            <AnimatePresence>
+              {activeCommandCategory && (
+                <motion.div
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: "auto" }}
+                  exit={{ opacity: 0, height: 0 }}
+                  className="w-full mb-6 overflow-hidden"
+                >
+                  <div className="bg-white/10 backdrop-blur-[2px] rounded-xl border-2 border-indigo-600 shadow-sm overflow-hidden">
+                    <ul className="divide-y divide-gray-100">
+                      {commandSuggestions[
+                        activeCommandCategory as keyof typeof commandSuggestions
+                      ].map((suggestion, index) => (
+                        <motion.li
+                          key={index}
+                          initial={{ opacity: 0 }}
+                          animate={{ opacity: 1 }}
+                          transition={{ delay: index * 0.03 }}
+                          onClick={() => handleCommandSelect(suggestion)}
+                          className="hover:bg-indigo-400/20 px-8 py-5 cursor-pointer transition-colors duration-75"
+                        >
+                          <div className="flex items-center gap-3">
+                            {activeCommandCategory === "learn" ? (
+                              <BookOpen className="w-4 h-4 text-indigo-600" />
+                            ) : activeCommandCategory === "write" ? (
+                              <PenTool className="w-4 h-4 text-indigo-600" />
+                            ) : (
+                              <Scale className="w-4 h-4 text-indigo-600" />
+                            )}
+                            <span className="text-sm text-gray-700">
+                              {suggestion}
+                            </span>
+                          </div>
+                        </motion.li>
+                      ))}
+                    </ul>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </>
+        ) : (
+          <> </>
+        )}
       </div>
     </div>
   );
@@ -403,17 +428,19 @@ function CommandButton({ icon, label, isActive, onClick }: CommandButtonProps) {
   return (
     <motion.button
       onClick={onClick}
-      className={`flex flex-col items-center justify-center gap-2 p-4 duration-500 rounded-xl border transition-all ${isActive
-        ? "backdrop-blur-[2px] shadow-xl border-2 border-indigo-500"
-        : "bg-transparent border-2 border-transparent"
-        }`}
+      className={`flex flex-col items-center justify-center gap-2 p-4 duration-500 rounded-xl border transition-all ${
+        isActive
+          ? "backdrop-blur-[2px] shadow-xl border-2 border-indigo-500"
+          : "bg-transparent border-2 border-transparent"
+      }`}
     >
       <div className={`${isActive ? "text-indigo-600" : "text-gray-500"}`}>
         {icon}
       </div>
       <span
-        className={`text-sm font-medium ${isActive ? "text-indigo-700" : "text-gray-700"
-          }`}
+        className={`text-sm font-medium ${
+          isActive ? "text-indigo-700" : "text-gray-700"
+        }`}
       >
         {label}
       </span>

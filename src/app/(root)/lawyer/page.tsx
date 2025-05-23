@@ -12,6 +12,7 @@ import type React from "react";
 import { FileText, Sparkles } from "lucide-react";
 import { AIAssistantInterface } from "@/components/ui/ai-assistant-interface";
 import { AuroraText } from "@/components/magicui/aurora-text";
+import SiriWave from "@/components/ui/ai";
 
 export default function Home() {
   const [inputValue, setInputValue] = useState("");
@@ -19,36 +20,72 @@ export default function Home() {
   const [reasonEnabled, setReasonEnabled] = useState(false);
   const [uploadedFiles, setUploadedFiles] = useState<string[]>([]);
   const [showUploadAnimation, setShowUploadAnimation] = useState(false);
+  const [inputFocused, setInputFocused] = useState(false);
   const [activeCommandCategory, setActiveCommandCategory] = useState<
     string | null
   >(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
   return (
-    <div className="min-h-screen ">
+    <div className="min-h-screen max-w-[90rem] mx-auto">
       <main className="pt-20">
         {/* Hero Section */}
-        <div className="m-40">
-          <div className="flex flex-col items-center text-center mb-8 md:mb-10">
-            <Badge
-              variant="outline"
-              className="h-fit w-fit p-3 rounded-full text-sm bg-indigo-100 text-indigo-800 mb-4"
-            >
-              <Sparkles className="h-3 w-3 mr-1" />
-              Revolutionizing Legal Solutions with AI
-            </Badge>
-            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extralight text-gray-900 mb-4">
-              Your Legal Partner{" "}
-              <AuroraText className="font-bold">Xegality AI</AuroraText>
-            </h1>
-            <p className="text-gray-600 text-base sm:text-lg max-w-2xl mb-8">
-              Experience seamless, accurate, and efficient legal support
-            </p>
+        <div className="mt-10">
+          <div className="flex flex-col items-center text-center  mb-8 md:mb-10">
+            <div className="flex flex-col items-center text-center mb-60">
+              {/* Container with all content except logo, fade out on focus */}
+              <div
+                className={`absolute transition-all duration-800 ease-in-out ${
+                  inputFocused
+                    ? "scale-0 opacity-0 pointer-events-none"
+                    : "scale-100 opacity-100"
+                }`}
+              >
+                {inputFocused ? (
+                  <></>
+                ) : (
+                  <div className="flex flex-col items-center justify-center gap-1.5">
+                    <Badge
+                      variant="outline"
+                      className="h-fit w-fit p-3 rounded-full text-sm bg-indigo-100 text-indigo-800 mb-4"
+                    >
+                      <Sparkles className="h-3 w-3 mr-1" />
+                      Revolutionizing Legal Solutions with AI
+                    </Badge>
+                    <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extralight text-gray-900 mb-4">
+                      Your Legal Partner{" "}
+                      <AuroraText className="font-bold">Xegality AI</AuroraText>
+                    </h1>
+                    <p className="text-gray-600 text-base text-center sm:text-lg max-w-2xl mb-8">
+                      Experience seamless, accurate, and efficient legal support
+                    </p>
+                  </div>
+                )}
+              </div>
+
+              {/* Only logo shown when input is focused */}
+              <div
+                className={`absolute transition-all duration-800 ease-in-out ${
+                  inputFocused
+                    ? "scale-100 opacity-100"
+                    : "scale-0 opacity-0 pointer-events-none"
+                }`}
+              >
+                <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extralight text-gray-900 mb-4">
+                  <div className="flex justify-center align-middle items-center flex-col gap-6">
+                    <SiriWave />
+                  </div>
+                </h1>
+              </div>
+            </div>
+            {/* Search/Input Section */}
             <div className="w-full max-w-5xl relative">
               <div className="absolute inset-0 rounded-lg z-10"></div>
               <div className="relative z-20">
-                {/* <AdvancedSearch /> */}
-                <AIAssistantInterface />
+                <AIAssistantInterface
+                  onFocus={() => setInputFocused(true)}
+                  onBlur={() => setInputFocused(false)}
+                />
               </div>
             </div>
           </div>

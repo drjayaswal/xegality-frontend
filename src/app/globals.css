@@ -45,25 +45,25 @@
   --color-destructive-foreground: var(----destructive-foreground);
   --animate-aurora: aurora 8s ease-in-out infinite alternate;
   @keyframes aurora {
-  0% {
-    background-position: 0% 50%;
-    transform: rotate(-5deg) scale(0.9);
+    0% {
+      background-position: 0% 50%;
+      transform: rotate(-5deg) scale(0.9);
     }
-  25% {
-    background-position: 50% 100%;
-    transform: rotate(5deg) scale(1.1);
+    25% {
+      background-position: 50% 100%;
+      transform: rotate(5deg) scale(1.1);
     }
-  50% {
-    background-position: 100% 50%;
-    transform: rotate(-3deg) scale(0.95);
+    50% {
+      background-position: 100% 50%;
+      transform: rotate(-3deg) scale(0.95);
     }
-  75% {
-    background-position: 50% 0%;
-    transform: rotate(3deg) scale(1.05);
+    75% {
+      background-position: 50% 0%;
+      transform: rotate(3deg) scale(1.05);
     }
-  100% {
-    background-position: 0% 50%;
-    transform: rotate(-5deg) scale(0.9);
+    100% {
+      background-position: 0% 50%;
+      transform: rotate(-5deg) scale(0.9);
     }
   }
 }
@@ -198,7 +198,33 @@
 }
 
 .animate-gradient {
-  background: linear-gradient(270deg, #9c2dec, #4f46e5, #eb255d);
+  background: linear-gradient(270deg, #3b82f6, #78cdf5, #4f46e5);
   background-size: 400% 400%;
   animation: gradientAnimation 8s ease infinite;
+}
+
+.circular-border {
+  @apply relative w-40 h-40 rounded-full overflow-hidden;
+
+  /* Inner rotating gradient border */
+  &::before {
+    content: "";
+    @apply absolute inset-0 rounded-full;
+    border: 8px solid transparent;
+    background: linear-gradient(90deg, #4f46e5, #3b82f6);
+    -webkit-mask: linear-gradient(#fff 0 0) content-box,
+      linear-gradient(#fff 0 0);
+    -webkit-mask-composite: destination-out;
+    mask-composite: exclude;
+    animation: rotate-border 4s linear infinite;
+  }
+}
+
+@keyframes rotate-border {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
