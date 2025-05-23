@@ -52,9 +52,9 @@ export function Header() {
 
           {/* Desktop Navigation */}
           <nav className="hidden lg:flex items-center space-x-8">
-            <NavLink href="#services">Book an Appointment</NavLink>
-            <NavLink href="#expertise">Hire an Attorney</NavLink>
-            <NavLink href="#contact">Legal Contracts</NavLink>
+            <NavLink href="/book-appointment">Book an Appointment</NavLink>
+            <NavLink href="/hire-attorney">Hire an Attorney</NavLink>
+            <NavLink href="/legal-contracts">Legal Contracts</NavLink>
           </nav>
 
           {/* Actions */}

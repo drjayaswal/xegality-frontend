@@ -41,6 +41,31 @@
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
+  --radius: var(----radius);
+  --color-destructive-foreground: var(----destructive-foreground);
+  --animate-aurora: aurora 8s ease-in-out infinite alternate;
+  @keyframes aurora {
+  0% {
+    background-position: 0% 50%;
+    transform: rotate(-5deg) scale(0.9);
+    }
+  25% {
+    background-position: 50% 100%;
+    transform: rotate(5deg) scale(1.1);
+    }
+  50% {
+    background-position: 100% 50%;
+    transform: rotate(-3deg) scale(0.95);
+    }
+  75% {
+    background-position: 50% 0%;
+    transform: rotate(3deg) scale(1.05);
+    }
+  100% {
+    background-position: 0% 50%;
+    transform: rotate(-5deg) scale(0.9);
+    }
+  }
 }
 
 :root {
@@ -76,6 +101,7 @@
   --sidebar-accent-foreground: oklch(0.205 0 0);
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
+  --destructive-foreground: hsl(0 0% 98%);
 }
 
 .dark {
@@ -110,6 +136,7 @@
   --sidebar-accent-foreground: oklch(0.985 0 0);
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.556 0 0);
+  --destructive-foreground: hsl(0 0% 98%);
 }
 
 @layer base {
@@ -129,4 +156,49 @@
 
 .no-visible-scrollbar::-webkit-scrollbar {
   display: none;
+}
+
+.typing-animation {
+  display: inline-block;
+  overflow: hidden; /* Ensures the text is hidden during animation */
+  white-space: nowrap; /* Prevents text from wrapping */
+  border-right: 2px solid gray; /* Simulates the typing cursor */
+  animation: typing 3s steps(30, end), blink 0.5s step-end infinite;
+}
+
+@keyframes typing {
+  from {
+    width: 0;
+  }
+  to {
+    width: 100%;
+  }
+}
+
+@keyframes blink {
+  from,
+  to {
+    border-color: transparent;
+  }
+  50% {
+    border-color: gray;
+  }
+}
+
+@keyframes gradientAnimation {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.animate-gradient {
+  background: linear-gradient(270deg, #9c2dec, #4f46e5, #eb255d);
+  background-size: 400% 400%;
+  animation: gradientAnimation 8s ease infinite;
 }

@@ -37,7 +37,7 @@ interface AdvancedSearchProps {
 }
 
 export function AdvancedSearch({
-  placeholder = "Help me with...",
+  placeholder = "Ask Xegality AI Anything...",
   onSearch,
   suggestions = [],
   filters = [],
@@ -226,17 +226,26 @@ export function AdvancedSearch({
   const filteredSuggestions = suggestions.filter((suggestion) => suggestion.toLowerCase().includes(query.toLowerCase()))
 
   return (
-    <div className={cn("relative", className)} ref={searchContainerRef}>
+    <div className={cn("relative backdrop-blur-xl", className)} ref={searchContainerRef}>
       {/* Search Input Container */}
-      <div
-        className={cn(
-          "flex items-center h-14 px-1 w-full border rounded-full focus-within:ring-[1px] focus-within:ring-indigo-500 focus-within:border-indigo-500 transition-all bg-white",
-          isFocused ? "shadow-md" : "shadow-sm",
-          variant === "minimal" ? "border-gray-200" : "border-gray-300",
-        )}
-      >
-        <div className="flex-1 flex items-center">
+<div
+  className={cn(
+    "flex items-center h-14 px-1 w-full border rounded-full transition-all",
+    "backdrop-blur-lg bg-white/60 shadow-md border-gray-300 focus-within:ring-2 focus-within:ring-indigo-500 focus-within:border-indigo-500",
+    isFocused ? "shadow-lg" : "shadow-sm",
+    variant === "minimal" ? "border-gray-200" : "border-gray-300"
+  )}
+>        <div className="flex-1 flex items-center">
+        {query ?
           <Search className="h-7 w-7 ml-3 text-indigo-500 flex-shrink-0" />
+          :
+          <Button
+            className="h-12 rounded-full bg-transparent shadow-none hover:scale-105 hover:bg-transparent px-4"
+          >
+            <Sparkles className="text-indigo-600 size-6 stroke-[1.5px] m-0.5" />
+          </Button>
+        }
+
           <Input
             ref={inputRef}
             type="text"
@@ -262,9 +271,9 @@ export function AdvancedSearch({
               <Button
                 variant="ghost"
                 size="icon"
-                className={cn("h-8 w-8 mr-1", hasSelectedFilters && "bg-indigo-100 text-indigo-700")}
+                className={cn("h-10 w-10 mr-1", hasSelectedFilters && "bg-white text-indigo-700")}
               >
-                <Filter className="h-4 w-4" />
+                <Filter className="h-6 w-6 hover:scale-110" />
                 <span className="sr-only">Filter</span>
               </Button>
             </PopoverTrigger>
@@ -308,7 +317,6 @@ export function AdvancedSearch({
           <Mic className={cn("h-6 w-6 hover:scale-110", isListening ? "text-indigo-800 animate-pulse" : "text-indigo-700")} />
         </button>
 
-        {query ?
           <Button
             className="group h-12 rounded-full bg-transparent shadow-none hover:bg-indigo-700 flex items-center justify-center gap-2 **:transition-all **:duration-500"
             onClick={() => handleSearch()}
@@ -318,13 +326,6 @@ export function AdvancedSearch({
               Search
             </span>
           </Button>
-          :
-          <Button
-            className="h-12 rounded-full bg-transparent shadow-none hover:scale-105 hover:bg-transparent px-4"
-          >
-            <Sparkles className="text-indigo-600 size-6 stroke-[1.5px] m-0.5" />
-          </Button>
-        }
       </div>
       {/* Selected Filters */}
       {hasSelectedFilters && variant === "default" && (

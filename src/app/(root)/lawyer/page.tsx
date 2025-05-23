@@ -1,41 +1,17 @@
-"use client"
-import { Input } from "@/components/ui/input"
-import {
-  Calendar,
-  ChevronRight,
-  Clock,
-  Users,
-} from "lucide-react"
-import Image from "next/image"
-import Link from "next/link"
-import {
-  Shield,
-  MessageSquare,
-  CheckCircle2,
-} from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
-import { Card, CardContent, CardFooter } from "@/components/ui/card"
-// import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Tabs } from "@/components/ui/ac-tabs"
-import { AdvancedSearch } from "@/components/advanced-seach"
+"use client";
+import { Input } from "@/components/ui/input";
+import { Calendar, ChevronRight, Clock, Users } from "lucide-react";
+import Image from "next/image";
+import Link from "next/link";
+import { Shield, MessageSquare, CheckCircle2 } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { useState, useRef } from "react";
 import { cn } from "@/lib/utils";
 import type React from "react";
-import {
-  Search,
-  Mic,
-  ArrowUp,
-  Plus,
-  FileText,
-  Code,
-  BookOpen,
-  PenTool,
-  BrainCircuit,
-  Sparkles,
-} from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
-import { Toggle } from "@/components/ui/toggle"
+import { FileText, Sparkles } from "lucide-react";
+import { AIAssistantInterface } from "@/components/ui/ai-assistant-interface";
+import { AuroraText } from "@/components/magicui/aurora-text";
 
 export default function Home() {
   const [inputValue, setInputValue] = useState("");
@@ -48,282 +24,112 @@ export default function Home() {
   >(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const handleUploadFile = () => {
-    setShowUploadAnimation(true);
-
-    // Simulate file upload with timeout
-    setTimeout(() => {
-      const newFile = `Document.pdf`;
-      setUploadedFiles((prev) => [...prev, newFile]);
-      setShowUploadAnimation(false);
-    }, 1500);
-  };
-
-
-  const handleCommandSelect = (command: string) => {
-    setInputValue(command);
-    setActiveCommandCategory(null);
-
-    if (inputRef.current) {
-      inputRef.current.focus();
-    }
-  };
-
-  const handleSendMessage = () => {
-    if (inputValue.trim()) {
-      console.log("Sending message:", inputValue);
-      setInputValue("");
-    }
-  };
-
-  const tabs = [
-    {
-      title: "Ask a Legal Question",
-      value: "product",
-      content: (
-        <div className="w-full relative h-[23rem] rounded-2xl flex items-center justify-center p-8 md:p-10 text-lg md:text-2xl font-semibold text-white bg-white/60 border-[1.7px] border-indigo-600/35 shadow-lg">
-          <div className="w-full border bg-white p-5 border-gray-200 rounded-xl shadow-sm mb-4">
-            <AdvancedSearch />
-
-
-            {/* Uploaded files */}
-            {uploadedFiles.length > 0 && (
-              <div className="px-4 pb-3">
-                <div className="flex flex-wrap gap-2">
-                  {uploadedFiles.map((file, index) => (
-                    <div
-                      key={index}
-                      className="flex items-center gap-2 bg-gray-50 py-1 px-2 rounded-md border border-gray-200"
-                    >
-                      <FileText className="w-3 h-3 text-blue-600" />
-                      <span className="text-xs text-gray-700">{file}</span>
-                      <button
-                        onClick={() =>
-                          setUploadedFiles((prev) =>
-                            prev.filter((_, i) => i !== index)
-                          )
-                        }
-                        className="text-gray-400 hover:text-gray-600"
-                      >
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          width="12"
-                          height="12"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          stroke="currentColor"
-                          strokeWidth="2"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        >
-                          <line x1="18" y1="6" x2="6" y2="18"></line>
-                          <line x1="6" y1="6" x2="18" y2="18"></line>
-                        </svg>
-                      </button>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* Search, Deep Research, Reason functions and actions */}
-            <div className="px-4 py-3 flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <Toggle className="data-[state=on]:text-indigo-400 border-[0.5px] data-[state=on]:hover:text-indigo-400 data-[state=on]:hover:bg-transparent px-5 data-[state=on]:bg-indigo-400/20 rounded-full border-transparent text-gray-500/80">
-                  Deep Search
-                </Toggle>
-        </div>
-            </div>
-
-            <div className="px-4 py-2 border-t border-gray-100">
-              <button
-                onClick={handleUploadFile}
-                className="flex items-center gap-2 text-gray-600 text-sm hover:text-gray-900 transition-colors"
-              >
-                {showUploadAnimation ? (
-                  <motion.div
-                    className="flex space-x-1"
-                    initial="hidden"
-                    animate="visible"
-                    variants={{
-                      hidden: {},
-                      visible: {
-                        transition: {
-                          staggerChildren: 0.1,
-                        },
-                      },
-                    }}
-                  >
-                    {[...Array(3)].map((_, i) => (
-                      <motion.div
-                        key={i}
-                        className="w-1.5 h-1.5 bg-blue-600 rounded-full"
-                        variants={{
-                          hidden: { opacity: 0, y: 5 },
-                          visible: {
-                            opacity: 1,
-                            y: 0,
-                            transition: {
-                              duration: 0.4,
-                              repeat: Infinity,
-                              repeatType: "mirror",
-                              delay: i * 0.1,
-                            },
-                          },
-                        }}
-                      />
-                    ))}
-                  </motion.div>
-                ) : (
-                  <Plus className="w-4 h-4" />
-                )}
-                <span>Upload Files</span>
-              </button>
-            </div>
-          </div>
-        </div>
-      ),
-    },
-    {
-      title: "Analyze Document",
-      value: "services",
-      content: (
-        <div className="w-full overflow-hidden relative h-[25rem] rounded-2xl p-8 md:p-10 text-lg md:text-2xl font-semibold text-white bg-white/60 border border-gray-400 shadow-lg">
-          <div className="space-y-6 text-center">
-            <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 hover:shadow-md hover:border-indigo-500 transition-colors">
-              <FileText className="h-10 w-10 text-gray-400 mx-auto mb-4" />
-              <h3 className="text-base md:text-lg font-semibold mb-2 text-gray-100">Upload your legal document</h3>
-              <p className="text-sm text-gray-400 mb-4">
-                Drag and drop or click to upload PDF, DOCX, or TXT files
-              </p>
-              <Button variant="outline" className="text-gray-100 border-gray-400 hover:border-indigo-500 hover:text-indigo-500">
-                Select File
-              </Button>
-            </div>
-            <Button className="w-full bg-indigo-600 hover:bg-indigo-700 py-4 text-base font-medium rounded-lg shadow-md transition-transform transform hover:scale-105">
-              Analyze Document
-            </Button>
-          </div>
-        </div>
-      ),
-    },
-    {
-      title: "Generate Document",
-      value: "playground",
-      content: (
-        <div className="w-full overflow-hidden relative h-[25rem] rounded-2xl p-8 md:p-10 text-lg md:text-2xl font-semibold text-white bg-white/60 border border-gray-400 shadow-lg">
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            {["Rental Agreement", "Employment Contract", "Legal Notice", "More Templates..."].map((template, idx) => (
-              <Link href="/templates" key={idx} className="w-full">
-                <Card className="cursor-pointer bg-gray-800 hover:bg-gray-700 hover:shadow-md rounded-lg transition-transform transform hover:scale-105">
-                  <CardContent className="p-6 flex items-center gap-4">
-                    <div className="rounded-full bg-indigo-100 p-3 flex items-center justify-center">
-                      <FileText className="h-6 w-6 text-indigo-700" />
-                    </div>
-                    <span className="text-gray-100 font-medium">{template}</span>
-                  </CardContent>
-                </Card>
-              </Link>
-            ))}
-          </div>
-        </div>
-      ),
-    },
-  ];
-
-
   return (
     <div className="min-h-screen ">
       <main className="pt-20">
         {/* Hero Section */}
-        <section className="relative py-20 overflow-hidden">
-          <div className="container relative z-10">
-            <div className="flex flex-col items-center text-center mb-10">
-              <Badge variant="outline" className="bg-indigo-100 text-indigo-800 border-indigo-200 mb-4">
-                <span className="flex items-center gap-1">
-                  <Sparkles className="h-3 w-3" />
-                  Powered by Advanced AI Technology
-                </span>
-              </Badge>
-              <h1 className="text-4xl md:text-6xl font-bold text-white mb-4">
-                India's <span className="text-indigo-200">First</span> AI Legal Assistant
-              </h1>
-              <p className="text-indigo-100 text-lg max-w-2xl">
-                Get instant legal advice, document analysis, and case management powered by artificial intelligence
-              </p>
+        <div className="m-40">
+          <div className="flex flex-col items-center text-center mb-8 md:mb-10">
+            <Badge
+              variant="outline"
+              className="h-fit w-fit p-3 rounded-full text-sm bg-indigo-100 text-indigo-800 mb-4"
+            >
+              <Sparkles className="h-3 w-3 mr-1" />
+              Revolutionizing Legal Solutions with AI
+            </Badge>
+            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extralight text-gray-900 mb-4">
+              Your Legal Partner{" "}
+              <AuroraText className="font-bold">Xegality AI</AuroraText>
+            </h1>
+            <p className="text-gray-600 text-base sm:text-lg max-w-2xl mb-8">
+              Experience seamless, accurate, and efficient legal support
+            </p>
+            <div className="w-full max-w-5xl relative">
+              <div className="absolute inset-0 rounded-lg z-10"></div>
+              <div className="relative z-20">
+                {/* <AdvancedSearch /> */}
+                <AIAssistantInterface />
+              </div>
             </div>
-
-
-
-
-            <div className="h-[20rem] md:h-[40rem] [perspective:1000px] relative b flex flex-col max-w-5xl mx-auto w-full  items-start justify-start my-10">
-              <Tabs tabs={tabs} />
-            </div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
           </div>
-        </section>
+        </div>
         {/* Services Section */}
-        <section id="services" className="py-20">
-          <div className="container mx-auto px-4">
+        <section id="services">
+          <div className="relative">
+            {/* Background decorative elements */}
+            <div className="absolute top-20 left-10 w-64 h-64 bg-indigo-200 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob"></div>
+            <div className="absolute top-40 right-10 w-72 h-72 bg-purple-300 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-2000"></div>
+            <div className="absolute bottom-20 left-1/3 w-72 h-72 bg-indigo-300 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-4000"></div>
+
             <SectionHeading
               subtitle="Our Services"
               title="Comprehensive Legal Solutions"
               description="We offer a wide range of legal services tailored to meet your specific needs and challenges."
             />
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mt-12">
-              <ServiceCard
-                icon={<Shield className="h-6 w-6 text-indigo-600" />}
-                title="Corporate Law"
-                description="Expert guidance on business formation, governance, compliance, and corporate transactions."
-              />
-              <ServiceCard
-                icon={<FileText className="h-6 w-6 text-indigo-600" />}
-                title="Contract Review"
-                description="Thorough analysis and drafting of contracts to protect your interests and mitigate risks."
-              />
-              <ServiceCard
-                icon={<Users className="h-6 w-6 text-indigo-600" />}
-                title="Intellectual Property"
-                description="Protection for your innovations, creative works, and brand identity through patents, trademarks, and copyrights."
-              />
-              <ServiceCard
-                icon={<Calendar className="h-6 w-6 text-indigo-600" />}
-                title="Litigation Support"
-                description="Strategic representation and advocacy in court proceedings and dispute resolution."
-              />
-              <ServiceCard
-                icon={<Clock className="h-6 w-6 text-indigo-600" />}
-                title="Regulatory Compliance"
-                description="Navigate complex regulatory frameworks with expert guidance to ensure full compliance."
-              />
-              <ServiceCard
-                icon={<MessageSquare className="h-6 w-6 text-indigo-600" />}
-                title="Legal Consultation"
-                description="Personalized legal advice and strategy sessions tailored to your specific situation."
-              />
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8 mt-12 relative z-10">
+              {[
+                {
+                  icon: <Shield className="h-6 w-6" />,
+                  title: "Corporate Law",
+                  description:
+                    "Expert guidance on business formation, governance, compliance, and corporate transactions.",
+                },
+                {
+                  icon: <FileText className="h-6 w-6" />,
+                  title: "Contract Review",
+                  description:
+                    "Thorough analysis and drafting of contracts to protect your interests and mitigate risks.",
+                },
+                {
+                  icon: <Users className="h-6 w-6" />,
+                  title: "Intellectual Property",
+                  description:
+                    "Protection for your innovations, creative works, and brand identity through patents, trademarks, and copyrights.",
+                },
+                {
+                  icon: <Calendar className="h-6 w-6" />,
+                  title: "Litigation Support",
+                  description:
+                    "Strategic representation and advocacy in court proceedings and dispute resolution.",
+                },
+                {
+                  icon: <Clock className="h-6 w-6" />,
+                  title: "Regulatory Compliance",
+                  description:
+                    "Navigate complex regulatory frameworks with expert guidance to ensure full compliance.",
+                },
+                {
+                  icon: <MessageSquare className="h-6 w-6" />,
+                  title: "Legal Consultation",
+                  description:
+                    "Personalized legal advice and strategy sessions tailored to your specific situation.",
+                },
+              ].map((service, index) => (
+                <div
+                  key={index}
+                  className="group relative bg-white rounded-2xl p-6 shadow-sm hover:shadow-md transition-all duration-300 border border-indigo-50 hover:border-indigo-200 overflow-hidden"
+                >
+                  {/* Gradient hover effect */}
+                  <div className="absolute inset-0 bg-gradient-to-br from-indigo-50 to-purple-50 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+
+                  {/* Content */}
+                  <div className="relative z-10">
+                    <div className="h-14 w-14 rounded-xl bg-indigo-100 flex items-center justify-center mb-6 group-hover:bg-indigo-200 transition-colors duration-300">
+                      <div className="text-indigo-600">{service.icon}</div>
+                    </div>
+                    <h3 className="text-xl font-semibold text-gray-900 mb-3 group-hover:text-indigo-700 transition-colors duration-300">
+                      {service.title}
+                    </h3>
+                    <p className="text-gray-600 group-hover:text-gray-700 transition-colors duration-300">
+                      {service.description}
+                    </p>
+                  </div>
+
+                  {/* Decorative corner accent */}
+                  <div className="absolute -bottom-2 -right-2 w-16 h-16 bg-indigo-100 rounded-full opacity-0 group-hover:opacity-30 transition-opacity duration-300 transform translate-x-1/2 translate-y-1/2"></div>
+                </div>
+              ))}
             </div>
           </div>
         </section>
@@ -371,8 +177,9 @@ export default function Home() {
                 </h2>
 
                 <p className="text-lg text-gray-600 mb-8">
-                  Our team brings decades of combined experience across various legal specialties, allowing us to
-                  provide comprehensive solutions to even the most complex legal challenges.
+                  Our team brings decades of combined experience across various
+                  legal specialties, allowing us to provide comprehensive
+                  solutions to even the most complex legal challenges.
                 </p>
 
                 <div className="space-y-6">
@@ -447,7 +254,6 @@ export default function Home() {
             </div>
           </div>
         </section>
-
 
         {/* Testimonials Section */}
         <section id="testimonials" className="mt-10 py-20 bg-gray-50">
@@ -529,32 +335,59 @@ export default function Home() {
                 Ready to Get Started with Expert Legal Guidance?
               </h2>
               <p className="text-lg text-indigo-100 mb-10">
-                Schedule a consultation with our team to discuss your legal needs and how we can help you achieve your
-                goals.
+                Schedule a consultation with our team to discuss your legal
+                needs and how we can help you achieve your goals.
               </p>
 
               <div className="bg-white p-8 rounded-2xl shadow-xl">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                   <div>
-                    <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
+                    <label
+                      htmlFor="name"
+                      className="block text-sm font-medium text-gray-700 mb-1"
+                    >
                       Full Name
                     </label>
-                    <Input type="text" id="name" placeholder="John Doe" className="w-full" />
+                    <Input
+                      type="text"
+                      id="name"
+                      placeholder="John Doe"
+                      className="w-full"
+                    />
                   </div>
                   <div>
-                    <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
+                    <label
+                      htmlFor="email"
+                      className="block text-sm font-medium text-gray-700 mb-1"
+                    >
                       Email Address
                     </label>
-                    <Input type="email" id="email" placeholder="john@example.com" className="w-full" />
+                    <Input
+                      type="email"
+                      id="email"
+                      placeholder="john@example.com"
+                      className="w-full"
+                    />
                   </div>
                   <div>
-                    <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-1">
+                    <label
+                      htmlFor="phone"
+                      className="block text-sm font-medium text-gray-700 mb-1"
+                    >
                       Phone Number
                     </label>
-                    <Input type="tel" id="phone" placeholder="+1 (555) 000-0000" className="w-full" />
+                    <Input
+                      type="tel"
+                      id="phone"
+                      placeholder="+1 (555) 000-0000"
+                      className="w-full"
+                    />
                   </div>
                   <div>
-                    <label htmlFor="service" className="block text-sm font-medium text-gray-700 mb-1">
+                    <label
+                      htmlFor="service"
+                      className="block text-sm font-medium text-gray-700 mb-1"
+                    >
                       Service Needed
                     </label>
                     <select
@@ -573,7 +406,10 @@ export default function Home() {
                 </div>
 
                 <div className="mb-6">
-                  <label htmlFor="message" className="block text-sm font-medium text-gray-700 mb-1">
+                  <label
+                    htmlFor="message"
+                    className="block text-sm font-medium text-gray-700 mb-1"
+                  >
                     Brief Description of Your Legal Needs
                   </label>
                   <textarea
@@ -593,9 +429,8 @@ export default function Home() {
         </section>
       </main>
     </div>
-  )
+  );
 }
-
 
 function SectionHeading({ subtitle, title, description }: SectionHeadingProps) {
   return (
@@ -603,10 +438,12 @@ function SectionHeading({ subtitle, title, description }: SectionHeadingProps) {
       <div className="inline-flex items-center rounded-full bg-indigo-50 px-3 py-1 text-sm font-medium text-indigo-600 mb-4">
         {subtitle}
       </div>
-      <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">{title}</h2>
+      <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+        {title}
+      </h2>
       <p className="text-lg text-gray-600">{description}</p>
     </div>
-  )
+  );
 }
 
 function ServiceCard({ icon, title, description }: ServiceCardProps) {
@@ -618,7 +455,7 @@ function ServiceCard({ icon, title, description }: ServiceCardProps) {
       <h3 className="text-xl font-semibold text-gray-900 mb-3">{title}</h3>
       <p className="text-gray-600">{description}</p>
     </div>
-  )
+  );
 }
 
 function ProcessStep({ number, title, description }: ProcessStepProps) {
@@ -632,7 +469,7 @@ function ProcessStep({ number, title, description }: ProcessStepProps) {
       <h3 className="text-xl font-semibold text-gray-900 mb-3">{title}</h3>
       <p className="text-gray-600">{description}</p>
     </div>
-  )
+  );
 }
 
 function ExpertiseItem({ title, description }: ExpertiseItemProps) {
@@ -646,10 +483,15 @@ function ExpertiseItem({ title, description }: ExpertiseItemProps) {
         <p className="text-gray-600">{description}</p>
       </div>
     </div>
-  )
+  );
 }
 
-function TestimonialCard({ quote, author, position, image }: TestimonialCardProps) {
+function TestimonialCard({
+  quote,
+  author,
+  position,
+  image,
+}: TestimonialCardProps) {
   return (
     <div className="bg-white rounded-xl p-6 shadow-sm hover:shadow-md transition-shadow border border-gray-100">
       <div className="flex items-center gap-1 mb-4 text-amber-400">
@@ -662,7 +504,13 @@ function TestimonialCard({ quote, author, position, image }: TestimonialCardProp
       <p className="text-gray-600 mb-6">"{quote}"</p>
       <div className="flex items-center gap-3">
         <div className="h-10 w-10 rounded-full overflow-hidden">
-          <Image src={image || "/placeholder.svg"} alt={author} width={40} height={40} className="object-cover" />
+          <Image
+            src={image || "/placeholder.svg"}
+            alt={author}
+            width={40}
+            height={40}
+            className="object-cover"
+          />
         </div>
         <div>
           <p className="font-medium text-gray-900">{author}</p>
@@ -670,7 +518,7 @@ function TestimonialCard({ quote, author, position, image }: TestimonialCardProp
         </div>
       </div>
     </div>
-  )
+  );
 }
 
 function TeamMember({ name, position, image }: TeamMemberProps) {
@@ -687,6 +535,5 @@ function TeamMember({ name, position, image }: TeamMemberProps) {
       <h3 className="text-lg font-semibold text-gray-900">{name}</h3>
       <p className="text-gray-600">{position}</p>
     </div>
-  )
+  );
 }
-
