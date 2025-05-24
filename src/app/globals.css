@@ -197,8 +197,18 @@
   }
 }
 
+.no-scroll-bar {
+  scrollbar-color: red transparent;
+}
+
+.gradient-border {
+  background: linear-gradient(270deg, #9c2dec, #ec4899, #4f46e5);
+  background-size: 400% 400%;
+  animation: gradientAnimation 3s ease infinite;
+}
+
 .animate-gradient {
-  background: linear-gradient(270deg, #3b82f6, #78cdf5, #4f46e5);
+  background: linear-gradient(270deg, #9c2dec, #ec4899, #4f46e5);
   background-size: 400% 400%;
   animation: gradientAnimation 8s ease infinite;
 }

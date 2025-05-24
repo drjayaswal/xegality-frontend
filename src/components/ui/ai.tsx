@@ -1,13 +1,18 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
-const SiriWave: React.FC = () => {
+interface SiriWaveProps {
+  isWaveMode: boolean; // Prop to determine wave or streamline mode
+}
+
+const SiriWave: React.FC<SiriWaveProps> = ({ isWaveMode }) => {
   const svgRef = useRef<SVGSVGElement | null>(null);
+  const [amplitude, setAmplitude] = useState(isWaveMode ? 30 : 0);
 
   useEffect(() => {
     const wave1 = svgRef.current?.querySelector("#wave1") as SVGPathElement;
-    // const wave2 = svgRef.current?.querySelector("#wave2") as SVGPathElement;
+    const wave2 = svgRef.current?.querySelector("#wave2") as SVGPathElement;
     const wave3 = svgRef.current?.querySelector("#wave3") as SVGPathElement;
 
     let t = 0;
@@ -41,21 +46,43 @@ const SiriWave: React.FC = () => {
     };
 
     const animate = () => {
-      drawWave(wave1, 30, 0.03, 1, 0);
-      // drawWave(wave2, 20, 0.035, 1.2, 100);
-      drawWave(wave3, 25, 0.04, 0.8, 200);
+      drawWave(wave1, amplitude, 0.02, 0.8, 0);
+      drawWave(wave2, amplitude, 0.03, 0.9, 0);
+      drawWave(wave3, amplitude, 0.04, 1, 200);
       t += 1;
       requestAnimationFrame(animate);
     };
 
     animate();
-  }, []);
+  }, [amplitude]);
+
+  useEffect(() => {
+    // Smooth transition of amplitude using an interval
+    const targetAmplitude = isWaveMode ? 7 : 0.8;
+    const step = isWaveMode ? 1 : -1;
+
+    const interval = setInterval(() => {
+      setAmplitude((current) => {
+        const nextAmplitude = current + step;
+        if (
+          (step > 0 && nextAmplitude >= targetAmplitude) ||
+          (step < 0 && nextAmplitude <= targetAmplitude)
+        ) {
+          clearInterval(interval);
+          return targetAmplitude;
+        }
+        return nextAmplitude;
+      });
+    }, 15);
+
+    return () => clearInterval(interval);
+  }, [isWaveMode]);
 
   return (
     <div
       style={{
-        width: "100px",
-        height: "100px",
+        width: "100%",
+        height: "100%",
         position: "relative",
         borderRadius: "50%",
         display: "flex",
@@ -64,22 +91,10 @@ const SiriWave: React.FC = () => {
         overflow: "hidden",
       }}
     >
-      <div
-        className="circular-border z-10"
-        style={{
-          position: "absolute",
-          width: "100%",
-          height: "100%",
-          borderRadius: "50%",
-          background: "rgba(255, 255, 255, 0.1)",
-          backdropFilter: "blur(1px)",
-          zIndex: -1,
-        }}
-      ></div>
       <svg
         ref={svgRef}
-        width="100"
-        height="100"
+        width="100%"
+        height="100%"
         viewBox="0 0 300 300"
         xmlns="http://www.w3.org/2000/svg"
         style={{
@@ -88,10 +103,10 @@ const SiriWave: React.FC = () => {
           overflow: "hidden",
         }}
       >
-        <g fill="none" strokeWidth="10">
+        <g fill="none" strokeWidth={isWaveMode ? "1" : "0.5"}>
           <path id="wave1" stroke="#4f46e5" />
-          {/* <path id="wave2" stroke="#ec4899" /> */}
-          <path id="wave3" stroke="#3b82f6" />
+          <path id="wave2" stroke="#ec4899" />
+          <path id="wave3" stroke="#9c2dec" />
         </g>
       </svg>
     </div>

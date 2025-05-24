@@ -3,7 +3,7 @@
 import type React from "react";
 
 import { useEffect, useState } from "react";
-import { motion } from "motion/react";
+import { hover, motion } from "motion/react";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
 import {
@@ -21,6 +21,7 @@ import {
   User,
   Users,
 } from "lucide-react";
+import XegalityAI from "./ai";
 
 type Tab = {
   title: string;
@@ -56,7 +57,7 @@ const NavItem = ({
       "flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors",
       active
         ? "bg-indigo-500 text-white"
-        : "text-gray-700 hover:bg-indigo-100 dark:text-gray-200 dark:hover:bg-indigo-950"
+        : "text-gray-700 border-2 border-transparent hover:bg-indigo-100 dark:text-gray-200 dark:hover:bg-indigo-950"
     )}
     onClick={onClick}
     onMouseEnter={onMouseEnter}
@@ -82,9 +83,9 @@ export default function LawyerDashboard() {
       value: "xegality-ai",
       category: "services",
       content: (
-        <div className="w-full overflow-hidden relative rounded-lg h-full p-10 text-xl md:text-4xl font-bold text-white bg-gradient-to-br from-blue-600 to-blue-900">
-          <p>Xegality AI</p>
-        </div>
+        <>
+          <XegalityAI />
+        </>
       ),
     },
     {
@@ -275,7 +276,7 @@ export default function LawyerDashboard() {
             <h2 className="mb-2 px-3 text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">
               Services
             </h2>
-            <div className="space-y-1">
+            <div>
               {servicesTabs.map((tab) => (
                 <NavItem
                   key={tab.value}
@@ -296,7 +297,7 @@ export default function LawyerDashboard() {
             <h2 className="mb-2 px-3 text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">
               Account
             </h2>
-            <div className="space-y-1">
+            <div>
               {accountTabs.map((tab) => (
                 <NavItem
                   key={tab.value}
@@ -345,7 +346,7 @@ export default function LawyerDashboard() {
           active={active}
           key={active.value}
           hovering={hovering}
-          className="mt-2"
+          className={cn("mt-2")}
         />
       </div>
     </div>
@@ -382,7 +383,7 @@ export const FadeInDiv = ({
           }}
           className={cn("w-full h-full absolute top-0 left-0", className)}
         >
-          {tab.content}
+          <>{tab.content}</>
         </motion.div>
       ))}
     </div>

@@ -332,86 +332,80 @@ AIAssistantInterfaceProps) {
             </Button>
           </div>
         </div>
-        {onDashboard ? (
-          <>
-            {/* Command categories */}
-            <div className="w-full grid grid-cols-3 gap-4 mb-4">
-              <CommandButton
-                icon={<BookOpen className="w-5 h-5" />}
-                label="Learn"
-                isActive={activeCommandCategory === "learn"}
-                onClick={() =>
-                  setActiveCommandCategory(
-                    activeCommandCategory === "learn" ? null : "learn"
-                  )
-                }
-              />
-              <CommandButton
-                icon={<PenTool className="w-5 h-5" />}
-                label="Write"
-                isActive={activeCommandCategory === "write"}
-                onClick={() =>
-                  setActiveCommandCategory(
-                    activeCommandCategory === "write" ? null : "write"
-                  )
-                }
-              />
-              <CommandButton
-                icon={<Scale className="w-5 h-5" />}
-                label="Legal"
-                isActive={activeCommandCategory === "legal"}
-                onClick={() =>
-                  setActiveCommandCategory(
-                    activeCommandCategory === "legal" ? null : "legal"
-                  )
-                }
-              />
-            </div>
-            {/* Command suggestions */}
-            <AnimatePresence>
-              {activeCommandCategory && (
-                <motion.div
-                  initial={{ opacity: 0, height: 0 }}
-                  animate={{ opacity: 1, height: "auto" }}
-                  exit={{ opacity: 0, height: 0 }}
-                  className="w-full mb-6 overflow-hidden"
-                >
-                  <div className="bg-white/10 backdrop-blur-[2px] rounded-xl border-2 border-indigo-600 shadow-sm overflow-hidden">
-                    <ul className="divide-y divide-gray-100">
-                      {commandSuggestions[
-                        activeCommandCategory as keyof typeof commandSuggestions
-                      ].map((suggestion, index) => (
-                        <motion.li
-                          key={index}
-                          initial={{ opacity: 0 }}
-                          animate={{ opacity: 1 }}
-                          transition={{ delay: index * 0.03 }}
-                          onClick={() => handleCommandSelect(suggestion)}
-                          className="hover:bg-indigo-400/20 px-8 py-5 cursor-pointer transition-colors duration-75"
-                        >
-                          <div className="flex items-center gap-3">
-                            {activeCommandCategory === "learn" ? (
-                              <BookOpen className="w-4 h-4 text-indigo-600" />
-                            ) : activeCommandCategory === "write" ? (
-                              <PenTool className="w-4 h-4 text-indigo-600" />
-                            ) : (
-                              <Scale className="w-4 h-4 text-indigo-600" />
-                            )}
-                            <span className="text-sm text-gray-700">
-                              {suggestion}
-                            </span>
-                          </div>
-                        </motion.li>
-                      ))}
-                    </ul>
-                  </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </>
-        ) : (
-          <> </>
-        )}
+        {/* Command categories */}
+        <div className="w-full grid grid-cols-3 gap-4 mb-4">
+          <CommandButton
+            icon={<BookOpen className="w-5 h-5" />}
+            label="Learn"
+            isActive={activeCommandCategory === "learn"}
+            onClick={() =>
+              setActiveCommandCategory(
+                activeCommandCategory === "learn" ? null : "learn"
+              )
+            }
+          />
+          <CommandButton
+            icon={<PenTool className="w-5 h-5" />}
+            label="Write"
+            isActive={activeCommandCategory === "write"}
+            onClick={() =>
+              setActiveCommandCategory(
+                activeCommandCategory === "write" ? null : "write"
+              )
+            }
+          />
+          <CommandButton
+            icon={<Scale className="w-5 h-5" />}
+            label="Legal"
+            isActive={activeCommandCategory === "legal"}
+            onClick={() =>
+              setActiveCommandCategory(
+                activeCommandCategory === "legal" ? null : "legal"
+              )
+            }
+          />
+        </div>
+        {/* Command suggestions */}
+        <AnimatePresence>
+          {activeCommandCategory && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: "auto" }}
+              exit={{ opacity: 0, height: 0 }}
+              className="w-full mb-6 overflow-hidden"
+            >
+              <div className="bg-white/10 backdrop-blur-[2px] rounded-xl border-2 border-indigo-600 shadow-sm overflow-hidden">
+                <ul className="divide-y divide-gray-100">
+                  {commandSuggestions[
+                    activeCommandCategory as keyof typeof commandSuggestions
+                  ].map((suggestion, index) => (
+                    <motion.li
+                      key={index}
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      transition={{ delay: index * 0.03 }}
+                      onClick={() => handleCommandSelect(suggestion)}
+                      className="hover:bg-indigo-400/20 px-8 py-5 cursor-pointer transition-colors duration-75"
+                    >
+                      <div className="flex items-center gap-3">
+                        {activeCommandCategory === "learn" ? (
+                          <BookOpen className="w-4 h-4 text-indigo-600" />
+                        ) : activeCommandCategory === "write" ? (
+                          <PenTool className="w-4 h-4 text-indigo-600" />
+                        ) : (
+                          <Scale className="w-4 h-4 text-indigo-600" />
+                        )}
+                        <span className="text-sm text-gray-700">
+                          {suggestion}
+                        </span>
+                      </div>
+                    </motion.li>
+                  ))}
+                </ul>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
     </div>
   );

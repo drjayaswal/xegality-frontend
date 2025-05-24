@@ -1,0 +1,549 @@
+"use client";
+
+import type React from "react";
+
+import { useState, useRef, useEffect } from "react";
+import { motion, AnimatePresence } from "motion/react";
+import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import {
+  Send,
+  Sparkles,
+  FileText,
+  Scale,
+  Clock,
+  Users,
+  Mic,
+  Paperclip,
+  User,
+  Brain,
+  EarIcon,
+  X,
+  File,
+  ImageIcon,
+} from "lucide-react";
+import SiriWave from "@/components/ui/ai";
+
+interface Message {
+  id: string;
+  content: string;
+  sender: "user" | "ai";
+  timestamp: Date;
+  type?: "text" | "suggestion";
+}
+
+interface UploadedFile {
+  id: string;
+  name: string;
+  size: string;
+  type: string;
+  uploadedAt: Date;
+}
+
+interface QuickAction {
+  icon: React.ReactNode;
+  label: string;
+  description: string;
+  action: () => void;
+}
+
+export default function XegalityAI() {
+  const [isListening, setIsListening] = useState(false);
+  const [showUploadAnimation, setShowUploadAnimation] = useState(false);
+  const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>([]);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const [messages, setMessages] = useState<Message[]>([]);
+  const [inputValue, setInputValue] = useState("");
+  const [isTyping, setIsTyping] = useState(false);
+  const scrollAreaRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  const quickActions: QuickAction[] = [
+    {
+      icon: <FileText className="h-4 w-4" />,
+      label: "Document Analysis",
+      description: "Analyze legal documents for key insights",
+      action: () =>
+        handleQuickAction("Please help me analyze a legal document"),
+    },
+    {
+      icon: <Scale className="h-4 w-4" />,
+      label: "Case Research",
+      description: "Research similar cases and precedents",
+      action: () =>
+        handleQuickAction("I need help researching case law and precedents"),
+    },
+    {
+      icon: <Clock className="h-4 w-4" />,
+      label: "Deadline Tracking",
+      description: "Track important legal deadlines",
+      action: () =>
+        handleQuickAction("Help me track important deadlines for my cases"),
+    },
+    {
+      icon: <Users className="h-4 w-4" />,
+      label: "Client Communication",
+      description: "Draft client communications",
+      action: () =>
+        handleQuickAction("Help me draft a professional client communication"),
+    },
+  ];
+
+  const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const files = event.target.files;
+    if (!files) return;
+
+    setShowUploadAnimation(true);
+
+    // Process each file
+    Array.from(files).forEach((file) => {
+      // Simulate upload delay
+      setTimeout(() => {
+        const newFile: UploadedFile = {
+          id: Date.now().toString() + Math.random(),
+          name: file.name,
+          size: formatFileSize(file.size),
+          type: file.type,
+          uploadedAt: new Date(),
+        };
+        setUploadedFiles((prev) => [...prev, newFile]);
+        setShowUploadAnimation(false);
+      }, 1500);
+    });
+
+    // Reset file input
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+  };
+
+  const formatFileSize = (bytes: number): string => {
+    if (bytes === 0) return "0 Bytes";
+    const k = 1024;
+    const sizes = ["Bytes", "KB", "MB", "GB"];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return (
+      Number.parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i]
+    );
+  };
+
+  const removeFile = (fileId: string) => {
+    setUploadedFiles((prev) => prev.filter((file) => file.id !== fileId));
+  };
+  const getFileIcon = (fileType: string, fileName: string) => {
+    if (fileType.includes("pdf"))
+      return <FileText className="h-5 w-5 text-red-500" />;
+    if (
+      fileType.includes("word") ||
+      fileType.includes("document") ||
+      fileName.includes(".doc")
+    )
+      return <ImageIcon className="h-5 w-5 text-blue-500" />;
+    if (fileType.includes("image"))
+      return <ImageIcon className="h-5 w-5 text-green-500" />;
+    return <ImageIcon className="h-5 w-5 text-purple-500" />;
+  };
+
+  const handleUploadClick = () => {
+    fileInputRef.current?.click();
+  };
+
+  // Handle voice search
+  const handleVoiceSearch = () => {
+    // Check if the browser supports the Web Speech API
+    if (
+      typeof window !== "undefined" &&
+      (window as any).webkitSpeechRecognition
+    ) {
+      const SpeechRecognition = (window as any).webkitSpeechRecognition;
+      const recognition = new SpeechRecognition();
+      recognition.continuous = false;
+      recognition.interimResults = false;
+      recognition.lang = "en-US";
+
+      setIsListening(true);
+
+      recognition.onresult = (event: any) => {
+        const transcript = event.results[0][0].transcript;
+        setInputValue(transcript);
+        setIsListening(false);
+      };
+
+      recognition.onerror = () => {
+        setIsListening(false);
+      };
+
+      recognition.onend = () => {
+        setIsListening(false);
+      };
+
+      recognition.start();
+    } else {
+      alert("Voice search is not supported in your browser");
+    }
+  };
+
+  const getFileColor = (fileType: string, fileName: string) => {
+    if (fileType.includes("pdf"))
+      return "from-red-500/20 to-red-600/20 border-red-500/30";
+    if (
+      fileType.includes("word") ||
+      fileType.includes("document") ||
+      fileName.includes(".doc")
+    )
+      return "from-blue-500/20 to-blue-600/20 border-blue-500/30";
+    if (fileType.includes("image"))
+      return "from-green-500/20 to-green-600/20 border-green-500/30";
+    return "from-purple-500/20 to-purple-600/20 border-purple-500/30";
+  };
+  const handleQuickAction = (message: string) => {
+    setInputValue(message);
+    inputRef.current?.focus();
+  };
+
+  const handleSendMessage = async () => {
+    if (!inputValue.trim()) return;
+
+    const userMessage: Message = {
+      id: Date.now().toString(),
+      content: inputValue,
+      sender: "user",
+      timestamp: new Date(),
+    };
+
+    setMessages((prev) => [...prev, userMessage]);
+    setInputValue("");
+    setIsTyping(true);
+
+    // Simulate AI response
+    setTimeout(() => {
+      const aiResponse: Message = {
+        id: (Date.now() + 1).toString(),
+        content: generateAIResponse(inputValue),
+        sender: "ai",
+        timestamp: new Date(),
+      };
+      setMessages((prev) => [...prev, aiResponse]);
+      setIsTyping(false);
+    }, 1500);
+  };
+
+  const generateAIResponse = (userInput: string): string => {
+    const responses = [
+      "I understand you need assistance with that. Let me analyze the relevant legal frameworks and provide you with comprehensive guidance based on current case law and regulations.",
+      "Based on my analysis of similar cases and legal precedents, I can provide you with several strategic approaches to consider for your situation.",
+      "I've reviewed the relevant statutes and case law. Here are the key points you should consider, along with potential risks and opportunities.",
+      "Let me break down the legal implications and provide you with actionable insights based on the latest legal developments in this area.",
+      "I can help you with that. Based on my knowledge of legal best practices and current regulations, here's what I recommend for your specific situation.",
+    ];
+    return responses[Math.floor(Math.random() * responses.length)];
+  };
+
+  const handleKeyPress = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      handleSendMessage();
+    }
+  };
+
+  useEffect(() => {
+    if (scrollAreaRef.current) {
+      scrollAreaRef.current.scrollTop = scrollAreaRef.current.scrollHeight;
+    }
+  }, [messages]);
+
+  return (
+    <div className="w-full h-full bg-white dark:bg-black rounded-lg overflow-hidden flex flex-col">
+      {/* Hidden file input */}
+      <input
+        ref={fileInputRef}
+        type="file"
+        multiple
+        accept=".pdf,.doc,.docx,.txt,.jpg,.jpeg,.png"
+        onChange={handleFileUpload}
+        className="hidden"
+      />
+
+      {/* Header with Full-Width Siri Wave */}
+      <div className="relative h-30 overflow-hidden bg-gradient-to-r from-[#4f46e5]/40 via-[#ec4899]/40 to-[#3b82f6]/40">
+        {/* Background overlay for better contrast */}
+        <div className="absolute inset-0 " />
+        {/* Siri Wave Container - Full Width and Height */}
+        <div className="absolute inset-0 flex items-center justify-center">
+          <div className="w-full h-fit flex items-center justify-center">
+            <SiriWave
+              isWaveMode={inputValue !== "" || isTyping || isListening}
+            />
+          </div>
+        </div>
+      </div>
+
+      {/* Chat Messages */}
+      <div className="flex-1 px-5 py-10 no-scroll-bar bg-gradient-to-r from-[#4f46e5]/40 via-[#ec4899]/40 to-[#3b82f6]/40 overflow-hidden">
+        <ScrollArea className="h-full" ref={scrollAreaRef}>
+          <div className="space-y-4 pb-20">
+            <div
+              className={cn(
+                " cursor-help text-white/60 text-6xl p-4 relative shadow-none"
+              )}
+            >
+              {(() => {
+                const currentHour = new Date().getHours();
+                if (currentHour < 12) {
+                  return "Good Morning";
+                } else if (currentHour < 18) {
+                  return "Good Afternoon";
+                } else {
+                  return "Good Evening";
+                }
+              })()}{" "}
+            </div>
+            <AnimatePresence>
+              {messages.map((message) => (
+                <motion.div
+                  key={message.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -20 }}
+                  className={cn(
+                    "flex gap-2",
+                    message.sender === "user" ? "justify-end" : "justify-start"
+                  )}
+                >
+                  {message.sender === "ai" && (
+                    <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-indigo-600 rounded-full rounded-r-none flex items-center justify-center shadow-md">
+                      <Brain className="h-6 w-6 text-white" />
+                    </div>
+                  )}
+                  <div
+                    className={cn(
+                      "max-w-[80%] p-4 relative rounded-2xl shadow-none duration-200 hover:shadow-lg",
+                      message.sender === "user"
+                        ? "-mr-2 bg-white/20 backdrop-blur-lg dark:text-white/90 text-black/90 rounded-tr-none"
+                        : "-ml-2 bg-white/20 backdrop-blur-lg dark:text-white/90 text-black/90 rounded-tl-none"
+                    )}
+                  >
+                    <p className="text-sm leading-relaxed">{message.content}</p>
+                    <p className="text-xs mt-2 text-black/40 dark:text-white/40">
+                      {message.timestamp.toLocaleTimeString([], {
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      })}
+                    </p>
+                  </div>
+                  {message.sender === "user" && (
+                    <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-full rounded-l-none flex items-center justify-center shadow-md">
+                      <User className="h-6 w-6 text-white" />
+                    </div>
+                  )}
+                </motion.div>
+              ))}
+            </AnimatePresence>
+            {/* Typing Indicator */}
+            {isTyping && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="flex gap-3"
+              >
+                <div className="w-10 h-10 animate-gradient rounded-full flex rounded-r-none items-center justify-center shadow-md">
+                  <Brain className="h-5 w-5 text-white" />
+                </div>
+                <div className="bg-white/20 backdrop-blur-lg dark:text-white/90 text-black/90 rounded-tl-none -ml-3 p-4 rounded-2xl rounded-l-none shadow-md">
+                  <div className="flex gap-1">
+                    <div className="w-2 h-2 dark:bg-white bg-black rounded-full animate-bounce"></div>
+                    <div
+                      className="w-2 h-2 dark:bg-white bg-black rounded-full animate-bounce"
+                      style={{ animationDelay: "0.1s" }}
+                    ></div>
+                    <div
+                      className="w-2 h-2 dark:bg-white bg-black rounded-full animate-bounce"
+                      style={{ animationDelay: "0.2s" }}
+                    ></div>
+                  </div>
+                </div>
+              </motion.div>
+            )}
+          </div>
+        </ScrollArea>
+      </div>
+
+      {/* Floating Uploaded Files Display */}
+      <AnimatePresence>
+        {uploadedFiles.length > 0 && (
+          <motion.div
+            initial={{ opacity: 0, y: 50, scale: 0.9 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 50, scale: 0.9 }}
+            className="absolute bottom-24 overflow-visible left-6 right-6 z-40"
+          >
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-2 max-h-40 overflow-y-auto">
+              {uploadedFiles.map((file, index) => (
+                <div
+                  key={file.id}
+                  className="relative group bg-white/30 dark:bg-black/30 backdrop-blur-md rounded-lg p-2 border border-white/10 dark:border-black/20 shadow-sm hover:shadow-md transition-all duration-300"
+                >
+                  <div className="flex items-center gap-2">
+                    <div className="flex-shrink-0 p-1 bg-white/70 dark:bg-gray-800/70 rounded-md">
+                      {getFileIcon(file.type, file.name)}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <h4
+                        className="text-xs font-medium text-gray-800 dark:text-white truncate"
+                        title={file.name}
+                      >
+                        {file.name}
+                      </h4>
+                      <p className="text-xs text-gray-600 dark:text-gray-300 mt-1">
+                        {file.size}
+                      </p>
+                    </div>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => removeFile(file.id)}
+                      className="opacity-0 group-hover:opacity-100 transition-opacity h-5 w-5 p-0 hover:bg-red-500/20 text-red-500"
+                    >
+                      <X className="h-3 w-3" />
+                    </Button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Upload Animation Overlay */}
+      <AnimatePresence>
+        {showUploadAnimation && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="absolute inset-0  backdrop-blur-xs flex items-center justify-center z-50"
+          >
+            <motion.div
+              initial={{ scale: 0.8, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.8, opacity: 0 }}
+              className="bg-white/30 dark:bg-black/30 rounded-2xl p-8 flex flex-col items-center gap-4"
+            >
+              <motion.div
+                animate={{ rotate: 360 }}
+                transition={{
+                  duration: 1,
+                  repeat: Number.POSITIVE_INFINITY,
+                  ease: "linear",
+                }}
+                className="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full"
+              />
+              <div className="text-center">
+                <h3 className="text-lg font-semibold text-gray-800 dark:text-white">
+                  Uploading Document
+                </h3>
+                <p className="text-sm text-gray-600 dark:text-gray-300">
+                  Please wait while we process your file...
+                </p>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Input Area */}
+      <div className="p-6 bg-gradient-to-r from-[#4f46e5]/40 via-[#ec4899]/40 to-[#3b82f6]/40">
+        <div className="flex gap-3 justify-center items-center">
+          <div className="flex-1 relative">
+            <Input
+              ref={inputRef}
+              value={inputValue}
+              onChange={(e) => setInputValue(e.target.value)}
+              onKeyPress={handleKeyPress}
+              placeholder="Ask Xegality AI anything about law, cases, or legal research..."
+              className="pr-20 py-3 bg-transparent focus-visible:ring-white/60 ring-2 ring-white/20 placeholder:text-black/40 dark:placeholder:text-white/40 font-bold shadow-none focus-visible::outline-none border-none"
+            />
+          </div>
+          <Button
+            onClick={handleUploadClick}
+            disabled={showUploadAnimation}
+            className="flex items-center gap-2 rounded-full text-gray-600 text-sm bg-gradient-to-r from-[#4f46e5]/10 via-[#ec4899]/10 to-[#3b82f6]/10 shadow-none hover:bg-transparent px-8 py-2 hover:text-indigo-900 hover:scale-105 transition-all duration-150"
+          >
+            {showUploadAnimation ? (
+              <motion.div
+                className="flex space-x-1"
+                initial="hidden"
+                animate="visible"
+                variants={{
+                  hidden: {},
+                  visible: {
+                    transition: {
+                      staggerChildren: 0.1,
+                    },
+                  },
+                }}
+              >
+                {[...Array(3)].map((_, i) => (
+                  <motion.div
+                    key={i}
+                    className="w-1.5 h-1.5 bg-indigo-600 rounded-full"
+                    variants={{
+                      hidden: { opacity: 0, y: 5 },
+                      visible: {
+                        opacity: 1,
+                        y: 0,
+                        transition: {
+                          duration: 0.4,
+                          repeat: Number.POSITIVE_INFINITY,
+                          repeatType: "mirror",
+                          delay: i * 0.1,
+                        },
+                      },
+                    }}
+                  />
+                ))}
+              </motion.div>
+            ) : (
+              <Paperclip className="w-4 h-4 text-black/70 dark:text-white/70" />
+            )}
+            {showUploadAnimation ? (
+              <>
+                <span>Uploading...</span>
+              </>
+            ) : (
+              <span className="text-black/70 dark:text-white/70">Attach</span>
+            )}
+          </Button>
+
+          <Button
+            className="h-10 w-10 animate-gradient flex justify-center items-center rounded-4xl"
+            onClick={handleVoiceSearch}
+          >
+            {isListening ? (
+              <>
+                <EarIcon className="animate-pulse text-white" />
+              </>
+            ) : (
+              <>
+                <Mic className="h-8 w-8 text-white" />
+              </>
+            )}
+          </Button>
+          <Button
+            onClick={handleSendMessage}
+            disabled={!inputValue.trim() || isTyping}
+            className="h-10 w-10 animate-gradient flex justify-center items-center rounded-4xl"
+          >
+            <Send className="h-5 w-5 text-white" />
+          </Button>
+        </div>
+        <p className="text-xs text-black/40 dark:text-white/40 mt-2 text-center">
+          Xegality AI can make mistakes. Please verify important information.
+        </p>
+      </div>
+    </div>
+  );
+}
