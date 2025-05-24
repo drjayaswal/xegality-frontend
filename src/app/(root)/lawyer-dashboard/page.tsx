@@ -21,7 +21,9 @@ import {
   User,
   Users,
 } from "lucide-react";
-import XegalityAI from "./ai";
+import DashBoardSettings from "./Settings";
+import Clients from "./Clients";
+import XegalityAI from "./Xegality-AI";
 
 type Tab = {
   title: string;
@@ -93,9 +95,9 @@ export default function LawyerDashboard() {
       value: "clients",
       category: "services",
       content: (
-        <div className="w-full overflow-hidden relative rounded-lg h-full p-10 text-xl md:text-4xl font-bold text-white bg-gradient-to-br from-green-600 to-green-900">
-          <p>Clients</p>
-        </div>
+        <>
+          <Clients />
+        </>
       ),
     },
     {
@@ -183,9 +185,9 @@ export default function LawyerDashboard() {
       value: "settings",
       category: "account",
       content: (
-        <div className="w-full overflow-hidden relative rounded-lg h-full p-10 text-xl md:text-4xl font-bold text-white bg-gradient-to-br from-gray-700 to-gray-900">
-          <h2 className="text-2xl md:text-3xl font-bold mb-6">Settings</h2>
-        </div>
+        <>
+          <DashBoardSettings />
+        </>
       ),
     },
   ];
@@ -212,27 +214,7 @@ export default function LawyerDashboard() {
       setActive(selectedTab);
     }
   };
-  const [isDarkMode, setIsDarkMode] = useState(false);
   const [hovering, setHovering] = useState(false);
-
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      const savedTheme = localStorage.getItem("theme");
-      if (savedTheme === "dark") {
-        setIsDarkMode(true);
-        document.documentElement.classList.add("dark");
-      }
-    }
-  }, []);
-
-  const toggleTheme = () => {
-    setIsDarkMode((prev) => {
-      const newTheme = !prev ? "dark" : "light";
-      localStorage.setItem("theme", newTheme);
-      document.documentElement.classList.toggle("dark", newTheme === "dark");
-      return !prev;
-    });
-  };
 
   const getTabIcon = (title: string) => {
     switch (title) {
@@ -311,25 +293,6 @@ export default function LawyerDashboard() {
                 />
               ))}
             </div>
-          </div>
-        </div>
-        <div className="m-20">
-          <div
-            className="relative w-20 h-8 flex items-center bg-indigo-600 rounded-full p-2 cursor-pointer"
-            onClick={toggleTheme}
-            aria-label="Toggle theme"
-          >
-            <div
-              className={cn(
-                "absolute w-11 h-10 bg-white border-none dark:bg-black rounded-full transform transition-transform duration-300",
-                {
-                  "-translate-x-3": !isDarkMode,
-                  "translate-x-8": isDarkMode,
-                }
-              )}
-            />
-            <Sun className="absolute left-2 w-6 h-6 text-yellow-600 dark:text-white" />
-            <Moon className="absolute right-2 w-6 h-6 text-white dark:text-blue-500" />
           </div>
         </div>
       </div>

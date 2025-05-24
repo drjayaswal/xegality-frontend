@@ -58,7 +58,7 @@ const SiriWave: React.FC<SiriWaveProps> = ({ isWaveMode }) => {
 
   useEffect(() => {
     // Smooth transition of amplitude using an interval
-    const targetAmplitude = isWaveMode ? 7 : 0.8;
+    const targetAmplitude = isWaveMode ? 7 : 0.9;
     const step = isWaveMode ? 1 : -1;
 
     const interval = setInterval(() => {
@@ -73,7 +73,7 @@ const SiriWave: React.FC<SiriWaveProps> = ({ isWaveMode }) => {
         }
         return nextAmplitude;
       });
-    }, 15);
+    }, 25);
 
     return () => clearInterval(interval);
   }, [isWaveMode]);

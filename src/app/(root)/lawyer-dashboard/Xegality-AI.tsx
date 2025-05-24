@@ -10,7 +10,6 @@ import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import {
   Send,
-  Sparkles,
   FileText,
   Scale,
   Clock,
@@ -21,7 +20,6 @@ import {
   Brain,
   EarIcon,
   X,
-  File,
   ImageIcon,
 } from "lucide-react";
 import SiriWave from "@/components/ui/ai";
@@ -42,55 +40,25 @@ interface UploadedFile {
   uploadedAt: Date;
 }
 
-interface QuickAction {
-  icon: React.ReactNode;
-  label: string;
-  description: string;
-  action: () => void;
-}
-
 export default function XegalityAI() {
   const [isListening, setIsListening] = useState(false);
   const [showUploadAnimation, setShowUploadAnimation] = useState(false);
   const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const [messages, setMessages] = useState<Message[]>([]);
+  const [messages, setMessages] = useState<Message[]>([
+    {
+      id: "1",
+      content: "How can I assist you today?",
+      sender: "ai",
+      timestamp: new Date(),
+    },
+  ]);
   const [inputValue, setInputValue] = useState("");
   const [isTyping, setIsTyping] = useState(false);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
-
-  const quickActions: QuickAction[] = [
-    {
-      icon: <FileText className="h-4 w-4" />,
-      label: "Document Analysis",
-      description: "Analyze legal documents for key insights",
-      action: () =>
-        handleQuickAction("Please help me analyze a legal document"),
-    },
-    {
-      icon: <Scale className="h-4 w-4" />,
-      label: "Case Research",
-      description: "Research similar cases and precedents",
-      action: () =>
-        handleQuickAction("I need help researching case law and precedents"),
-    },
-    {
-      icon: <Clock className="h-4 w-4" />,
-      label: "Deadline Tracking",
-      description: "Track important legal deadlines",
-      action: () =>
-        handleQuickAction("Help me track important deadlines for my cases"),
-    },
-    {
-      icon: <Users className="h-4 w-4" />,
-      label: "Client Communication",
-      description: "Draft client communications",
-      action: () =>
-        handleQuickAction("Help me draft a professional client communication"),
-    },
-  ];
+  const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files;
@@ -133,6 +101,7 @@ export default function XegalityAI() {
   const removeFile = (fileId: string) => {
     setUploadedFiles((prev) => prev.filter((file) => file.id !== fileId));
   };
+
   const getFileIcon = (fileType: string, fileName: string) => {
     if (fileType.includes("pdf"))
       return <FileText className="h-5 w-5 text-red-500" />;
@@ -145,6 +114,20 @@ export default function XegalityAI() {
     if (fileType.includes("image"))
       return <ImageIcon className="h-5 w-5 text-green-500" />;
     return <ImageIcon className="h-5 w-5 text-purple-500" />;
+  };
+
+  const getFileColor = (fileType: string, fileName: string) => {
+    if (fileType.includes("pdf"))
+      return "from-red-500/20 to-red-600/20 border-red-500/30";
+    if (
+      fileType.includes("word") ||
+      fileType.includes("document") ||
+      fileName.includes(".doc")
+    )
+      return "from-blue-500/20 to-blue-600/20 border-blue-500/30";
+    if (fileType.includes("image"))
+      return "from-green-500/20 to-green-600/20 border-green-500/30";
+    return "from-purple-500/20 to-purple-600/20 border-purple-500/30";
   };
 
   const handleUploadClick = () => {
@@ -186,19 +169,6 @@ export default function XegalityAI() {
     }
   };
 
-  const getFileColor = (fileType: string, fileName: string) => {
-    if (fileType.includes("pdf"))
-      return "from-red-500/20 to-red-600/20 border-red-500/30";
-    if (
-      fileType.includes("word") ||
-      fileType.includes("document") ||
-      fileName.includes(".doc")
-    )
-      return "from-blue-500/20 to-blue-600/20 border-blue-500/30";
-    if (fileType.includes("image"))
-      return "from-green-500/20 to-green-600/20 border-green-500/30";
-    return "from-purple-500/20 to-purple-600/20 border-purple-500/30";
-  };
   const handleQuickAction = (message: string) => {
     setInputValue(message);
     inputRef.current?.focus();
@@ -250,13 +220,21 @@ export default function XegalityAI() {
   };
 
   useEffect(() => {
-    if (scrollAreaRef.current) {
-      scrollAreaRef.current.scrollTop = scrollAreaRef.current.scrollHeight;
-    }
-  }, [messages]);
+    const scrollToBottom = () => {
+      messagesEndRef.current?.scrollIntoView({
+        behavior: "smooth",
+        block: "end",
+      });
+    };
+
+    // Small delay to ensure DOM is updated
+    const timeoutId = setTimeout(scrollToBottom, 100);
+
+    return () => clearTimeout(timeoutId);
+  }, [messages, isTyping]);
 
   return (
-    <div className="w-full h-full bg-white dark:bg-black rounded-lg overflow-hidden flex flex-col">
+    <div className="w-full h-full bg-white dark:bg-black rounded-lg overflow-hidden flex flex-col relative">
       {/* Hidden file input */}
       <input
         ref={fileInputRef}
@@ -282,7 +260,7 @@ export default function XegalityAI() {
       </div>
 
       {/* Chat Messages */}
-      <div className="flex-1 px-5 py-10 no-scroll-bar bg-gradient-to-r from-[#4f46e5]/40 via-[#ec4899]/40 to-[#3b82f6]/40 overflow-hidden">
+      <div className="flex-1 px-5 py-10 bg-gradient-to-r from-[#4f46e5]/40 via-[#ec4899]/40 to-[#3b82f6]/40 overflow-hidden">
         <ScrollArea className="h-full" ref={scrollAreaRef}>
           <div className="space-y-4 pb-20">
             <div
@@ -354,19 +332,21 @@ export default function XegalityAI() {
                 </div>
                 <div className="bg-white/20 backdrop-blur-lg dark:text-white/90 text-black/90 rounded-tl-none -ml-3 p-4 rounded-2xl rounded-l-none shadow-md">
                   <div className="flex gap-1">
-                    <div className="w-2 h-2 dark:bg-white bg-black rounded-full animate-bounce"></div>
+                    <div className="w-2 h-2 dark:bg-white/40 bg-black/40 rounded-full animate-bounce"></div>
                     <div
-                      className="w-2 h-2 dark:bg-white bg-black rounded-full animate-bounce"
+                      className="w-2 h-2 dark:bg-white/40 bg-black/40 rounded-full animate-bounce"
                       style={{ animationDelay: "0.1s" }}
                     ></div>
                     <div
-                      className="w-2 h-2 dark:bg-white bg-black rounded-full animate-bounce"
+                      className="w-2 h-2 dark:bg-white/40 bg-black/40 rounded-full animate-bounce"
                       style={{ animationDelay: "0.2s" }}
                     ></div>
                   </div>
                 </div>
               </motion.div>
             )}
+            {/* Auto-scroll anchor */}
+            <div ref={messagesEndRef} />
           </div>
         </ScrollArea>
       </div>
@@ -384,10 +364,10 @@ export default function XegalityAI() {
               {uploadedFiles.map((file, index) => (
                 <div
                   key={file.id}
-                  className="relative group bg-white/30 dark:bg-black/30 backdrop-blur-md rounded-lg p-2 border border-white/10 dark:border-black/20 shadow-sm hover:shadow-md transition-all duration-300"
+                  className="relative group bg-white/30 backdrop-blur-md rounded-lg p-2 border border-white/10 dark:border-black/20 shadow-sm hover:shadow-md transition-all duration-300"
                 >
                   <div className="flex items-center gap-2">
-                    <div className="flex-shrink-0 p-1 bg-white/70 dark:bg-gray-800/70 rounded-md">
+                    <div className="flex-shrink-0 p-1 bg-white/70 rounded-md">
                       {getFileIcon(file.type, file.name)}
                     </div>
                     <div className="flex-1 min-w-0">
@@ -455,7 +435,7 @@ export default function XegalityAI() {
       </AnimatePresence>
 
       {/* Input Area */}
-      <div className="p-6 bg-gradient-to-r from-[#4f46e5]/40 via-[#ec4899]/40 to-[#3b82f6]/40">
+      <div className="p-6 pt-8 bg-gradient-to-r from-[#4f46e5]/40 via-[#ec4899]/40 to-[#3b82f6]/40 relative z-30">
         <div className="flex gap-3 justify-center items-center">
           <div className="flex-1 relative">
             <Input
