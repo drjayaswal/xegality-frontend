@@ -396,7 +396,7 @@ export default function SettingsLite() {
                   <Switch
                     checked={notification.enabled}
                     onCheckedChange={() => toggleNotification(notification.id)}
-                    className="data-[state=checked]:bg-indigo-600"
+                    className="data-[state=checked]:bg-white/10"
                   />
                 </div>
               ))}
@@ -411,7 +411,7 @@ export default function SettingsLite() {
               <div className="p-4 bg-white/30 dark:bg-white/10 backdrop-blur-lg rounded-xl border border-white/20">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
-                    <Key className="h-5 w-5 text-indigo-600" />
+                    <Key className="h-5 w-5 dark:text-indigo-500 text-indigo-600" />
                     <div>
                       <h4 className="font-medium text-gray-800 dark:text-white">
                         Change Password
@@ -429,7 +429,7 @@ export default function SettingsLite() {
               <div className="p-4 bg-white/30 dark:bg-white/10 backdrop-blur-lg rounded-xl border border-white/20">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
-                    <Smartphone className="h-5 w-5 text-indigo-600" />
+                    <Smartphone className="h-5 w-5 dark:text-indigo-500 text-indigo-600" />
                     <div>
                       <h4 className="font-medium text-gray-800 dark:text-white">
                         Two-Factor Authentication
@@ -444,14 +444,14 @@ export default function SettingsLite() {
                     onCheckedChange={(checked) =>
                       setPreferences({ ...preferences, twoFactorAuth: checked })
                     }
-                    className="data-[state=checked]:bg-indigo-600"
+                    className="data-[state=checked]:bg-white/10"
                   />
                 </div>
               </div>
               <div className="p-4 bg-white/30 dark:bg-white/10 backdrop-blur-lg rounded-xl border border-white/20">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
-                    <Eye className="h-5 w-5 text-indigo-600" />
+                    <Eye className="h-5 w-5 dark:text-indigo-500 text-indigo-600" />
                     <div>
                       <h4 className="font-medium text-gray-800 dark:text-white">
                         Privacy Settings
@@ -477,10 +477,10 @@ export default function SettingsLite() {
               <div className="p-4 bg-white/30 dark:bg-white/10 backdrop-blur-lg rounded-xl border border-white/20">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
-                    {preferences.darkMode ? (
-                      <Moon className="h-5 w-5 text-indigo-600" />
+                    {isDarkMode ? (
+                      <Moon className="h-5 w-5 dark:text-indigo-500 text-indigo-600" />
                     ) : (
-                      <Sun className="h-5 w-5 text-indigo-600" />
+                      <Sun className="h-5 w-5 dark:text-indigo-500 text-indigo-600" />
                     )}
                     <div>
                       <h4 className="font-medium text-gray-800 dark:text-white">
@@ -522,7 +522,7 @@ export default function SettingsLite() {
               <div className="p-4 bg-white/30 dark:bg-white/10 backdrop-blur-lg rounded-xl border border-white/20">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
-                    <Monitor className="h-5 w-5 text-indigo-600" />
+                    <Monitor className="h-5 w-5 dark:text-indigo-500 text-indigo-600" />
                     <div>
                       <h4 className="font-medium text-gray-800 dark:text-white">
                         Display Density
@@ -550,7 +550,7 @@ export default function SettingsLite() {
               <div className="p-4 bg-white/30 dark:bg-white/10 backdrop-blur-lg rounded-xl border border-white/20">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
-                    <Globe className="h-5 w-5 text-indigo-600" />
+                    <Globe className="h-5 w-5 dark:text-indigo-500 text-indigo-600" />
                     <div>
                       <h4 className="font-medium text-gray-800 dark:text-white">
                         Language
@@ -580,7 +580,7 @@ export default function SettingsLite() {
               <div className="p-4 bg-white/30 dark:bg-white/10 backdrop-blur-lg rounded-xl border border-white/20">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
-                    <Volume2 className="h-5 w-5 text-indigo-600" />
+                    <Volume2 className="h-5 w-5 dark:text-indigo-500 text-indigo-600" />
                     <div>
                       <h4 className="font-medium text-gray-800 dark:text-white">
                         Sound Effects
@@ -595,14 +595,14 @@ export default function SettingsLite() {
                     onCheckedChange={(checked) =>
                       setPreferences({ ...preferences, soundEnabled: checked })
                     }
-                    className="data-[state=checked]:bg-indigo-600"
+                    className="data-[state=checked]:bg-white/10"
                   />
                 </div>
               </div>
               <div className="p-4 bg-white/30 dark:bg-white/10 backdrop-blur-lg rounded-xl border border-white/20">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
-                    <Save className="h-5 w-5 text-indigo-600" />
+                    <Save className="h-5 w-5 dark:text-indigo-500 text-indigo-600" />
                     <div>
                       <h4 className="font-medium text-gray-800 dark:text-white">
                         Auto Save
@@ -617,7 +617,7 @@ export default function SettingsLite() {
                     onCheckedChange={(checked) =>
                       setPreferences({ ...preferences, autoSave: checked })
                     }
-                    className="data-[state=checked]:bg-indigo-600"
+                    className="data-[state=checked]:bg-white/10"
                   />
                 </div>
               </div>
@@ -663,10 +663,10 @@ export default function SettingsLite() {
                 key={section.id}
                 onClick={() => handleSectionChange(section.id)}
                 className={cn(
-                  "w-full text-left p-4 rounded-xl transition-all duration-200 group",
+                  "w-full text-left p-4 rounded-4xl transition-all duration-200 group",
                   activeSection === section.id
-                    ? "bg-white/30 backdrop-blur-lg border border-white/20 shadow-lg"
-                    : "hover:bg-white/20 backdrop-blur-sm"
+                    ? "bg-white/30 backdrop-blur-lg shadow-lg"
+                    : "hover:bg-white/20 backdrop-blur-sm m-2"
                 )}
               >
                 <div className="flex items-center gap-3">
@@ -675,7 +675,7 @@ export default function SettingsLite() {
                       "p-2 rounded-lg transition-colors",
                       activeSection === section.id
                         ? "bg-indigo-600 text-white"
-                        : "bg-white/20 text-gray-700 dark:text-gray-300 group-hover:bg-indigo-600 group-hover:text-white"
+                        : "bg-white/10 text-gray-700 dark:text-gray-300 group-hover:bg-indigo-600 group-hover:text-white"
                     )}
                   >
                     {section.icon}

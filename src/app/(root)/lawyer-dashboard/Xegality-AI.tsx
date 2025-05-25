@@ -360,11 +360,11 @@ export default function XegalityAI() {
             exit={{ opacity: 0, y: 50, scale: 0.9 }}
             className="absolute bottom-24 overflow-visible left-6 right-6 z-40"
           >
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-2 max-h-40 overflow-y-auto">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-2 max-h-100 overflow-y-auto">
               {uploadedFiles.map((file, index) => (
                 <div
                   key={file.id}
-                  className="relative group bg-white/30 backdrop-blur-md rounded-lg p-2 border border-white/10 dark:border-black/20 shadow-sm hover:shadow-md transition-all duration-300"
+                  className="relative group bg-white/30 backdrop-blur-md rounded-2xl p-2 border border-white/10 dark:border-black/20 shadow-sm hover:shadow-md transition-all duration-300"
                 >
                   <div className="flex items-center gap-2">
                     <div className="flex-shrink-0 p-1 bg-white/70 rounded-md">
@@ -385,9 +385,9 @@ export default function XegalityAI() {
                       variant="ghost"
                       size="sm"
                       onClick={() => removeFile(file.id)}
-                      className="opacity-0 group-hover:opacity-100 transition-opacity h-5 w-5 p-0 hover:bg-red-500/20 text-red-500"
+                      className="opacity-0 group-hover:opacity-100 transition-opacity h-5 w-5 p-0 hover:bg-black text-red-500"
                     >
-                      <X className="h-3 w-3" />
+                      <X className="h-3 w-3  stroke-3" />
                     </Button>
                   </div>
                 </div>
@@ -396,7 +396,6 @@ export default function XegalityAI() {
           </motion.div>
         )}
       </AnimatePresence>
-
       {/* Upload Animation Overlay */}
       <AnimatePresence>
         {showUploadAnimation && (
@@ -491,7 +490,7 @@ export default function XegalityAI() {
             )}
             {showUploadAnimation ? (
               <>
-                <span>Uploading...</span>
+                <span>Attaching...</span>
               </>
             ) : (
               <span className="text-black/70 dark:text-white/70">Attach</span>

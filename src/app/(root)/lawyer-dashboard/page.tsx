@@ -24,6 +24,11 @@ import {
 import DashBoardSettings from "./Settings";
 import Clients from "./Clients";
 import XegalityAI from "./Xegality-AI";
+import Appointments from "./Appointment";
+import BillingPayments from "./Billing&Payment";
+import Subscription from "./Subscription";
+import HelpSupport from "./Help&Support";
+import CaseManagement from "./Case-Management";
 
 type Tab = {
   title: string;
@@ -104,81 +109,31 @@ export default function LawyerDashboard() {
       title: "Appointments",
       value: "appointments",
       category: "services",
-      content: (
-        <div className="w-full overflow-hidden relative rounded-lg h-full p-10 text-xl md:text-4xl font-bold text-white bg-gradient-to-br from-orange-600 to-orange-900">
-          <p>Appointments</p>
-        </div>
-      ),
+      content: <Appointments />,
     },
     {
       title: "Case Management",
       value: "case-management",
       category: "services",
-      content: (
-        <div className="w-full overflow-hidden relative rounded-lg h-full p-10 text-xl md:text-4xl font-bold text-white bg-gradient-to-br from-purple-600 to-purple-900">
-          <p>Case Management</p>
-        </div>
-      ),
+      content: <CaseManagement />,
     },
     {
       title: "Billing & Payments",
       value: "billing-payments",
       category: "services",
-      content: (
-        <div className="w-full overflow-hidden relative rounded-lg h-full p-10 text-xl md:text-4xl font-bold text-white bg-gradient-to-br from-red-600 to-red-900">
-          <p>Billing & Payments</p>
-        </div>
-      ),
-    },
-    {
-      title: "Profile Settings",
-      value: "profile-settings",
-      category: "account",
-      content: (
-        <div className="w-full overflow-hidden relative rounded-lg h-full p-10 text-xl md:text-4xl font-bold text-white bg-gradient-to-br from-indigo-600 to-indigo-900">
-          <p>Profile Settings</p>
-        </div>
-      ),
-    },
-    {
-      title: "Notifications",
-      value: "notifications",
-      category: "account",
-      content: (
-        <div className="w-full overflow-hidden relative rounded-lg h-full p-10 text-xl md:text-4xl font-bold text-white bg-gradient-to-br from-teal-600 to-teal-900">
-          <p>Notifications</p>
-        </div>
-      ),
-    },
-    {
-      title: "Security",
-      value: "security",
-      category: "account",
-      content: (
-        <div className="w-full overflow-hidden relative rounded-lg h-full p-10 text-xl md:text-4xl font-bold text-white bg-gradient-to-br from-gray-700 to-gray-900">
-          <p>Security</p>
-        </div>
-      ),
+      content: <BillingPayments />,
     },
     {
       title: "Subscription",
       value: "subscription",
       category: "account",
-      content: (
-        <div className="w-full overflow-hidden relative rounded-lg h-full p-10 text-xl md:text-4xl font-bold text-white bg-gradient-to-br from-yellow-600 to-yellow-900">
-          <p>Subscription</p>
-        </div>
-      ),
+      content: <Subscription />,
     },
     {
       title: "Help & Support",
       value: "help-support",
       category: "account",
-      content: (
-        <div className="w-full overflow-hidden relative rounded-lg h-full p-10 text-xl md:text-4xl font-bold text-white bg-gradient-to-br from-pink-600 to-pink-900">
-          <p>Help & Support</p>
-        </div>
-      ),
+      content: <HelpSupport />,
     },
     {
       title: "Settings",
@@ -228,12 +183,6 @@ export default function LawyerDashboard() {
         return <DoorOpen className="h-4 w-4" />;
       case "Billing & Payments":
         return <ReceiptText className="h-4 w-4" />;
-      case "Profile Settings":
-        return <User className="h-4 w-4" />;
-      case "Notifications":
-        return <Bell className="h-4 w-4" />;
-      case "Security":
-        return <Shield className="h-4 w-4" />;
       case "Subscription":
         return <CreditCard className="h-4 w-4" />;
       case "Help & Support":

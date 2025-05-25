@@ -24,6 +24,7 @@ import {
   ImageIcon,
   File,
 } from "lucide-react";
+import SiriWave from "@/components/ui/ai";
 
 interface Client {
   id: string;
@@ -284,7 +285,7 @@ export default function Clients() {
     const sizes = ["Bytes", "KB", "MB", "GB"];
     const i = Math.floor(Math.log(bytes) / Math.log(k));
     return (
-      Number.parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i]
+      Number.parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + " " + sizes[i]
     );
   };
 
@@ -467,7 +468,7 @@ export default function Clients() {
             exit={isMobileView ? { x: -300, opacity: 0 } : { opacity: 0 }}
             transition={{ duration: 0.3 }}
             className={cn(
-              "bg-gradient-to-r from-[#4f46e5]/40 to-[#ec4899]/40 border-r-2 dark:border-white border-white/40",
+              "bg-gradient-to-r from-[#ec4899]/40 to-[#4f46e5]/40 border-r-2 border-white/50",
               isMobileView
                 ? "absolute inset-y-0 left-0 z-20 w-full md:w-80"
                 : "w-80"
@@ -496,7 +497,7 @@ export default function Clients() {
                   placeholder="Search conversations..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-10 bg-white/20 focus-visible:ring-0 focus-visible:border-indigo-600 placeholder:text-black/40"
+                  className="pl-10 bg-white/20 focus-visible:ring-0 border-2 focus-visible:border-white/40 dark:placeholder:text-white/40 placeholder:text-black/40"
                 />
               </div>
             </div>
@@ -588,7 +589,7 @@ export default function Clients() {
         {selectedConversation ? (
           <>
             {/* Chat Header */}
-            <div className="px-4 py-6 border-b border-white/20 bg-white/10 backdrop-blur-lg">
+            <div className="px-4 py-6 border-b-2 border-white/20 bg-white/10 backdrop-blur-lg">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   {isMobileView && !showSidebar && (
@@ -725,43 +726,6 @@ export default function Clients() {
               </ScrollArea>
             </div>
 
-            {/* Upload Animation Overlay */}
-            <AnimatePresence>
-              {showUploadAnimation && (
-                <motion.div
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  className="absolute inset-0 bg-black/20 backdrop-blur-sm flex items-center justify-center z-50"
-                >
-                  <motion.div
-                    initial={{ scale: 0.8, opacity: 0 }}
-                    animate={{ scale: 1, opacity: 1 }}
-                    exit={{ scale: 0.8, opacity: 0 }}
-                    className="bg-white/95 dark:bg-gray-800/95 backdrop-blur-xl rounded-2xl p-8 flex flex-col items-center gap-4 shadow-2xl border border-white/20"
-                  >
-                    <motion.div
-                      animate={{ rotate: 360 }}
-                      transition={{
-                        duration: 1,
-                        repeat: Number.POSITIVE_INFINITY,
-                        ease: "linear",
-                      }}
-                      className="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full"
-                    />
-                    <div className="text-center">
-                      <h3 className="text-lg font-semibold text-gray-800 dark:text-white">
-                        Uploading Document
-                      </h3>
-                      <p className="text-sm text-gray-600 dark:text-gray-300">
-                        Please wait while we process your file...
-                      </p>
-                    </div>
-                  </motion.div>
-                </motion.div>
-              )}
-            </AnimatePresence>
-
             {/* Input Area */}
             <div className="p-4 border-t-2 border-white/40 bg-white/10 backdrop-blur-lg">
               <div className="flex flex-wrap md:flex-nowrap items-center gap-3">
@@ -774,11 +738,11 @@ export default function Clients() {
                       exit={{ opacity: 0, y: 50, scale: 0.9 }}
                       className="absolute bottom-24 overflow-visible left-6 right-6 z-40"
                     >
-                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-2 max-h-40 overflow-y-auto">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-2 max-h-100 overflow-y-auto">
                         {uploadedFiles.map((file, index) => (
                           <div
                             key={file.id}
-                            className="relative group bg-white/30 backdrop-blur-md rounded-lg p-2 border border-white/10 dark:border-black/20 shadow-sm hover:shadow-md transition-all duration-300"
+                            className="relative group bg-white/30 backdrop-blur-md rounded-2xl p-2 border border-white/10 dark:border-black/20 shadow-sm hover:shadow-md transition-all duration-300"
                           >
                             <div className="flex items-center gap-2">
                               <div className="flex-shrink-0 p-1 bg-white/70 rounded-md">
@@ -799,9 +763,9 @@ export default function Clients() {
                                 variant="ghost"
                                 size="sm"
                                 onClick={() => removeFile(file.id)}
-                                className="opacity-0 group-hover:opacity-100 transition-opacity h-5 w-5 p-0 hover:bg-red-500/20 text-red-500"
+                                className="opacity-0 group-hover:opacity-100 transition-opacity h-5 w-5 p-0 hover:bg-black text-red-500"
                               >
-                                <X className="h-3 w-3" />
+                                <X className="h-3 w-3  stroke-3" />
                               </Button>
                             </div>
                           </div>
@@ -813,48 +777,14 @@ export default function Clients() {
                 <Button
                   onClick={handleUploadClick}
                   disabled={showUploadAnimation}
-                  className="flex items-center gap-2 rounded-full text-gray-600 text-sm bg-gradient-to-r from-[#4f46e5]/10 via-[#ec4899]/10 to-[#3b82f6]/10 shadow-none hover:bg-transparent px-4 md:px-8 py-2 hover:text-indigo-900 hover:scale-105 transition-all duration-150 w-full md:w-auto mb-2 md:mb-0"
+                  className="flex items-center gap-2 rounded-full text-gray-600 text-sm bg-transparent shadow-none hover:bg-transparent border-2 border-transparent hover:border-white/40 px-4 md:px-8 py-2 hover:text-indigo-900 hover:scale-105 transition-all duration-150 w-full md:w-auto mb-2 md:mb-0"
                 >
-                  {showUploadAnimation ? (
-                    <motion.div
-                      className="flex space-x-1"
-                      initial="hidden"
-                      animate="visible"
-                      variants={{
-                        hidden: {},
-                        visible: {
-                          transition: {
-                            staggerChildren: 0.1,
-                          },
-                        },
-                      }}
-                    >
-                      {[...Array(3)].map((_, i) => (
-                        <motion.div
-                          key={i}
-                          className="w-1.5 h-1.5 bg-indigo-600 rounded-full"
-                          variants={{
-                            hidden: { opacity: 0, y: 5 },
-                            visible: {
-                              opacity: 1,
-                              y: 0,
-                              transition: {
-                                duration: 0.4,
-                                repeat: Number.POSITIVE_INFINITY,
-                                repeatType: "mirror",
-                                delay: i * 0.1,
-                              },
-                            },
-                          }}
-                        />
-                      ))}
-                    </motion.div>
-                  ) : (
-                    <Paperclip className="w-4 h-4 text-black/70 dark:text-white/70" />
-                  )}
+                  <Paperclip className="w-4 h-4 text-black/70 dark:text-white/70" />
                   {showUploadAnimation ? (
                     <>
-                      <span>Uploading...</span>
+                      <span className="text-black/70 dark:text-white/70">
+                        Attaching...
+                      </span>
                     </>
                   ) : (
                     <span className="text-black/70 dark:text-white/70">
@@ -869,7 +799,7 @@ export default function Clients() {
                     onChange={(e) => setInputValue(e.target.value)}
                     onKeyPress={handleKeyPress}
                     placeholder="Type your message..."
-                    className="bg-transparent dark:bg-white/50 focus-visible:ring-0 border-2 border-white/40 focus-visible:border-indigo-500 w-full"
+                    className="bg-transparent dark:placeholder:text-white/40 placeholder:text-black/40 focus-visible:ring-0 border-2 border-white/40 focus-visible:border-indigo-500 w-full"
                   />
                 </div>
                 <div className="flex gap-2 w-full md:w-auto justify-end mt-2 md:mt-0">
@@ -899,17 +829,11 @@ export default function Clients() {
             </div>
           </>
         ) : (
-          <div className="flex-1 flex items-center justify-center bg-gradient-to-r from-[#4f46e5]/40 via-[#ec4899]/40 to-[#3b82f6]/40">
-            <div className="text-center">
-              <div className="w-24 h-24 bg-white/20 border-2 dark:border-white/40 border-black/90 backdrop-blur-lg rounded-full flex items-center justify-center mx-auto mb-4">
-                <User className="h-12 w-12 dark:text-white/40 text-black/90" />
+          <div className="relative h-40 overflow-hidden my-auto">
+            <div className="absolute inset-0 flex items-center justify-center">
+              <div className="w-full h-fit flex items-center justify-center">
+                <SiriWave isWaveMode={true} />
               </div>
-              <h3 className="text-2xl font-medium dark:text-white/40 text-black/90 mb-2">
-                Select a conversation
-              </h3>
-              <p className="text-black/90 dark:text-white/40">
-                Choose a client from the sidebar to start messaging
-              </p>
             </div>
           </div>
         )}
