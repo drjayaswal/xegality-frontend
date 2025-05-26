@@ -1,7 +1,8 @@
 import { Shield } from "lucide-react"
+
 import Link from "next/link";
 
-function SocialIcon({ icon }:SocialIconProps) {
+function SocialIcon({ icon }: SocialIconProps) {
   return (
     <a
       href="#"
@@ -145,3 +146,5 @@ export function Footer() {
     </footer>
   )
 }
+
+

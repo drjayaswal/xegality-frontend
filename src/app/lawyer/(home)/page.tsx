@@ -1,4 +1,5 @@
 "use client";
+
 import { Input } from "@/components/ui/input";
 import { Calendar, ChevronRight, Clock, Users } from "lucide-react";
 import Image from "next/image";
@@ -11,7 +12,7 @@ import { cn } from "@/lib/utils";
 import type React from "react";
 import { FileText, Sparkles } from "lucide-react";
 import { AIAssistantInterface } from "@/components/ui/ai-assistant-interface";
-import { AuroraText } from "@/components/magicui/aurora-text";
+import { AuroraText } from "@/components/ui/aurora-text";
 import SiriWave from "@/components/ui/ai";
 
 export default function Home() {
@@ -35,11 +36,10 @@ export default function Home() {
             <div className="flex flex-col items-center text-center mb-60">
               {/* Container with all content except logo, fade out on focus */}
               <div
-                className={`absolute transition-all duration-800 ease-in-out ${
-                  inputFocused
-                    ? "scale-0 opacity-0 pointer-events-none"
-                    : "scale-100 opacity-100"
-                }`}
+                className={`absolute transition-all duration-800 ease-in-out ${inputFocused
+                  ? "scale-0 opacity-0 pointer-events-none"
+                  : "scale-100 opacity-100"
+                  }`}
               >
                 {inputFocused ? (
                   <></>
@@ -65,15 +65,14 @@ export default function Home() {
 
               {/* Only logo shown when input is focused */}
               <div
-                className={`absolute transition-all duration-800 ease-in-out ${
-                  inputFocused
-                    ? "scale-100 opacity-100"
-                    : "scale-0 opacity-0 pointer-events-none"
-                }`}
+                className={`absolute transition-all duration-800 ease-in-out ${inputFocused
+                  ? "scale-100 opacity-100"
+                  : "scale-0 opacity-0 pointer-events-none"
+                  }`}
               >
                 <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extralight text-gray-900 mb-4">
                   <div className="flex justify-center align-middle items-center flex-col gap-6">
-                    <SiriWave />
+                    <SiriWave isWaveMode={inputValue != ""} />
                   </div>
                 </h1>
               </div>
@@ -574,3 +573,4 @@ function TeamMember({ name, position, image }: TeamMemberProps) {
     </div>
   );
 }
+

@@ -1,4 +1,5 @@
 "use client"
+
 import { useState } from "react";
 import { ArrowRight, Menu, X } from "lucide-react";
 import Link from "next/link";
@@ -83,9 +84,8 @@ export function Header() {
 
         {/* Mobile Navigation */}
         <div
-          className={` p-5 rounded-b-3xl lg:hidden absolute top-full left-0 right-0 bg-white rounded-lg shadow-md transition-all duration-300 ease-in-out ${
-            menuOpen ? "max-h-screen opacity-100 translate-y-0" : "max-h-0 opacity-0 -translate-y-4"
-          } overflow-hidden`}
+          className={` p-5 rounded-b-3xl lg:hidden absolute top-full left-0 right-0 bg-white rounded-lg shadow-md transition-all duration-300 ease-in-out ${menuOpen ? "max-h-screen opacity-100 translate-y-0" : "max-h-0 opacity-0 -translate-y-4"
+            } overflow-hidden`}
         >
           <nav className="flex flex-col space-y-4 px-4 py-4">
             <NavLink href="#services">Book an Appointment</NavLink>
@@ -103,3 +103,5 @@ export function Header() {
     </header>
   );
 }
+
+
