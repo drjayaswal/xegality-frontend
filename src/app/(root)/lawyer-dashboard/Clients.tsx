@@ -468,7 +468,7 @@ export default function Clients() {
             exit={isMobileView ? { x: -300, opacity: 0 } : { opacity: 0 }}
             transition={{ duration: 0.3 }}
             className={cn(
-              "bg-gradient-to-r from-[#ec4899]/40 to-[#4f46e5]/40 border-r-2 border-white/50",
+              "bg-gradient-[#4f46e5]/10 to-[#4f46e5]/40 border-r-2 border-white/50",
               isMobileView
                 ? "absolute inset-y-0 left-0 z-20 w-full md:w-80"
                 : "w-80"
@@ -582,7 +582,7 @@ export default function Clients() {
       {/* Chat Area */}
       <div
         className={cn(
-          "flex-1 flex flex-col bg-gradient-to-r from-[#4f46e5]/40 via-[#ec4899]/40 to-[#3b82f6]/40",
+          "flex-1 flex flex-col bg-gradient-to-r from-[#3b82f6]/10 to-[#3b82f6]/40",
           isMobileView && showSidebar ? "hidden md:flex" : "flex"
         )}
       >
@@ -829,11 +829,17 @@ export default function Clients() {
             </div>
           </>
         ) : (
-          <div className="relative h-40 overflow-hidden my-auto">
-            <div className="absolute inset-0 flex items-center justify-center">
-              <div className="w-full h-fit flex items-center justify-center">
-                <SiriWave isWaveMode={true} />
+          <div className="flex-1 flex items-center justify-center bg-gradient-to-r from-[#3b82f6]/10 to-[#3b82f6]/40">
+            <div className="text-center">
+              <div className="w-24 h-24 bg-white/20 backdrop-blur-lg rounded-full flex items-center justify-center mx-auto mb-4">
+                <User className="h-12 w-12 text-white/80" />
               </div>
+              <h3 className="text-xl font-medium text-white/80 mb-2">
+                Select a conversation
+              </h3>
+              <p className="text-white/80">
+                Choose a client from the sidebar to start messaging
+              </p>
             </div>
           </div>
         )}

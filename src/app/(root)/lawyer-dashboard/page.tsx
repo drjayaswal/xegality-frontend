@@ -2,8 +2,7 @@
 
 import type React from "react";
 
-import { useEffect, useState } from "react";
-import { hover, motion } from "motion/react";
+import { useState } from "react";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
 import {
@@ -12,23 +11,21 @@ import {
   DoorOpen,
   HelpCircle,
   LinkIcon,
-  Moon,
   ReceiptText,
   Settings,
   Shield,
   Sparkles,
-  Sun,
   User,
   Users,
 } from "lucide-react";
-import DashBoardSettings from "./Settings";
-import Clients from "./Clients";
 import XegalityAI from "./Xegality-AI";
-import Appointments from "./Appointment";
-import BillingPayments from "./Billing&Payment";
-import Subscription from "./Subscription";
 import HelpSupport from "./Help&Support";
+import Subscription from "./Subscription";
+import BillingPayments from "./Billing&Payment";
 import CaseManagement from "./Case-Management";
+import Appointments from "./Appointment";
+import Clients from "./Clients";
+import SettingsLite from "./Settings";
 
 type Tab = {
   title: string;
@@ -64,7 +61,7 @@ const NavItem = ({
       "flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors",
       active
         ? "bg-indigo-500 text-white"
-        : "text-gray-700 border-2 border-transparent hover:bg-indigo-100 dark:text-gray-200 dark:hover:bg-indigo-950"
+        : "text-gray-700 hover:bg-indigo-100 dark:text-gray-200 dark:hover:bg-indigo-950"
     )}
     onClick={onClick}
     onMouseEnter={onMouseEnter}
@@ -141,12 +138,11 @@ export default function LawyerDashboard() {
       category: "account",
       content: (
         <>
-          <DashBoardSettings />
+          <SettingsLite />
         </>
       ),
     },
   ];
-
   // Separate tabs by category for sidebar display
   const servicesTabs = allTabs.filter((tab) => tab.category === "services");
   const accountTabs = allTabs.filter((tab) => tab.category === "account");
@@ -169,6 +165,7 @@ export default function LawyerDashboard() {
       setActive(selectedTab);
     }
   };
+
   const [hovering, setHovering] = useState(false);
 
   const getTabIcon = (title: string) => {
@@ -183,6 +180,12 @@ export default function LawyerDashboard() {
         return <DoorOpen className="h-4 w-4" />;
       case "Billing & Payments":
         return <ReceiptText className="h-4 w-4" />;
+      case "Profile Settings":
+        return <User className="h-4 w-4" />;
+      case "Notifications":
+        return <Bell className="h-4 w-4" />;
+      case "Security":
+        return <Shield className="h-4 w-4" />;
       case "Subscription":
         return <CreditCard className="h-4 w-4" />;
       case "Help & Support":
@@ -201,13 +204,14 @@ export default function LawyerDashboard() {
         <div className="flex h-14 items-center border-b px-4">
           <h1 className="text-lg font-semibold">Dashboard</h1>
         </div>
+
         <div className="flex-1 overflow-auto py-4">
           {/* Services Section */}
           <div className="px-3 py-2">
             <h2 className="mb-2 px-3 text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">
               Services
             </h2>
-            <div>
+            <div className="space-y-1">
               {servicesTabs.map((tab) => (
                 <NavItem
                   key={tab.value}
@@ -228,7 +232,7 @@ export default function LawyerDashboard() {
             <h2 className="mb-2 px-3 text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">
               Account
             </h2>
-            <div>
+            <div className="space-y-1">
               {accountTabs.map((tab) => (
                 <NavItem
                   key={tab.value}
@@ -247,18 +251,13 @@ export default function LawyerDashboard() {
       </div>
 
       {/* Main Content */}
-      <div
-        className={cn(
-          "h-[calc(100vh-17px)] flex flex-col mx-2 w-full items-start justify-start transition-transform duration-300",
-          hovering ? "scale-90" : "scale-100"
-        )}
-      >
+      <div className="h-[calc(100vh-17px)] flex flex-col mx-2 w-full items-start justify-start">
         <FadeInDiv
           tabs={tabs}
           active={active}
           key={active.value}
           hovering={hovering}
-          className={cn("mt-2")}
+          className="mt-2"
         />
       </div>
     </div>
@@ -281,22 +280,17 @@ export const FadeInDiv = ({
   return (
     <div className="relative w-full h-full">
       {tabs.map((tab, idx) => (
-        <motion.div
+        <div
           key={tab.value}
-          layoutId={tab.value}
           style={{
-            scale: 1 - idx * 0.1,
-            top: hovering ? idx * -50 : 0,
-            zIndex: isActive(tab) ? 10 : -idx,
-            opacity: idx < 3 ? 1 - idx * 0.1 : 0,
-          }}
-          animate={{
-            y: isActive(tab) ? [0, 40, 0] : 0,
+            opacity: isActive(tab) ? 1 : 0,
+            visibility: isActive(tab) ? "visible" : "hidden",
+            transition: "opacity 0.3s ease, visibility 0.3s ease",
           }}
           className={cn("w-full h-full absolute top-0 left-0", className)}
         >
-          <>{tab.content}</>
-        </motion.div>
+          {tab.content}
+        </div>
       ))}
     </div>
   );

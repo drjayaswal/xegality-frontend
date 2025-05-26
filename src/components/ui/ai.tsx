@@ -58,7 +58,7 @@ const SiriWave: React.FC<SiriWaveProps> = ({ isWaveMode }) => {
 
   useEffect(() => {
     // Smooth transition of amplitude using an interval
-    const targetAmplitude = isWaveMode ? 7 : 0.9;
+    const targetAmplitude = isWaveMode ? 7 : 2;
     const step = isWaveMode ? 1 : -1;
 
     const interval = setInterval(() => {
@@ -103,10 +103,10 @@ const SiriWave: React.FC<SiriWaveProps> = ({ isWaveMode }) => {
           overflow: "hidden",
         }}
       >
-        <g fill="none" strokeWidth={isWaveMode ? "1" : "0.5"}>
-          <path id="wave1" stroke="#4f46e5" />
-          <path id="wave2" stroke="#ec4899" />
-          <path id="wave3" stroke="#9c2dec" />
+        <g fill="none" strokeWidth={isWaveMode ? "2" : "1"}>
+          <path id="wave1" stroke="#4f46e590" />
+          <path id="wave2" stroke="#3b82f690" />
+          <path id="wave3" stroke="#9c2dec80" />
         </g>
       </svg>
     </div>

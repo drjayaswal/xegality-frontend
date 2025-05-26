@@ -245,40 +245,37 @@ export default function XegalityAI() {
         className="hidden"
       />
 
-      {/* Header with Full-Width Siri Wave */}
-      <div className="relative h-30 overflow-hidden bg-gradient-to-r from-[#4f46e5]/40 via-[#ec4899]/40 to-[#3b82f6]/40">
-        {/* Background overlay for better contrast */}
-        <div className="absolute inset-0 " />
-        {/* Siri Wave Container - Full Width and Height */}
+      {/* Header */}
+      <div className="relative h-24 overflow-hidden bg-gradient-to-r from-[#3b82f6]/10 to-[#3b82f6]/40">
         <div className="absolute inset-0 flex items-center justify-center">
           <div className="w-full h-fit flex items-center justify-center">
-            <SiriWave
-              isWaveMode={inputValue !== "" || isTyping || isListening}
-            />
+            <SiriWave isWaveMode={false} />
+          </div>
+        </div>
+        <div className="absolute inset-0 flex items-center justify-center">
+          <div
+            className={cn(
+              " cursor-help text-white/85 text-6xl p-4 relative shadow-none"
+            )}
+          >
+            {(() => {
+              const currentHour = new Date().getHours();
+              if (currentHour < 12) {
+                return "Good Morning";
+              } else if (currentHour < 18) {
+                return "Good Afternoon";
+              } else {
+                return "Good Evening";
+              }
+            })()}{" "}
           </div>
         </div>
       </div>
 
       {/* Chat Messages */}
-      <div className="flex-1 px-5 py-10 bg-gradient-to-r from-[#4f46e5]/40 via-[#ec4899]/40 to-[#3b82f6]/40 overflow-hidden">
+      <div className="flex-1 px-5 py-10 bg-gradient-to-r from-[#3b82f6]/10 to-[#3b82f6]/40 overflow-hidden">
         <ScrollArea className="h-full" ref={scrollAreaRef}>
           <div className="space-y-4 pb-20">
-            <div
-              className={cn(
-                " cursor-help text-white/60 text-6xl p-4 relative shadow-none"
-              )}
-            >
-              {(() => {
-                const currentHour = new Date().getHours();
-                if (currentHour < 12) {
-                  return "Good Morning";
-                } else if (currentHour < 18) {
-                  return "Good Afternoon";
-                } else {
-                  return "Good Evening";
-                }
-              })()}{" "}
-            </div>
             <AnimatePresence>
               {messages.map((message) => (
                 <motion.div
@@ -434,7 +431,7 @@ export default function XegalityAI() {
       </AnimatePresence>
 
       {/* Input Area */}
-      <div className="p-6 pt-8 bg-gradient-to-r from-[#4f46e5]/40 via-[#ec4899]/40 to-[#3b82f6]/40 relative z-30">
+      <div className="p-6 pt-8 bg-gradient-to-r from-[#3b82f6]/10 to-[#3b82f6]/40 relative z-30">
         <div className="flex gap-3 justify-center items-center">
           <div className="flex-1 relative">
             <Input
@@ -498,7 +495,7 @@ export default function XegalityAI() {
           </Button>
 
           <Button
-            className="h-10 w-10 animate-gradient flex justify-center items-center rounded-4xl"
+            className="h-10 w-10 bg-gradient-to-r from-[#3b82f6]/10 to-[#3b82f6]/40 flex justify-center items-center rounded-4xl"
             onClick={handleVoiceSearch}
           >
             {isListening ? (

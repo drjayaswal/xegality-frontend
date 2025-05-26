@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { motion, AnimatePresence } from "motion/react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -309,15 +308,14 @@ export default function Appointments() {
           {filteredAppointments.length > 0 ? (
             <div className="space-y-4">
               {filteredAppointments.map((appointment) => (
-                <motion.div
+                <div
                   key={appointment.id}
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
                   className={cn(
-                    "bg-white/30 dark:bg-white/10 backdrop-blur-sm rounded-xl border border-white/20 overflow-hidden",
+                    "bg-white/30 dark:bg-white/10 backdrop-blur-sm rounded-xl border border-white/20 overflow-hidden opacity-0 transform translate-y-4 transition-all duration-300 ease-out",
                     selectedAppointment === appointment.id
                       ? "ring-2 ring-indigo-600"
-                      : ""
+                      : "",
+                    "animate-fade-in"
                   )}
                   onClick={() =>
                     setSelectedAppointment(
@@ -326,6 +324,12 @@ export default function Appointments() {
                         : appointment.id
                     )
                   }
+                  style={{
+                    animationDelay: `${
+                      filteredAppointments.indexOf(appointment) * 100
+                    }ms`,
+                    animationFillMode: "forwards",
+                  }}
                 >
                   <div className="p-4 cursor-pointer">
                     <div className="flex flex-wrap md:flex-nowrap items-start justify-between gap-4">
@@ -376,41 +380,44 @@ export default function Appointments() {
                       </Button>
                     </div>
 
-                    <AnimatePresence>
-                      {selectedAppointment === appointment.id &&
-                        appointment.notes && (
-                          <motion.div
-                            initial={{ height: 0, opacity: 0 }}
-                            animate={{ height: "auto", opacity: 1 }}
-                            exit={{ height: 0, opacity: 0 }}
-                            className="mt-4 pt-4 border-t border-white/20"
-                          >
-                            <h4 className="text-sm font-medium text-gray-600 dark:text-gray-300 mb-2">
-                              Notes
-                            </h4>
-                            <p className="text-gray-800 dark:text-white">
-                              {appointment.notes}
-                            </p>
+                    {selectedAppointment === appointment.id &&
+                      appointment.notes && (
+                        <div
+                          className="mt-4 pt-4 border-t border-white/20 overflow-hidden transition-all duration-300 ease-in-out"
+                          style={{
+                            maxHeight:
+                              selectedAppointment === appointment.id
+                                ? "500px"
+                                : "0",
+                            opacity:
+                              selectedAppointment === appointment.id ? 1 : 0,
+                          }}
+                        >
+                          <h4 className="text-sm font-medium text-gray-600 dark:text-gray-300 mb-2">
+                            Notes
+                          </h4>
+                          <p className="text-gray-800 dark:text-white">
+                            {appointment.notes}
+                          </p>
 
-                            <div className="flex gap-2 mt-4 justify-end">
-                              <Button
-                                variant="outline"
-                                className="gap-2 text-red-600 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-900/20"
-                              >
-                                <X className="h-4 w-4" /> Cancel
-                              </Button>
-                              <Button variant="outline" className="gap-2">
-                                <Clock className="h-4 w-4" /> Reschedule
-                              </Button>
-                              <Button className="bg-indigo-600 hover:bg-indigo-700 gap-2">
-                                <Check className="h-4 w-4" /> Confirm
-                              </Button>
-                            </div>
-                          </motion.div>
-                        )}
-                    </AnimatePresence>
+                          <div className="flex gap-2 mt-4 justify-end">
+                            <Button
+                              variant="outline"
+                              className="gap-2 text-red-600 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-900/20"
+                            >
+                              <X className="h-4 w-4" /> Cancel
+                            </Button>
+                            <Button variant="outline" className="gap-2">
+                              <Clock className="h-4 w-4" /> Reschedule
+                            </Button>
+                            <Button className="bg-indigo-600 hover:bg-indigo-700 gap-2">
+                              <Check className="h-4 w-4" /> Confirm
+                            </Button>
+                          </div>
+                        </div>
+                      )}
                   </div>
-                </motion.div>
+                </div>
               ))}
             </div>
           ) : (
