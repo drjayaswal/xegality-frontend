@@ -201,244 +201,249 @@ export default function Appointments() {
   };
 
   return (
-    <div className="w-full h-full bg-white dark:bg-black rounded-lg overflow-hidden flex flex-col relative">
-      {/* Header */}
-      <div className="relative h-24 overflow-hidden bg-gradient-to-r from-[#4f46e5]/40 via-[#ec4899]/40 to-[#3b82f6]/40">
-        <div className="absolute inset-0 flex items-center justify-center">
-          <div className="w-full h-fit flex items-center justify-center">
-            <SiriWave isWaveMode={false} />
+    <div className="w-full h-full dark:bg-black bg-white bg-gradient-to-r from-[#3b82f6]/10 to-[#3b82f6]/40 rounded-2xl">
+      <div className="w-full h-full rounded-lg overflow-hidden flex flex-col relative">
+        {/* Header */}
+        <div className="relative h-24 overflow-hidden">
+          <div className="absolute inset-0 flex items-center justify-center">
+            <div className="w-full h-fit flex items-center justify-center">
+              <SiriWave isWaveMode={false} />
+            </div>
           </div>
         </div>
-        <div className="absolute inset-0 flex items-center justify-center">
-          <h1 className="text-5xl font-bold text-white/80">Appointment</h1>
-        </div>
-      </div>
-      {/* Calendar Controls */}
-      <div className="bg-gradient-to-r from-[#4f46e5]/40 via-[#ec4899]/40 to-[#3b82f6]/40 backdrop-blur-sm border-b border-white/20 p-4">
-        <div className="flex flex-col md:flex-row gap-4 items-center justify-between">
-          <div className="flex items-center gap-2">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => changeDate(-1)}
-              className="h-8 w-8 p-0 rounded-full"
-            >
-              <ChevronLeft className="h-4 w-4" />
-            </Button>
-            <h2 className="text-lg font-medium text-gray-800 dark:text-white min-w-[200px] text-center">
-              {getDateRangeText()}
-            </h2>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => changeDate(1)}
-              className="h-8 w-8 p-0 rounded-full"
-            >
-              <ChevronRight className="h-4 w-4" />
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setSelectedDate(new Date())}
-              className="ml-2 bg-white/40 rounded-4xl text-black/80 border-transparent"
-            >
-              Today
-            </Button>
-          </div>
-
-          <div className="flex items-center gap-2">
-            <div className="flex rounded-lg overflow-hidden border border-white/20">
+        {/* Calendar Controls */}
+        <div className=" border-b border-white/20 p-4">
+          <div className="flex flex-col md:flex-row gap-4 items-center justify-between">
+            <div className="flex items-center gap-2">
               <Button
-                variant={viewMode === "day" ? "default" : "ghost"}
+                variant="outline"
                 size="sm"
-                onClick={() => setViewMode("day")}
-                className={cn(
-                  "rounded-none",
-                  viewMode === "day" ? "bg-indigo-600 hover:bg-indigo-700" : ""
-                )}
+                onClick={() => changeDate(-1)}
+                className="h-8 w-8 p-0 rounded-full"
               >
-                Day
+                <ChevronLeft className="h-4 w-4" />
+              </Button>
+              <h2 className="text-lg font-medium text-gray-800 dark:text-white min-w-[200px] text-center">
+                {getDateRangeText()}
+              </h2>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => changeDate(1)}
+                className="h-8 w-8 p-0 rounded-full"
+              >
+                <ChevronRight className="h-4 w-4" />
               </Button>
               <Button
-                variant={viewMode === "week" ? "default" : "ghost"}
+                variant="outline"
                 size="sm"
-                onClick={() => setViewMode("week")}
-                className={cn(
-                  "rounded-none",
-                  viewMode === "week" ? "bg-indigo-600 hover:bg-indigo-700" : ""
-                )}
+                onClick={() => setSelectedDate(new Date())}
+                className="ml-2 bg-white/40 rounded-4xl border-transparent"
               >
-                Week
-              </Button>
-              <Button
-                variant={viewMode === "month" ? "default" : "ghost"}
-                size="sm"
-                onClick={() => setViewMode("month")}
-                className={cn(
-                  "rounded-none",
-                  viewMode === "month"
-                    ? "bg-indigo-600 hover:bg-indigo-700"
-                    : ""
-                )}
-              >
-                Month
+                Today
               </Button>
             </div>
 
-            <Button className="bg-indigo-600 hover:bg-indigo-700 ml-2">
-              <Plus className="h-4 w-4 mr-2" /> New Appointment
-            </Button>
+            <div className="flex items-center gap-2">
+              <div className="flex rounded-full overflow-hidden border border-white/20">
+                <Button
+                  variant={viewMode === "day" ? "default" : "ghost"}
+                  size="sm"
+                  onClick={() => setViewMode("day")}
+                  className={cn(
+                    "rounded-none",
+                    viewMode === "day"
+                      ? "text-white bg-indigo-600 hover:bg-indigo-700"
+                      : ""
+                  )}
+                >
+                  Day
+                </Button>
+                <Button
+                  variant={viewMode === "week" ? "default" : "ghost"}
+                  size="sm"
+                  onClick={() => setViewMode("week")}
+                  className={cn(
+                    "rounded-none",
+                    viewMode === "week"
+                      ? "text-white bg-indigo-600 hover:bg-indigo-700"
+                      : ""
+                  )}
+                >
+                  Week
+                </Button>
+                <Button
+                  variant={viewMode === "month" ? "default" : "ghost"}
+                  size="sm"
+                  onClick={() => setViewMode("month")}
+                  className={cn(
+                    "rounded-none",
+                    viewMode === "month"
+                      ? "text-white bg-indigo-600 hover:bg-indigo-700"
+                      : ""
+                  )}
+                >
+                  Month
+                </Button>
+              </div>
+
+              <Button className="text-white bg-indigo-600 hover:bg-indigo-700 ml-2">
+                <Plus className="h-4 w-4 mr-2" /> New Appointment
+              </Button>
+            </div>
+          </div>
+
+          <div className="mt-4 relative">
+            <Search className="absolute left-3 top-2.5 h-5 w-5 text-gray-400" />
+            <Input
+              placeholder="Search appointments..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="pl-10 bg-white/20 text-left focus-visible:ring-0 border-1 border-[#3b82f6]/40 focus-visible:border-[#3b82f6]/40 transition-all duration-150 dark:placeholder:text-white/40 placeholder:text-black/40"
+            />
           </div>
         </div>
 
-        <div className="mt-4 relative">
-          <Search className="absolute left-3 top-2.5 h-5 w-5 text-gray-400" />
-          <Input
-            placeholder="Search appointments..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-10 bg-white/20 focus-visible:ring-0 focus-visible:border-indigo-600 placeholder:text-black/40 dark:placeholder:text-white/40"
-          />
-        </div>
-      </div>
-
-      {/* Appointments List */}
-      <div className="flex-1 bg-gradient-to-r from-[#4f46e5]/40 via-[#ec4899]/40 to-[#3b82f6]/40 p-6">
-        <ScrollArea className="h-full">
-          {filteredAppointments.length > 0 ? (
-            <div className="space-y-4">
-              {filteredAppointments.map((appointment) => (
-                <div
-                  key={appointment.id}
-                  className={cn(
-                    "bg-white/30 dark:bg-white/10 backdrop-blur-sm rounded-xl border border-white/20 overflow-hidden opacity-0 transform translate-y-4 transition-all duration-300 ease-out",
-                    selectedAppointment === appointment.id
-                      ? "ring-2 ring-indigo-600"
-                      : "",
-                    "animate-fade-in"
-                  )}
-                  onClick={() =>
-                    setSelectedAppointment(
-                      appointment.id === selectedAppointment
-                        ? null
-                        : appointment.id
-                    )
-                  }
-                  style={{
-                    animationDelay: `${
-                      filteredAppointments.indexOf(appointment) * 100
-                    }ms`,
-                    animationFillMode: "forwards",
-                  }}
-                >
-                  <div className="p-4 cursor-pointer">
-                    <div className="flex flex-wrap md:flex-nowrap items-start justify-between gap-4">
-                      <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 bg-indigo-100 dark:bg-indigo-900/50 rounded-lg flex items-center justify-center">
-                          <CalendarIcon className="h-5 w-5 text-indigo-600" />
-                        </div>
-                        <div>
-                          <h3 className="font-medium text-gray-800 dark:text-white">
-                            {appointment.title}
-                          </h3>
-                          <p className="text-sm text-gray-600 dark:text-gray-300">
-                            with {appointment.client}
-                          </p>
-                        </div>
-                      </div>
-
-                      <div className="flex flex-wrap md:flex-nowrap items-center gap-3 ml-auto md:ml-0">
-                        <div className="flex items-center gap-1 text-sm text-gray-600 dark:text-gray-300">
-                          <Clock className="h-4 w-4" />
-                          <span>
-                            {appointment.startTime} - {appointment.endTime}
-                          </span>
-                        </div>
-
-                        <div className="flex items-center gap-1 text-sm text-gray-600 dark:text-gray-300">
-                          <MapPin className="h-4 w-4" />
-                          <span>{appointment.location}</span>
-                        </div>
-
-                        <div
-                          className={cn(
-                            "px-3 py-1 rounded-full text-xs font-medium border flex items-center gap-1",
-                            getAppointmentStatusColor(appointment.status)
-                          )}
-                        >
-                          {getAppointmentTypeIcon(appointment.type)}
-                          <span className="capitalize">{appointment.type}</span>
-                        </div>
-                      </div>
-
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className="h-8 w-8 p-0 ml-auto"
-                      >
-                        <MoreHorizontal className="h-4 w-4" />
-                      </Button>
-                    </div>
-
-                    {selectedAppointment === appointment.id &&
-                      appointment.notes && (
-                        <div
-                          className="mt-4 pt-4 border-t border-white/20 overflow-hidden transition-all duration-300 ease-in-out"
-                          style={{
-                            maxHeight:
-                              selectedAppointment === appointment.id
-                                ? "500px"
-                                : "0",
-                            opacity:
-                              selectedAppointment === appointment.id ? 1 : 0,
-                          }}
-                        >
-                          <h4 className="text-sm font-medium text-gray-600 dark:text-gray-300 mb-2">
-                            Notes
-                          </h4>
-                          <p className="text-gray-800 dark:text-white">
-                            {appointment.notes}
-                          </p>
-
-                          <div className="flex gap-2 mt-4 justify-end">
-                            <Button
-                              variant="outline"
-                              className="gap-2 text-red-600 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-900/20"
-                            >
-                              <X className="h-4 w-4" /> Cancel
-                            </Button>
-                            <Button variant="outline" className="gap-2">
-                              <Clock className="h-4 w-4" /> Reschedule
-                            </Button>
-                            <Button className="bg-indigo-600 hover:bg-indigo-700 gap-2">
-                              <Check className="h-4 w-4" /> Confirm
-                            </Button>
+        {/* Appointments List */}
+        <div className="flex-1 p-6">
+          <ScrollArea className="h-full">
+            {filteredAppointments.length > 0 ? (
+              <div className="space-y-4">
+                {filteredAppointments.map((appointment) => (
+                  <div
+                    key={appointment.id}
+                    className={cn(
+                      "bg-white/30 dark:bg-white/10 backdrop-blur-sm rounded-xl border border-white/20 overflow-hidden opacity-0 transform translate-y-4 transition-all duration-300 ease-out",
+                      selectedAppointment === appointment.id
+                        ? "ring-2 ring-indigo-600"
+                        : "",
+                      "animate-fade-in"
+                    )}
+                    onClick={() =>
+                      setSelectedAppointment(
+                        appointment.id === selectedAppointment
+                          ? null
+                          : appointment.id
+                      )
+                    }
+                    style={{
+                      animationDelay: `${
+                        filteredAppointments.indexOf(appointment) * 100
+                      }ms`,
+                      animationFillMode: "forwards",
+                    }}
+                  >
+                    <div className="p-4 cursor-pointer">
+                      <div className="flex flex-wrap md:flex-nowrap items-start justify-between gap-4">
+                        <div className="flex items-center gap-3">
+                          <div className="w-10 h-10 bg-indigo-100 dark:bg-indigo-900/50 rounded-lg flex items-center justify-center">
+                            <CalendarIcon className="h-5 w-5 text-indigo-600" />
+                          </div>
+                          <div>
+                            <h3 className="font-medium text-gray-800 dark:text-white">
+                              {appointment.title}
+                            </h3>
+                            <p className="text-sm text-gray-600 dark:text-gray-300">
+                              with {appointment.client}
+                            </p>
                           </div>
                         </div>
-                      )}
+
+                        <div className="flex flex-wrap md:flex-nowrap items-center gap-3 ml-auto md:ml-0">
+                          <div className="flex items-center gap-1 text-sm text-gray-600 dark:text-gray-300">
+                            <Clock className="h-4 w-4" />
+                            <span>
+                              {appointment.startTime} - {appointment.endTime}
+                            </span>
+                          </div>
+
+                          <div className="flex items-center gap-1 text-sm text-gray-600 dark:text-gray-300">
+                            <MapPin className="h-4 w-4" />
+                            <span>{appointment.location}</span>
+                          </div>
+
+                          <div
+                            className={cn(
+                              "px-3 py-1 rounded-full text-xs font-medium border flex items-center gap-1",
+                              getAppointmentStatusColor(appointment.status)
+                            )}
+                          >
+                            {getAppointmentTypeIcon(appointment.type)}
+                            <span className="capitalize">
+                              {appointment.type}
+                            </span>
+                          </div>
+                        </div>
+
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="h-8 w-8 p-0 ml-auto"
+                        >
+                          <MoreHorizontal className="h-4 w-4" />
+                        </Button>
+                      </div>
+
+                      {selectedAppointment === appointment.id &&
+                        appointment.notes && (
+                          <div
+                            className="mt-4 pt-4 border-t border-white/20 overflow-hidden transition-all duration-300 ease-in-out"
+                            style={{
+                              maxHeight:
+                                selectedAppointment === appointment.id
+                                  ? "500px"
+                                  : "0",
+                              opacity:
+                                selectedAppointment === appointment.id ? 1 : 0,
+                            }}
+                          >
+                            <h4 className="text-sm font-medium text-gray-600 dark:text-gray-300 mb-2">
+                              Notes
+                            </h4>
+                            <p className="text-gray-800 dark:text-white">
+                              {appointment.notes}
+                            </p>
+
+                            <div className="flex gap-2 mt-4 justify-end">
+                              <Button
+                                variant="outline"
+                                className="gap-2 text-red-600 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-900/20"
+                              >
+                                <X className="h-4 w-4" /> Cancel
+                              </Button>
+                              <Button variant="outline" className="gap-2">
+                                <Clock className="h-4 w-4" /> Reschedule
+                              </Button>
+                              <Button className="bg-indigo-600 hover:bg-indigo-700 gap-2">
+                                <Check className="h-4 w-4" /> Confirm
+                              </Button>
+                            </div>
+                          </div>
+                        )}
+                    </div>
                   </div>
-                </div>
-              ))}
-            </div>
-          ) : (
-            <div className="text-center py-12 bg-white/20 backdrop-blur-sm rounded-xl border border-white/20">
-              <CalendarIcon className="h-12 w-12 mx-auto text-gray-400 mb-4" />
-              <h3 className="text-xl font-medium text-gray-800 dark:text-white mb-2">
-                No appointments found
-              </h3>
-              <p className="text-gray-600 dark:text-gray-300">
-                {searchQuery
-                  ? "Try adjusting your search criteria"
-                  : `You don't have any appointments ${
-                      viewMode === "day" ? "today" : "scheduled"
-                    }`}
-              </p>
-              <Button className="mt-4 bg-indigo-600 hover:bg-indigo-700">
-                <Plus className="h-4 w-4 mr-2" /> Schedule Appointment
-              </Button>
-            </div>
-          )}
-        </ScrollArea>
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-12 bg-white/20 backdrop-blur-sm rounded-xl border border-white/20">
+                <CalendarIcon className="h-12 w-12 mx-auto text-gray-400 mb-4" />
+                <h3 className="text-xl font-medium text-gray-800 dark:text-white mb-2">
+                  No appointments found
+                </h3>
+                <p className="text-gray-600 dark:text-gray-300">
+                  {searchQuery
+                    ? "Try adjusting your search criteria"
+                    : `You don't have any appointments ${
+                        viewMode === "day" ? "today" : "scheduled"
+                      }`}
+                </p>
+                <Button className="mt-4 text-white bg-indigo-600 hover:bg-indigo-700">
+                  <Plus className="h-4 w-4 mr-2" /> Schedule Appointment
+                </Button>
+              </div>
+            )}
+          </ScrollArea>
+        </div>
       </div>
     </div>
   );

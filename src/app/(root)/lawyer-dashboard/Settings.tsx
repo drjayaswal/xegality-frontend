@@ -206,14 +206,14 @@ export default function SettingsLite() {
           <div className="space-y-6 animate-fadeIn">
             <div className="flex items-center gap-6">
               <div className="relative">
-                <div className="w-24 h-24 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-full flex items-center justify-center">
+                <div className="w-24 h-24 bg-[#3b82f6] rounded-full flex items-center justify-center">
                   <User className="h-12 w-12 text-white" />
                 </div>
                 <Button
                   size="sm"
                   className="absolute -bottom-2 -right-2 rounded-full h-8 w-8 p-0 bg-white/90 hover:bg-white text-gray-700"
                 >
-                  <Camera className="h-4 w-4" />
+                  <Camera className="stroke-[2.5px] h-4 w-4 text-[#3b82f6]" />
                 </Button>
               </div>
               <div>
@@ -396,7 +396,7 @@ export default function SettingsLite() {
                   <Switch
                     checked={notification.enabled}
                     onCheckedChange={() => toggleNotification(notification.id)}
-                    className="data-[state=checked]:bg-white/10"
+                    className="data-[state=checked]:bg-[#3b82f6] data-[state=unchecked]:bg-transparent data-[state=unchecked]:border-transparent data-[state=unchecked]:shadow-none"
                   />
                 </div>
               ))}
@@ -421,7 +421,11 @@ export default function SettingsLite() {
                       </p>
                     </div>
                   </div>
-                  <Button variant="outline" size="sm">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="bg-transparent border-black/30 hover:bg-white/20"
+                  >
                     Change
                   </Button>
                 </div>
@@ -444,26 +448,8 @@ export default function SettingsLite() {
                     onCheckedChange={(checked) =>
                       setPreferences({ ...preferences, twoFactorAuth: checked })
                     }
-                    className="data-[state=checked]:bg-white/10"
+                    className="data-[state=checked]:bg-[#3b82f6] data-[state=unchecked]:bg-transparent data-[state=unchecked]:border-transparent data-[state=unchecked]:shadow-none"
                   />
-                </div>
-              </div>
-              <div className="p-4 bg-white/30 dark:bg-white/10 backdrop-blur-lg rounded-xl border border-white/20">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <Eye className="h-5 w-5 dark:text-indigo-500 text-indigo-600" />
-                    <div>
-                      <h4 className="font-medium text-gray-800 dark:text-white">
-                        Privacy Settings
-                      </h4>
-                      <p className="text-sm text-gray-600 dark:text-gray-300">
-                        Manage your privacy preferences
-                      </p>
-                    </div>
-                  </div>
-                  <Button variant="outline" size="sm">
-                    Configure
-                  </Button>
                 </div>
               </div>
             </div>
@@ -491,32 +477,12 @@ export default function SettingsLite() {
                       </p>
                     </div>
                   </div>
-                  <div
-                    className="relative w-18 h-8 flex items-center bg-gradient-to-r border-4 border-white dark:border-black from-rose-500 to-indigo-600 rounded-full px-1 cursor-pointer shadow-none"
-                    onClick={toggleTheme}
-                    aria-label="Toggle theme"
-                  >
-                    {/* Toggle Knob */}
-                    <div
-                      className={cn(
-                        "absolute w-8 h-[31px] bg-white dark:bg-black rounded-full transform transition-transform duration-300 shadow-none",
-                        {
-                          "-translate-x-1": !isDarkMode,
-                          "translate-x-7": isDarkMode,
-                        }
-                      )}
-                    />
 
-                    {/* Icons */}
-                    <Sun
-                      className="absolute left-1 w-5 h-5 text-yellow-400 dark:text-gray-400 transition-opacity duration-300"
-                      style={{ opacity: !isDarkMode ? 1 : 0 }}
-                    />
-                    <Moon
-                      className="absolute right-1 w-5 h-5 text-blue-400 dark:text-gray-400 transition-opacity duration-300"
-                      style={{ opacity: isDarkMode ? 1 : 0 }}
-                    />
-                  </div>
+                  <Switch
+                    checked={isDarkMode}
+                    onCheckedChange={toggleTheme}
+                    className="data-[state=checked]:bg-[#3b82f6] data-[state=unchecked]:bg-transparent data-[state=unchecked]:border-transparent data-[state=unchecked]:shadow-none"
+                  />
                 </div>
               </div>
               <div className="p-4 bg-white/30 dark:bg-white/10 backdrop-blur-lg rounded-xl border border-white/20">
@@ -532,7 +498,7 @@ export default function SettingsLite() {
                       </p>
                     </div>
                   </div>
-                  <select className="px-3 py-1 rounded-lg border border-white/10 text-sm">
+                  <select className="px-3 py-1 rounded-lg focus-visible:outline-0 text-sm">
                     <option>Comfortable</option>
                     <option>Compact</option>
                     <option>Spacious</option>
@@ -568,7 +534,7 @@ export default function SettingsLite() {
                         language: e.target.value,
                       })
                     }
-                    className="px-3 py-1 rounded-lg border border-white/10 text-sm"
+                    className="px-3 py-1 rounded-lg focus-visible:outline-0 text-sm"
                   >
                     <option value="en">English</option>
                     <option value="es">Spanish</option>
@@ -595,7 +561,7 @@ export default function SettingsLite() {
                     onCheckedChange={(checked) =>
                       setPreferences({ ...preferences, soundEnabled: checked })
                     }
-                    className="data-[state=checked]:bg-white/10"
+                    className="data-[state=checked]:bg-[#3b82f6] data-[state=unchecked]:bg-transparent data-[state=unchecked]:border-transparent data-[state=unchecked]:shadow-none"
                   />
                 </div>
               </div>
@@ -617,7 +583,7 @@ export default function SettingsLite() {
                     onCheckedChange={(checked) =>
                       setPreferences({ ...preferences, autoSave: checked })
                     }
-                    className="data-[state=checked]:bg-white/10"
+                    className="data-[state=checked]:bg-[#3b82f6] data-[state=unchecked]:bg-transparent data-[state=unchecked]:border-transparent data-[state=unchecked]:shadow-none"
                   />
                 </div>
               </div>
@@ -643,39 +609,36 @@ export default function SettingsLite() {
   return (
     <div className="w-full h-full bg-white dark:bg-black rounded-lg overflow-hidden flex flex-col relative">
       {/* Header with simplified animation */}
-      <div className="relative h-24 overflow-hidden bg-gradient-to-r from-[#4f46e5]/40 via-[#ec4899]/40 to-[#3b82f6]/40">
+      <div className="relative h-24 overflow-hidden bg-gradient-to-r from-[#3b82f6]/15 to-[#3b82f6]/40">
         <div className="absolute inset-0 flex items-center justify-center">
           <div className="w-full h-fit flex items-center justify-center">
             <SiriWave isWaveMode={isAnimating} />
           </div>
         </div>
-        <div className="absolute inset-0 flex items-center justify-center">
-          <h1 className="text-5xl font-bold text-white/80">Settings</h1>
-        </div>
       </div>
 
-      <div className="flex-1 flex bg-gradient-to-r from-[#4f46e5]/40 via-[#ec4899]/40 to-[#3b82f6]/40">
+      <div className="flex-1 flex bg-gradient-to-r from-[#3b82f6]/15 to-[#3b82f6]/40">
         {/* Sidebar - Simplified */}
-        <div className="w-80 p-6 border-r border-white/20">
+        <div className="w-80 p-6">
           <div className="space-y-2">
             {settingsSections.map((section) => (
               <button
                 key={section.id}
                 onClick={() => handleSectionChange(section.id)}
                 className={cn(
-                  "w-full text-left p-4 rounded-4xl transition-all duration-200 group",
+                  "w-full text-left p-4 rounded-full transition-all duration-200 group",
                   activeSection === section.id
                     ? "bg-white/30 backdrop-blur-lg shadow-lg"
-                    : "hover:bg-white/20 backdrop-blur-sm m-2"
+                    : "hover:bg-transparent backdrop-blur-sm m-2"
                 )}
               >
                 <div className="flex items-center gap-3">
                   <div
                     className={cn(
-                      "p-2 rounded-lg transition-colors",
+                      "p-2 rounded-full transition-colors",
                       activeSection === section.id
-                        ? "bg-indigo-600 text-white"
-                        : "bg-white/10 text-gray-700 dark:text-gray-300 group-hover:bg-indigo-600 group-hover:text-white"
+                        ? "bg-[#3b82f6] text-white"
+                        : "bg-transparent text-gray-700 dark:text-gray-300 group-hover:bg-[#3b82f6] group-hover:text-white"
                     )}
                   >
                     {section.icon}
@@ -711,7 +674,7 @@ export default function SettingsLite() {
                 <Button
                   onClick={handleSave}
                   disabled={isAnimating}
-                  className="px-8 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-medium rounded-xl shadow-lg hover:shadow-xl transition-all duration-200"
+                  className="px-4 mr-4 py-3 dark:bg-[#3b82f6]/50 dark:hover:bg-[#3b82f6]/70 bg-[#3b82f6] hover:bg-[#3b82f6] hover:scale-110 text-white font-medium rounded-full shadow-none transition-all duration-200"
                 >
                   {isAnimating ? (
                     <div className="flex items-center gap-2">

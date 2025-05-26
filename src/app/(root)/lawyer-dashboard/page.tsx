@@ -11,10 +11,12 @@ import {
   DoorOpen,
   HelpCircle,
   LinkIcon,
+  Moon,
   ReceiptText,
   Settings,
   Shield,
   Sparkles,
+  Sun,
   User,
   Users,
 } from "lucide-react";
@@ -26,6 +28,7 @@ import CaseManagement from "./Case-Management";
 import Appointments from "./Appointment";
 import Clients from "./Clients";
 import SettingsLite from "./Settings";
+import { Switch } from "@/components/ui/switch";
 
 type Tab = {
   title: string;
@@ -149,6 +152,7 @@ export default function LawyerDashboard() {
 
   const [active, setActive] = useState<Tab>(allTabs[0]);
   const [tabs, setTabs] = useState<Tab[]>(allTabs);
+  const [isDarkMode, setIsDarkMode] = useState(false);
 
   const moveSelectedTabToTop = (tabValue: string) => {
     const clickedTab = allTabs.find((tab) => tab.value === tabValue);
@@ -167,6 +171,14 @@ export default function LawyerDashboard() {
   };
 
   const [hovering, setHovering] = useState(false);
+  const toggleTheme = () => {
+    setIsDarkMode((prev) => {
+      const newTheme = !prev ? "dark" : "light";
+      localStorage.setItem("theme", newTheme);
+      document.documentElement.classList.toggle("dark", newTheme === "dark");
+      return !prev;
+    });
+  };
 
   const getTabIcon = (title: string) => {
     switch (title) {
@@ -247,6 +259,13 @@ export default function LawyerDashboard() {
               ))}
             </div>
           </div>
+        </div>
+        <div className="flex items-center justify-between">
+          <Switch
+            checked={isDarkMode}
+            onCheckedChange={toggleTheme}
+            className="data-[state=checked]:bg-[#3b82f6] data-[state=unchecked]:bg-transparent data-[state=unchecked]:border-transparent data-[state=unchecked]:shadow-none"
+          />
         </div>
       </div>
 

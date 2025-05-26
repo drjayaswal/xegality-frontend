@@ -479,841 +479,812 @@ export default function CaseManagement() {
   }, []);
 
   return (
-    <div className="w-full h-full bg-white dark:bg-black rounded-lg overflow-hidden flex flex-col relative">
-      {/* Hidden file input */}
-      <input
-        ref={fileInputRef}
-        type="file"
-        multiple
-        accept=".pdf,.doc,.docx,.txt,.jpg,.jpeg,.png,.xlsx,.xls"
-        className="hidden"
-      />
+    <div className="w-full h-full dark:bg-black bg-white  rounded-2xl">
+      <div className="w-full h-full bg-gradient-to-r from-[#3b82f6]/10 to-[#3b82f6]/40 rounded-2xl overflow-hidden flex relative">
+        {/* <div className="w-full h-full rounded-2xl overflow-hidden flex flex-col relative"> */}
+        {/* Hidden file input */}
+        <input
+          ref={fileInputRef}
+          type="file"
+          multiple
+          accept=".pdf,.doc,.docx,.txt,.jpg,.jpeg,.png,.xlsx,.xls"
+          className="hidden"
+        />
 
-      {/* Main Content */}
-      <div className="flex-1 flex flex-col md:flex-row">
-        {/* Case List Sidebar */}
-        <div
-          className={cn(
-            "p-6 bg-gradient-to-r from-[#ec4899]/40 to-[#4f46e5]/40  border-r-2 border-white/50",
-            isMobileView
-              ? "absolute inset-y-0 left-0 z-20 w-full md:w-80"
-              : "w-80"
-          )}
-        >
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-xl font-bold text-gray-800 dark:text-white">
-              Cases
-            </h2>
-          </div>
-
-          {/* Search and Filter */}
-          <div className="relative mb-4">
-            <Search className="absolute left-3 top-2 h-5 w-5 text-indigo-600" />
-            <Input
-              placeholder="Search cases..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-10 bg-white/20 focus-visible:ring-0 border-2 focus-visible:border-white/40 dark:placeholder:text-white/40 placeholder:text-black/40"
-            />
-          </div>
-
-          <div className="flex justify-between items-center mb-4">
-            <Button className="border-2 border-indigo-600 bg-transparent text-indigo-600 hover:text-white hover:bg-indigo-600">
-              <Plus className="h-4 w-4 mr-2" /> New Case
-            </Button>
-          </div>
-          <hr className="mb-2 border-2 border-white/50 mt-10" />
-          {/* Case List */}
-          <div className="h-[calc(100vh-20rem)] overflow-y-auto">
-            {isLoading ? (
-              <div className="space-y-2 p-2">
-                {[1, 2, 3].map((i) => (
-                  <div
-                    key={i}
-                    className="p-4 rounded-xl bg-white/10 animate-pulse"
-                  >
-                    <div className="flex items-start gap-3">
-                      <div className="w-10 h-10 bg-white/20 rounded-lg"></div>
-                      <div className="flex-1">
-                        <div className="h-4 bg-white/20 rounded w-3/4 mb-2"></div>
-                        <div className="h-3 bg-white/20 rounded w-1/2"></div>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            ) : filteredCases.length > 0 ? (
-              filteredCases.map((caseItem) => (
-                <motion.div
-                  key={caseItem.id}
-                  onClick={() => {
-                    setSelectedCase(caseItem.id);
-                    if (isMobileView) {
-                      //   setShowSidebar(false);
-                    }
-                  }}
-                  className={cn(
-                    "p-4 rounded-[36px] cursor-pointer transition-all duration-200 mb-2 relative",
-                    selectedCase === caseItem.id
-                      ? "bg-white/30 backdrop-blur-lg shadow-lg"
-                      : "hover:bg-white/20 backdrop-blur-sm m-2"
-                  )}
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                >
-                  <div className="flex items-start gap-3">
-                    <div className="relative">
-                      <div className="w-12 h-12 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-full flex items-center justify-center">
-                        <Briefcase className="h-6 w-6 text-white" />
-                      </div>
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center justify-between">
-                        <h3 className="font-medium text-gray-800 dark:text-white truncate">
-                          {caseItem.title}
-                        </h3>
-                        <div className="flex items-center gap-1 justify-center mr-2">
-                          <span className="text-xs text-black dark:text-white/40">
-                            {formatDate(caseItem.openDate)}
-                          </span>
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-2 mt-1">
-                        <span
-                          className={cn(
-                            "px-2 py-0.5 rounded-full text-xs font-medium border",
-                            getStatusColor(caseItem.status)
-                          )}
-                        >
-                          {caseItem.status}
-                        </span>
-                        <span
-                          className={cn(
-                            "px-2 py-0.5 rounded-full text-xs font-medium border",
-                            getPriorityColor(caseItem.priority)
-                          )}
-                        >
-                          {caseItem.priority}
-                        </span>
-                      </div>
-                      <div className="flex items-center gap-2 mt-1 text-xs text-gray-600 dark:text-gray-400">
-                        <Calendar className="h-3 w-3" />
-                        <span>Client: {caseItem.client}</span>
-                      </div>
-                    </div>
-                  </div>
-                </motion.div>
-              ))
-            ) : (
-              <div className="text-center py-12 bg-white/20 backdrop-blur-sm rounded-xl border border-white/40">
-                <Briefcase className="h-12 w-12 mx-auto text-gray-400 mb-4" />
-                <h3 className="text-xl font-medium text-gray-800 dark:text-white mb-2">
-                  No cases found
-                </h3>
-                <p className="text-gray-600 dark:text-gray-300">
-                  {searchQuery || filterStatus !== "all"
-                    ? "Try adjusting your search or filter criteria"
-                    : "You don't have any cases yet"}
-                </p>
-                <Button className="mt-4 bg-indigo-600 hover:bg-indigo-700">
-                  <Plus className="h-4 w-4 mr-2" /> Create New Case
-                </Button>
-              </div>
+        {/* Main Content */}
+        <div className="flex-1 flex flex-col md:flex-row">
+          {/* Case List Sidebar */}
+          <div
+            className={cn(
+              "p-6",
+              isMobileView
+                ? "absolute inset-y-0 left-0 z-20 w-full md:w-80"
+                : "w-80"
             )}
-          </div>
-        </div>
-
-        {/* Case Details */}
-        {currentCase ? (
-          <div className="flex-1 bg-gradient-to-r from-[#4f46e5]/40 via-[#ec4899]/40 to-[#3b82f6]/40">
-            {/* Case Header */}
-            <div className="p-4 border-b border-white/20 bg-white/10 backdrop-blur-sm">
-              <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-                <div>
-                  <div className="flex items-center gap-2">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="md:hidden h-8 w-8 p-0"
-                      onClick={() => setSelectedCase(null)}
-                    >
-                      <ChevronDown className="h-4 w-4" />
-                    </Button>
-                    <h2 className="text-xl font-semibold text-gray-800 dark:text-white">
-                      {currentCase.title}
-                    </h2>
-                    <span
-                      className={cn(
-                        "px-2 py-0.5 rounded-full text-xs font-medium border",
-                        getStatusColor(currentCase.status)
-                      )}
-                    >
-                      {currentCase.status}
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-2 mt-1">
-                    <span className="text-sm text-gray-600 dark:text-gray-300">
-                      <span className="font-medium">Client:</span>{" "}
-                      {currentCase.client}
-                    </span>
-                    <span className="text-sm text-gray-600 dark:text-gray-300">
-                      <span className="font-medium">Case #:</span>{" "}
-                      {currentCase.caseNumber}
-                    </span>
-                  </div>
-                </div>
-
-                <div className="flex gap-2">
-                  <Button variant="outline" className="gap-2">
-                    <Edit className="h-4 w-4" /> Edit Case
-                  </Button>
-                  <Button className="bg-indigo-600 hover:bg-indigo-700 gap-2">
-                    <MessageSquare className="h-4 w-4" /> Message Client
-                  </Button>
-                </div>
-              </div>
-
-              {/* Tabs */}
-              <div className="flex mt-6 border-b border-white/20">
-                <button
-                  onClick={() => setActiveTab("overview")}
-                  className={cn(
-                    "px-4 py-2 font-medium transition-colors",
-                    activeTab === "overview"
-                      ? "text-indigo-600 border-b-2 border-indigo-600"
-                      : "text-gray-600 dark:text-gray-300 hover:text-indigo-600"
-                  )}
-                >
-                  Overview
-                </button>
-                <button
-                  onClick={() => setActiveTab("documents")}
-                  className={cn(
-                    "px-4 py-2 font-medium transition-colors",
-                    activeTab === "documents"
-                      ? "text-indigo-600 border-b-2 border-indigo-600"
-                      : "text-gray-600 dark:text-gray-300 hover:text-indigo-600"
-                  )}
-                >
-                  Documents
-                </button>
-                <button
-                  onClick={() => setActiveTab("notes")}
-                  className={cn(
-                    "px-4 py-2 font-medium transition-colors",
-                    activeTab === "notes"
-                      ? "text-indigo-600 border-b-2 border-indigo-600"
-                      : "text-gray-600 dark:text-gray-300 hover:text-indigo-600"
-                  )}
-                >
-                  Notes
-                </button>
-                <button
-                  onClick={() => setActiveTab("tasks")}
-                  className={cn(
-                    "px-4 py-2 font-medium transition-colors",
-                    activeTab === "tasks"
-                      ? "text-indigo-600 border-b-2 border-indigo-600"
-                      : "text-gray-600 dark:text-gray-300 hover:text-indigo-600"
-                  )}
-                >
-                  Tasks
-                </button>
-              </div>
+          >
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-xl font-bold text-gray-800 dark:text-white">
+                Cases
+              </h2>
             </div>
 
-            {/* Tab Content */}
-            <ScrollArea className="h-[calc(100vh-16rem)]">
-              <div className="p-6">
-                <div className="tab-content">
-                  {/* Overview Tab */}
-                  <div
+            {/* Search */}
+            <div className="relative mb-4">
+              <Search className="absolute left-3 top-2 h-5 w-5 text-[#3b82f6]" />
+              <Input
+                placeholder="Search cases..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="pl-10 bg-white/20 focus-visible:ring-0 border-2 focus-visible:border-white/40 dark:placeholder:text-white/40 placeholder:text-black/40"
+              />
+            </div>
+
+            <div className="flex justify-between items-center mb-4">
+              <Button className=" text-white rounded-2xl hover:text-black bg-[#3b82f6] hover:bg-white backdrop-blur-sm border-2 border-white gap-2">
+                <Plus className="h-4 w-4 mr-2" /> New Case
+              </Button>
+            </div>
+            {/* Case List */}
+            <div className="h-[calc(100vh-20rem)] overflow-y-auto">
+              {isLoading ? (
+                <></>
+              ) : filteredCases.length > 0 ? (
+                filteredCases.map((caseItem) => (
+                  <motion.div
+                    key={caseItem.id}
+                    onClick={() => {
+                      setSelectedCase(caseItem.id);
+                      if (isMobileView) {
+                        //   setShowSidebar(false);
+                      }
+                    }}
                     className={cn(
-                      "space-y-6 transition-opacity duration-300",
-                      activeTab === "overview"
-                        ? "opacity-100"
-                        : "opacity-0 hidden"
+                      "p-4 rounded-[36px] cursor-pointer transition-all duration-200 mb-2 relative",
+                      selectedCase === caseItem.id
+                        ? "bg-white/30 backdrop-blur-lg shadow-lg"
+                        : "hover:bg-white/20 backdrop-blur-sm m-2"
                     )}
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
                   >
-                    {/* Case Details */}
-                    <div className="bg-white/30 dark:bg-white/10 backdrop-blur-sm rounded-xl border border-white/20 p-6">
-                      <h3 className="text-lg font-medium text-gray-800 dark:text-white mb-4">
-                        Case Details
-                      </h3>
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div>
-                          <div className="space-y-3">
-                            <div>
-                              <p className="text-sm text-gray-600 dark:text-gray-400">
-                                Case Type
-                              </p>
-                              <p className="font-medium text-gray-800 dark:text-white">
-                                {currentCase.type}
-                              </p>
-                            </div>
-                            <div>
-                              <p className="text-sm text-gray-600 dark:text-gray-400">
-                                Status
-                              </p>
-                              <p className="font-medium text-gray-800 dark:text-white capitalize">
-                                {currentCase.status}
-                              </p>
-                            </div>
-                            <div>
-                              <p className="text-sm text-gray-600 dark:text-gray-400">
-                                Priority
-                              </p>
-                              <div className="flex items-center gap-2">
-                                <span
-                                  className={cn(
-                                    "px-2 py-0.5 rounded-full text-xs font-medium border",
-                                    getPriorityColor(currentCase.priority)
-                                  )}
-                                >
-                                  {currentCase.priority}
-                                </span>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-
-                        <div>
-                          <div className="space-y-3">
-                            <div>
-                              <p className="text-sm text-gray-600 dark:text-gray-400">
-                                Assigned To
-                              </p>
-                              <p className="font-medium text-gray-800 dark:text-white">
-                                {currentCase.assignedTo}
-                              </p>
-                            </div>
-                            <div>
-                              <p className="text-sm text-gray-600 dark:text-gray-400">
-                                Open Date
-                              </p>
-                              <p className="font-medium text-gray-800 dark:text-white">
-                                {formatDate(currentCase.openDate)}
-                              </p>
-                            </div>
-                            <div>
-                              <p className="text-sm text-gray-600 dark:text-gray-400">
-                                Last Activity
-                              </p>
-                              <p className="font-medium text-gray-800 dark:text-white">
-                                {formatDate(currentCase.lastActivity)}
-                              </p>
-                            </div>
-                          </div>
+                    <div className="flex items-start gap-3">
+                      <div className="relative">
+                        <div className="w-12 h-12 bg-[#3b82f6] rounded-full flex items-center justify-center">
+                          <Briefcase className="h-6 w-6 text-white" />
                         </div>
                       </div>
-
-                      <div className="mt-6">
-                        <p className="text-sm text-gray-600 dark:text-gray-400">
-                          Description
-                        </p>
-                        <p className="mt-1 text-gray-800 dark:text-white">
-                          {currentCase.description}
-                        </p>
-                      </div>
-
-                      {currentCase.nextHearing && (
-                        <div className="mt-6 p-4 bg-indigo-100/50 dark:bg-indigo-900/20 rounded-lg border border-indigo-200 dark:border-indigo-800">
-                          <div className="flex items-center gap-2">
-                            <Calendar className="h-5 w-5 text-indigo-600" />
-                            <h4 className="font-medium text-gray-800 dark:text-white">
-                              Next Hearing
-                            </h4>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center justify-between">
+                          <h3 className="font-medium text-gray-800 dark:text-white truncate">
+                            {caseItem.title.split(" ")[0]}
+                          </h3>
+                          <div className="flex items-center gap-1 justify-center mr-2">
+                            <span className="text-xs text-black dark:text-white/40">
+                              {formatDate(caseItem.openDate)}
+                            </span>
                           </div>
-                          <p className="mt-1 text-gray-800 dark:text-white">
-                            {formatDate(currentCase.nextHearing)}
-                          </p>
                         </div>
-                      )}
-                    </div>
-
-                    {/* Recent Activity */}
-                    <div className="bg-white/30 dark:bg-white/10 backdrop-blur-sm rounded-xl border border-white/20 p-6">
-                      <h3 className="text-lg font-medium text-gray-800 dark:text-white mb-4">
-                        Recent Activity
-                      </h3>
-
-                      <div className="space-y-4">
-                        {/* Combine and sort notes and tasks by date */}
-                        {[...currentCase.notes, ...currentCase.tasks]
-                          .sort((a, b) => {
-                            const dateA =
-                              "createdAt" in a ? a.createdAt : a.dueDate;
-                            const dateB =
-                              "createdAt" in b ? b.createdAt : b.dueDate;
-                            return dateB.getTime() - dateA.getTime();
-                          })
-                          .slice(0, 5)
-                          .map((item) => {
-                            const isNote = "createdAt" in item;
-                            return (
-                              <div
-                                key={item.id}
-                                className="flex gap-3 p-3 bg-white/20 dark:bg-white/5 rounded-lg border border-white/10"
-                              >
-                                <div className="w-8 h-8 bg-indigo-100 dark:bg-indigo-900/50 rounded-full flex items-center justify-center">
-                                  {isNote ? (
-                                    <MessageSquare className="h-4 w-4 text-indigo-600" />
-                                  ) : (
-                                    getTaskStatusIcon(item.status)
-                                  )}
-                                </div>
-                                <div className="flex-1">
-                                  {isNote ? (
-                                    <>
-                                      <p className="text-sm text-gray-800 dark:text-white">
-                                        {item.content}
-                                      </p>
-                                      <div className="flex items-center gap-2 mt-1 text-xs text-gray-600 dark:text-gray-400">
-                                        <span>{item.createdBy}</span>
-                                        <span>•</span>
-                                        <span>
-                                          {formatDateTime(item.createdAt)}
-                                        </span>
-                                      </div>
-                                    </>
-                                  ) : (
-                                    <>
-                                      <p className="text-sm text-gray-800 dark:text-white">
-                                        {item.title}
-                                      </p>
-                                      <div className="flex items-center gap-2 mt-1 text-xs text-gray-600 dark:text-gray-400">
-                                        <span
-                                          className={cn(
-                                            "px-2 py-0.5 rounded-full text-xs font-medium border",
-                                            getTaskStatusColor(item.status)
-                                          )}
-                                        >
-                                          {item.status}
-                                        </span>
-                                        <span>•</span>
-                                        <span>
-                                          Due: {formatDate(item.dueDate)}
-                                        </span>
-                                      </div>
-                                    </>
-                                  )}
-                                </div>
-                              </div>
-                            );
-                          })}
                       </div>
                     </div>
+                  </motion.div>
+                ))
+              ) : (
+                <div className="text-center py-12 rounded-xl border border-white/40">
+                  <Briefcase className="h-12 w-12 mx-auto text-gray-400 mb-4" />
+                  <h3 className="text-xl font-medium text-gray-800 dark:text-white mb-2">
+                    No cases found
+                  </h3>
+                  <p className="text-gray-600 dark:text-gray-300">
+                    {searchQuery || filterStatus !== "all"
+                      ? "Try adjusting your search or filter criteria"
+                      : "You don't have any cases yet"}
+                  </p>
+                  <Button className="mt-4 bg-indigo-600 hover:bg-indigo-700">
+                    <Plus className="h-4 w-4 mr-2" /> Create New Case
+                  </Button>
+                </div>
+              )}
+            </div>
+          </div>
 
-                    {/* Quick Actions */}
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          {/* Case Details */}
+          {currentCase ? (
+            <div className="flex-1">
+              {/* Case Header */}
+              <div className="p-4 border-b border-white/20  bg-[#3b82f6]/10">
+                <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                  <div>
+                    <div className="flex items-center gap-2">
                       <Button
-                        variant="outline"
-                        className="p-6 h-auto flex flex-col items-center justify-center gap-2 bg-white/20 hover:bg-white/30"
+                        variant="ghost"
+                        size="sm"
+                        className="md:hidden h-8 w-8 p-0"
+                        onClick={() => setSelectedCase(null)}
                       >
-                        <Upload className="h-6 w-6 text-indigo-600" />
-                        <span className="font-medium">Upload Document</span>
+                        <ChevronDown className="h-4 w-4" />
                       </Button>
-                      <Button
-                        variant="outline"
-                        className="p-6 h-auto flex flex-col items-center justify-center gap-2 bg-white/20 hover:bg-white/30"
+                      <h2 className="text-xl font-semibold text-gray-800 dark:text-white">
+                        {currentCase.title}
+                      </h2>
+                      <span
+                        className={cn(
+                          "px-2 py-0.5 rounded-full text-xs font-medium border",
+                          getStatusColor(currentCase.status)
+                        )}
                       >
-                        <Plus className="h-6 w-6 text-indigo-600" />
-                        <span className="font-medium">Add Task</span>
-                      </Button>
-                      <Button
-                        variant="outline"
-                        className="p-6 h-auto flex flex-col items-center justify-center gap-2 bg-white/20 hover:bg-white/30"
-                      >
-                        <Calendar className="h-6 w-6 text-indigo-600" />
-                        <span className="font-medium">Schedule Hearing</span>
-                      </Button>
+                        {currentCase.status}
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-2 mt-1">
+                      <span className="text-sm text-gray-600 dark:text-gray-300">
+                        <span className="font-medium">Client:</span>{" "}
+                        {currentCase.client}
+                      </span>
+                      <span className="text-sm text-gray-600 dark:text-gray-300">
+                        <span className="font-medium">Case #:</span>{" "}
+                        {currentCase.caseNumber}
+                      </span>
                     </div>
                   </div>
 
-                  {/* Documents Tab */}
-                  <div
+                  <div className="flex gap-2">
+                    <Button variant="outline" className="gap-2">
+                      <Edit className="h-4 w-4" /> Edit Case
+                    </Button>
+                    <Button className="bg-indigo-600 hover:bg-indigo-700 gap-2">
+                      <MessageSquare className="h-4 w-4" /> Message Client
+                    </Button>
+                  </div>
+                </div>
+
+                {/* Tabs */}
+                <div className="flex mt-6 border-b border-white/20">
+                  <button
+                    onClick={() => setActiveTab("overview")}
                     className={cn(
-                      "space-y-6 transition-opacity duration-300",
-                      activeTab === "documents"
-                        ? "opacity-100"
-                        : "opacity-0 hidden"
+                      "px-4 py-2 font-medium transition-colors",
+                      activeTab === "overview"
+                        ? "text-indigo-600 border-b-2 border-indigo-600"
+                        : "text-gray-600 dark:text-gray-300 hover:text-indigo-600"
                     )}
                   >
-                    <div className="flex justify-between items-center">
-                      <h3 className="text-lg font-medium text-gray-800 dark:text-white">
-                        Documents ({currentCase.documents.length})
-                      </h3>
-                      <Button
-                        className="bg-indigo-600 hover:bg-indigo-700 gap-2"
-                        onClick={handleUploadDocument}
-                      >
-                        <Upload className="h-4 w-4" /> Upload Document
-                      </Button>
-                    </div>
+                    Overview
+                  </button>
+                  <button
+                    onClick={() => setActiveTab("documents")}
+                    className={cn(
+                      "px-4 py-2 font-medium transition-colors",
+                      activeTab === "documents"
+                        ? "text-indigo-600 border-b-2 border-indigo-600"
+                        : "text-gray-600 dark:text-gray-300 hover:text-indigo-600"
+                    )}
+                  >
+                    Documents
+                  </button>
+                  <button
+                    onClick={() => setActiveTab("notes")}
+                    className={cn(
+                      "px-4 py-2 font-medium transition-colors",
+                      activeTab === "notes"
+                        ? "text-indigo-600 border-b-2 border-indigo-600"
+                        : "text-gray-600 dark:text-gray-300 hover:text-indigo-600"
+                    )}
+                  >
+                    Notes
+                  </button>
+                  <button
+                    onClick={() => setActiveTab("tasks")}
+                    className={cn(
+                      "px-4 py-2 font-medium transition-colors",
+                      activeTab === "tasks"
+                        ? "text-indigo-600 border-b-2 border-indigo-600"
+                        : "text-gray-600 dark:text-gray-300 hover:text-indigo-600"
+                    )}
+                  >
+                    Tasks
+                  </button>
+                </div>
+              </div>
 
-                    <div className="bg-white/30 dark:bg-white/10 backdrop-blur-sm rounded-xl border border-white/20 overflow-hidden">
-                      <div className="grid grid-cols-5 gap-4 p-4 border-b border-white/20 bg-white/10 font-medium text-gray-700 dark:text-gray-300">
-                        <div className="col-span-2">Name</div>
-                        <div>Uploaded By</div>
-                        <div>Date</div>
-                        <div className="text-right">Actions</div>
-                      </div>
-
-                      {currentCase.documents.map((document) => (
-                        <div
-                          key={document.id}
-                          className="grid grid-cols-5 gap-4 p-4 border-b border-white/20 last:border-0 items-center"
-                        >
-                          <div className="col-span-2 flex items-center gap-3">
-                            {getFileIcon(document.type)}
-                            <div>
-                              <p className="font-medium text-gray-800 dark:text-white">
-                                {document.name}
-                              </p>
-                              <p className="text-xs text-gray-600 dark:text-gray-400">
-                                {document.size}
-                              </p>
+              {/* Tab Content */}
+              <ScrollArea className="h-[calc(100vh-16rem)]">
+                <div className="p-6">
+                  <div className="tab-content">
+                    {/* Overview Tab */}
+                    <div
+                      className={cn(
+                        "space-y-6 transition-opacity duration-300",
+                        activeTab === "overview"
+                          ? "opacity-100"
+                          : "opacity-0 hidden"
+                      )}
+                    >
+                      {/* Case Details */}
+                      <div className="bg-white/30 dark:bg-white/10 backdrop-blur-sm rounded-xl border border-white/20 p-6">
+                        <h3 className="text-lg font-medium text-gray-800 dark:text-white mb-4">
+                          Case Details
+                        </h3>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                          <div>
+                            <div className="space-y-3">
+                              <div>
+                                <p className="text-sm text-gray-600 dark:text-gray-400">
+                                  Case Type
+                                </p>
+                                <p className="font-medium text-gray-800 dark:text-white">
+                                  {currentCase.type}
+                                </p>
+                              </div>
+                              <div>
+                                <p className="text-sm text-gray-600 dark:text-gray-400">
+                                  Status
+                                </p>
+                                <p className="font-medium text-gray-800 dark:text-white capitalize">
+                                  {currentCase.status}
+                                </p>
+                              </div>
+                              <div>
+                                <p className="text-sm text-gray-600 dark:text-gray-400">
+                                  Priority
+                                </p>
+                                <div className="flex items-center gap-2">
+                                  <span
+                                    className={cn(
+                                      "px-2 py-0.5 rounded-full text-xs font-medium border",
+                                      getPriorityColor(currentCase.priority)
+                                    )}
+                                  >
+                                    {currentCase.priority}
+                                  </span>
+                                </div>
+                              </div>
                             </div>
                           </div>
-                          <div className="text-gray-800 dark:text-white">
-                            {document.uploadedBy}
-                          </div>
-                          <div className="text-gray-800 dark:text-white">
-                            {formatDate(document.uploadedAt)}
-                          </div>
-                          <div className="flex gap-2 justify-end">
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              className="h-8 w-8 p-0"
-                            >
-                              <Download className="h-4 w-4 text-gray-600 dark:text-gray-300" />
-                            </Button>
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              className="h-8 w-8 p-0"
-                            >
-                              <Trash2 className="h-4 w-4 text-red-600" />
-                            </Button>
+
+                          <div>
+                            <div className="space-y-3">
+                              <div>
+                                <p className="text-sm text-gray-600 dark:text-gray-400">
+                                  Assigned To
+                                </p>
+                                <p className="font-medium text-gray-800 dark:text-white">
+                                  {currentCase.assignedTo}
+                                </p>
+                              </div>
+                              <div>
+                                <p className="text-sm text-gray-600 dark:text-gray-400">
+                                  Open Date
+                                </p>
+                                <p className="font-medium text-gray-800 dark:text-white">
+                                  {formatDate(currentCase.openDate)}
+                                </p>
+                              </div>
+                              <div>
+                                <p className="text-sm text-gray-600 dark:text-gray-400">
+                                  Last Activity
+                                </p>
+                                <p className="font-medium text-gray-800 dark:text-white">
+                                  {formatDate(currentCase.lastActivity)}
+                                </p>
+                              </div>
+                            </div>
                           </div>
                         </div>
-                      ))}
+
+                        <div className="mt-6">
+                          <p className="text-sm text-gray-600 dark:text-gray-400">
+                            Description
+                          </p>
+                          <p className="mt-1 text-gray-800 dark:text-white">
+                            {currentCase.description}
+                          </p>
+                        </div>
+
+                        {currentCase.nextHearing && (
+                          <div className="mt-6 p-4 bg-indigo-100/50 dark:bg-indigo-900/20 rounded-lg border border-indigo-200 dark:border-indigo-800">
+                            <div className="flex items-center gap-2">
+                              <Calendar className="h-5 w-5 text-indigo-600" />
+                              <h4 className="font-medium text-gray-800 dark:text-white">
+                                Next Hearing
+                              </h4>
+                            </div>
+                            <p className="mt-1 text-gray-800 dark:text-white">
+                              {formatDate(currentCase.nextHearing)}
+                            </p>
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Recent Activity */}
+                      <div className="bg-white/30 dark:bg-white/10 backdrop-blur-sm rounded-xl border border-white/20 p-6">
+                        <h3 className="text-lg font-medium text-gray-800 dark:text-white mb-4">
+                          Recent Activity
+                        </h3>
+
+                        <div className="space-y-4">
+                          {/* Combine and sort notes and tasks by date */}
+                          {[...currentCase.notes, ...currentCase.tasks]
+                            .sort((a, b) => {
+                              const dateA =
+                                "createdAt" in a ? a.createdAt : a.dueDate;
+                              const dateB =
+                                "createdAt" in b ? b.createdAt : b.dueDate;
+                              return dateB.getTime() - dateA.getTime();
+                            })
+                            .slice(0, 5)
+                            .map((item) => {
+                              const isNote = "createdAt" in item;
+                              return (
+                                <div
+                                  key={item.id}
+                                  className="flex gap-3 p-3 bg-white/20 dark:bg-white/5 rounded-lg border border-white/10"
+                                >
+                                  <div className="w-8 h-8 bg-indigo-100 dark:bg-indigo-900/50 rounded-full flex items-center justify-center">
+                                    {isNote ? (
+                                      <MessageSquare className="h-4 w-4 text-indigo-600" />
+                                    ) : (
+                                      getTaskStatusIcon(item.status)
+                                    )}
+                                  </div>
+                                  <div className="flex-1">
+                                    {isNote ? (
+                                      <>
+                                        <p className="text-sm text-gray-800 dark:text-white">
+                                          {item.content}
+                                        </p>
+                                        <div className="flex items-center gap-2 mt-1 text-xs text-gray-600 dark:text-gray-400">
+                                          <span>{item.createdBy}</span>
+                                          <span>•</span>
+                                          <span>
+                                            {formatDateTime(item.createdAt)}
+                                          </span>
+                                        </div>
+                                      </>
+                                    ) : (
+                                      <>
+                                        <p className="text-sm text-gray-800 dark:text-white">
+                                          {item.title}
+                                        </p>
+                                        <div className="flex items-center gap-2 mt-1 text-xs text-gray-600 dark:text-gray-400">
+                                          <span
+                                            className={cn(
+                                              "px-2 py-0.5 rounded-full text-xs font-medium border",
+                                              getTaskStatusColor(item.status)
+                                            )}
+                                          >
+                                            {item.status}
+                                          </span>
+                                          <span>•</span>
+                                          <span>
+                                            Due: {formatDate(item.dueDate)}
+                                          </span>
+                                        </div>
+                                      </>
+                                    )}
+                                  </div>
+                                </div>
+                              );
+                            })}
+                        </div>
+                      </div>
+
+                      {/* Quick Actions */}
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <Button
+                          variant="outline"
+                          className="p-6 h-auto flex flex-col items-center justify-center gap-2 bg-white/20 hover:bg-white/30"
+                        >
+                          <Upload className="h-6 w-6 text-indigo-600" />
+                          <span className="font-medium">Upload Document</span>
+                        </Button>
+                        <Button
+                          variant="outline"
+                          className="p-6 h-auto flex flex-col items-center justify-center gap-2 bg-white/20 hover:bg-white/30"
+                        >
+                          <Plus className="h-6 w-6 text-indigo-600" />
+                          <span className="font-medium">Add Task</span>
+                        </Button>
+                        <Button
+                          variant="outline"
+                          className="p-6 h-auto flex flex-col items-center justify-center gap-2 bg-white/20 hover:bg-white/30"
+                        >
+                          <Calendar className="h-6 w-6 text-indigo-600" />
+                          <span className="font-medium">Schedule Hearing</span>
+                        </Button>
+                      </div>
                     </div>
 
-                    {currentCase.documents.length === 0 && (
-                      <div className="text-center py-12 bg-white/20 backdrop-blur-sm rounded-xl border border-white/20">
-                        <Folder className="h-12 w-12 mx-auto text-gray-400 mb-4" />
-                        <h3 className="text-xl font-medium text-gray-800 dark:text-white mb-2">
-                          No documents yet
+                    {/* Documents Tab */}
+                    <div
+                      className={cn(
+                        "space-y-6 transition-opacity duration-300",
+                        activeTab === "documents"
+                          ? "opacity-100"
+                          : "opacity-0 hidden"
+                      )}
+                    >
+                      <div className="flex justify-between items-center">
+                        <h3 className="text-lg font-medium text-gray-800 dark:text-white">
+                          Documents ({currentCase.documents.length})
                         </h3>
-                        <p className="text-gray-600 dark:text-gray-300">
-                          Upload documents related to this case to keep
-                          everything organized.
-                        </p>
                         <Button
-                          className="mt-4 bg-indigo-600 hover:bg-indigo-700 gap-2"
+                          className="bg-indigo-600 hover:bg-indigo-700 gap-2"
                           onClick={handleUploadDocument}
                         >
                           <Upload className="h-4 w-4" /> Upload Document
                         </Button>
                       </div>
-                    )}
-                  </div>
 
-                  {/* Notes Tab */}
-                  <div
-                    className={cn(
-                      "space-y-6 transition-opacity duration-300",
-                      activeTab === "notes" ? "opacity-100" : "opacity-0 hidden"
-                    )}
-                  >
-                    <div className="bg-white/30 dark:bg-white/10 backdrop-blur-sm rounded-xl border border-white/20 p-6">
-                      <h3 className="text-lg font-medium text-gray-800 dark:text-white mb-4">
-                        Add Note
-                      </h3>
-                      <div className="flex gap-4">
-                        <div className="flex-1">
-                          <Textarea
-                            placeholder="Add a note about this case..."
-                            value={newNote}
-                            onChange={(e) => setNewNote(e.target.value)}
-                            className="min-h-[100px] bg-white/20 focus-visible:ring-0 focus-visible:border-indigo-600"
-                          />
+                      <div className="bg-white/30 dark:bg-white/10 backdrop-blur-sm rounded-xl border border-white/20 overflow-hidden">
+                        <div className="grid grid-cols-5 gap-4 p-4 border-b border-white/20 bg-white/10 font-medium text-gray-700 dark:text-gray-300">
+                          <div className="col-span-2">Name</div>
+                          <div>Uploaded By</div>
+                          <div>Date</div>
+                          <div className="text-right">Actions</div>
                         </div>
-                        <Button
-                          className="bg-indigo-600 hover:bg-indigo-700 self-end gap-2"
-                          onClick={handleAddNote}
-                          disabled={!newNote.trim()}
-                        >
-                          <Send className="h-4 w-4" /> Add Note
-                        </Button>
-                      </div>
-                    </div>
 
-                    <div>
-                      <h3 className="text-lg font-medium text-gray-800 dark:text-white mb-4">
-                        Notes ({currentCase.notes.length})
-                      </h3>
-
-                      <div className="space-y-4">
-                        {currentCase.notes.length > 0 ? (
-                          currentCase.notes
-                            .sort(
-                              (a, b) =>
-                                b.createdAt.getTime() - a.createdAt.getTime()
-                            )
-                            .map((note, index) => (
-                              <div
-                                key={note.id}
-                                className="bg-white/30 dark:bg-white/10 backdrop-blur-sm rounded-xl border border-white/20 p-4 opacity-0 transform translate-y-4 animate-fade-in"
-                                style={{
-                                  animationDelay: `${index * 100}ms`,
-                                  animationFillMode: "forwards",
-                                }}
-                              >
-                                <div className="flex items-start gap-3">
-                                  <div className="w-10 h-10 bg-indigo-100 dark:bg-indigo-900/50 rounded-full flex items-center justify-center">
-                                    <User className="h-5 w-5 text-indigo-600" />
-                                  </div>
-                                  <div className="flex-1">
-                                    <div className="flex items-center justify-between">
-                                      <h4 className="font-medium text-gray-800 dark:text-white">
-                                        {note.createdBy}
-                                      </h4>
-                                      <div className="flex items-center gap-2">
-                                        <span className="text-sm text-gray-600 dark:text-gray-400">
-                                          {formatDateTime(note.createdAt)}
-                                        </span>
-                                        <Button
-                                          variant="ghost"
-                                          size="sm"
-                                          className="h-8 w-8 p-0"
-                                        >
-                                          <MoreHorizontal className="h-4 w-4" />
-                                        </Button>
-                                      </div>
-                                    </div>
-                                    <p className="mt-2 text-gray-800 dark:text-white whitespace-pre-line">
-                                      {note.content}
-                                    </p>
-                                  </div>
-                                </div>
+                        {currentCase.documents.map((document) => (
+                          <div
+                            key={document.id}
+                            className="grid grid-cols-5 gap-4 p-4 border-b border-white/20 last:border-0 items-center"
+                          >
+                            <div className="col-span-2 flex items-center gap-3">
+                              {getFileIcon(document.type)}
+                              <div>
+                                <p className="font-medium text-gray-800 dark:text-white">
+                                  {document.name}
+                                </p>
+                                <p className="text-xs text-gray-600 dark:text-gray-400">
+                                  {document.size}
+                                </p>
                               </div>
-                            ))
-                        ) : (
-                          <div className="text-center py-12 bg-white/20 backdrop-blur-sm rounded-xl border border-white/20">
-                            <MessageSquare className="h-12 w-12 mx-auto text-gray-400 mb-4" />
-                            <h3 className="text-xl font-medium text-gray-800 dark:text-white mb-2">
-                              No notes yet
-                            </h3>
-                            <p className="text-gray-600 dark:text-gray-300">
-                              Add notes to keep track of important information
-                              about this case.
-                            </p>
+                            </div>
+                            <div className="text-gray-800 dark:text-white">
+                              {document.uploadedBy}
+                            </div>
+                            <div className="text-gray-800 dark:text-white">
+                              {formatDate(document.uploadedAt)}
+                            </div>
+                            <div className="flex gap-2 justify-end">
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                className="h-8 w-8 p-0"
+                              >
+                                <Download className="h-4 w-4 text-gray-600 dark:text-gray-300" />
+                              </Button>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                className="h-8 w-8 p-0"
+                              >
+                                <Trash2 className="h-4 w-4 text-red-600" />
+                              </Button>
+                            </div>
                           </div>
-                        )}
+                        ))}
                       </div>
+
+                      {currentCase.documents.length === 0 && (
+                        <div className="text-center py-12 bg-white/20 backdrop-blur-sm rounded-xl border border-white/20">
+                          <Folder className="h-12 w-12 mx-auto text-gray-400 mb-4" />
+                          <h3 className="text-xl font-medium text-gray-800 dark:text-white mb-2">
+                            No documents yet
+                          </h3>
+                          <p className="text-gray-600 dark:text-gray-300">
+                            Upload documents related to this case to keep
+                            everything organized.
+                          </p>
+                          <Button
+                            className="mt-4 bg-indigo-600 hover:bg-indigo-700 gap-2"
+                            onClick={handleUploadDocument}
+                          >
+                            <Upload className="h-4 w-4" /> Upload Document
+                          </Button>
+                        </div>
+                      )}
                     </div>
-                  </div>
 
-                  {/* Tasks Tab */}
-                  <div
-                    className={cn(
-                      "space-y-6 transition-opacity duration-300",
-                      activeTab === "tasks" ? "opacity-100" : "opacity-0 hidden"
-                    )}
-                  >
-                    <div className="flex justify-between items-center">
-                      <h3 className="text-lg font-medium text-gray-800 dark:text-white">
-                        Tasks ({currentCase.tasks.length})
-                      </h3>
-                      <Button className="bg-indigo-600 hover:bg-indigo-700 gap-2">
-                        <Plus className="h-4 w-4" /> Add Task
-                      </Button>
-                    </div>
-
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      {/* Tasks by Status */}
-                      <div className="bg-white/30 dark:bg-white/10 backdrop-blur-sm rounded-xl border border-white/20 p-4">
-                        <h4 className="font-medium text-gray-800 dark:text-white mb-4">
-                          Tasks by Status
-                        </h4>
-
-                        <div className="space-y-2">
-                          {[
-                            "pending",
-                            "in-progress",
-                            "completed",
-                            "overdue",
-                          ].map((status) => {
-                            const count = currentCase.tasks.filter(
-                              (task) => task.status === status
-                            ).length;
-                            return (
-                              <div
-                                key={status}
-                                className="flex items-center justify-between p-2 bg-white/20 dark:bg-white/5 rounded-lg"
-                              >
-                                <div className="flex items-center gap-2">
-                                  {getTaskStatusIcon(status)}
-                                  <span className="capitalize text-gray-800 dark:text-white">
-                                    {status}
-                                  </span>
-                                </div>
-                                <span
-                                  className={cn(
-                                    "px-2 py-0.5 rounded-full text-xs font-medium",
-                                    getTaskStatusColor(status)
-                                  )}
-                                >
-                                  {count}
-                                </span>
-                              </div>
-                            );
-                          })}
+                    {/* Notes Tab */}
+                    <div
+                      className={cn(
+                        "space-y-6 transition-opacity duration-300",
+                        activeTab === "notes"
+                          ? "opacity-100"
+                          : "opacity-0 hidden"
+                      )}
+                    >
+                      <div className="bg-white/30 dark:bg-white/10 backdrop-blur-sm rounded-xl border border-white/20 p-6">
+                        <h3 className="text-lg font-medium text-gray-800 dark:text-white mb-4">
+                          Add Note
+                        </h3>
+                        <div className="flex gap-4">
+                          <div className="flex-1">
+                            <Textarea
+                              placeholder="Add a note about this case..."
+                              value={newNote}
+                              onChange={(e) => setNewNote(e.target.value)}
+                              className="min-h-[100px] bg-white/20 focus-visible:ring-0 focus-visible:border-indigo-600"
+                            />
+                          </div>
+                          <Button
+                            className="bg-indigo-600 hover:bg-indigo-700 self-end gap-2"
+                            onClick={handleAddNote}
+                            disabled={!newNote.trim()}
+                          >
+                            <Send className="h-4 w-4" /> Add Note
+                          </Button>
                         </div>
                       </div>
 
-                      {/* Upcoming Deadlines */}
-                      <div className="bg-white/30 dark:bg-white/10 backdrop-blur-sm rounded-xl border border-white/20 p-4">
-                        <h4 className="font-medium text-gray-800 dark:text-white mb-4">
-                          Upcoming Deadlines
-                        </h4>
+                      <div>
+                        <h3 className="text-lg font-medium text-gray-800 dark:text-white mb-4">
+                          Notes ({currentCase.notes.length})
+                        </h3>
 
-                        <div className="space-y-2">
-                          {currentCase.tasks
-                            .filter((task) => task.status !== "completed")
-                            .sort(
-                              (a, b) =>
-                                a.dueDate.getTime() - b.dueDate.getTime()
-                            )
-                            .slice(0, 3)
-                            .map((task) => (
-                              <div
-                                key={task.id}
-                                className="flex items-center justify-between p-2 bg-white/20 dark:bg-white/5 rounded-lg"
-                              >
-                                <div className="flex items-center gap-2">
-                                  <Calendar className="h-4 w-4 text-indigo-600" />
-                                  <span className="text-gray-800 dark:text-white">
-                                    {task.title}
-                                  </span>
+                        <div className="space-y-4">
+                          {currentCase.notes.length > 0 ? (
+                            currentCase.notes
+                              .sort(
+                                (a, b) =>
+                                  b.createdAt.getTime() - a.createdAt.getTime()
+                              )
+                              .map((note, index) => (
+                                <div
+                                  key={note.id}
+                                  className="bg-white/30 dark:bg-white/10 backdrop-blur-sm rounded-xl border border-white/20 p-4 opacity-0 transform translate-y-4 animate-fade-in"
+                                  style={{
+                                    animationDelay: `${index * 100}ms`,
+                                    animationFillMode: "forwards",
+                                  }}
+                                >
+                                  <div className="flex items-start gap-3">
+                                    <div className="w-10 h-10 bg-indigo-100 dark:bg-indigo-900/50 rounded-full flex items-center justify-center">
+                                      <User className="h-5 w-5 text-indigo-600" />
+                                    </div>
+                                    <div className="flex-1">
+                                      <div className="flex items-center justify-between">
+                                        <h4 className="font-medium text-gray-800 dark:text-white">
+                                          {note.createdBy}
+                                        </h4>
+                                        <div className="flex items-center gap-2">
+                                          <span className="text-sm text-gray-600 dark:text-gray-400">
+                                            {formatDateTime(note.createdAt)}
+                                          </span>
+                                          <Button
+                                            variant="ghost"
+                                            size="sm"
+                                            className="h-8 w-8 p-0"
+                                          >
+                                            <MoreHorizontal className="h-4 w-4" />
+                                          </Button>
+                                        </div>
+                                      </div>
+                                      <p className="mt-2 text-gray-800 dark:text-white whitespace-pre-line">
+                                        {note.content}
+                                      </p>
+                                    </div>
+                                  </div>
                                 </div>
-                                <span className="text-sm text-gray-600 dark:text-gray-400">
-                                  {formatDate(task.dueDate)}
-                                </span>
-                              </div>
-                            ))}
-
-                          {currentCase.tasks.filter(
-                            (task) => task.status !== "completed"
-                          ).length === 0 && (
-                            <div className="text-center py-4 text-gray-600 dark:text-gray-400">
-                              No upcoming deadlines
+                              ))
+                          ) : (
+                            <div className="text-center py-12 bg-white/20 backdrop-blur-sm rounded-xl border border-white/20">
+                              <MessageSquare className="h-12 w-12 mx-auto text-gray-400 mb-4" />
+                              <h3 className="text-xl font-medium text-gray-800 dark:text-white mb-2">
+                                No notes yet
+                              </h3>
+                              <p className="text-gray-600 dark:text-gray-300">
+                                Add notes to keep track of important information
+                                about this case.
+                              </p>
                             </div>
                           )}
                         </div>
                       </div>
                     </div>
 
-                    {/* Task List */}
-                    <div className="bg-white/30 dark:bg-white/10 backdrop-blur-sm rounded-xl border border-white/20 overflow-hidden">
-                      <div className="grid grid-cols-6 gap-4 p-4 border-b border-white/20 bg-white/10 font-medium text-gray-700 dark:text-gray-300">
-                        <div className="col-span-2">Task</div>
-                        <div>Assigned To</div>
-                        <div>Due Date</div>
-                        <div>Status</div>
-                        <div className="text-right">Actions</div>
-                      </div>
-
-                      {currentCase.tasks.map((task) => (
-                        <div
-                          key={task.id}
-                          className="grid grid-cols-6 gap-4 p-4 border-b border-white/20 last:border-0 items-center"
-                        >
-                          <div className="col-span-2">
-                            <p className="font-medium text-gray-800 dark:text-white">
-                              {task.title}
-                            </p>
-                            <p className="text-xs text-gray-600 dark:text-gray-400">
-                              {task.description}
-                            </p>
-                          </div>
-                          <div className="text-gray-800 dark:text-white">
-                            {task.assignedTo}
-                          </div>
-                          <div className="text-gray-800 dark:text-white">
-                            {formatDate(task.dueDate)}
-                          </div>
-                          <div>
-                            <span
-                              className={cn(
-                                "px-2 py-1 rounded-full text-xs font-medium border flex items-center gap-1 w-fit",
-                                getTaskStatusColor(task.status)
-                              )}
-                            >
-                              {getTaskStatusIcon(task.status)}
-                              <span className="capitalize">{task.status}</span>
-                            </span>
-                          </div>
-                          <div className="flex gap-2 justify-end">
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              className="h-8 w-8 p-0"
-                            >
-                              <Edit className="h-4 w-4 text-gray-600 dark:text-gray-300" />
-                            </Button>
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              className="h-8 w-8 p-0"
-                            >
-                              <Trash2 className="h-4 w-4 text-red-600" />
-                            </Button>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-
-                    {currentCase.tasks.length === 0 && (
-                      <div className="text-center py-12 bg-white/20 backdrop-blur-sm rounded-xl border border-white/20">
-                        <Clock className="h-12 w-12 mx-auto text-gray-400 mb-4" />
-                        <h3 className="text-xl font-medium text-gray-800 dark:text-white mb-2">
-                          No tasks yet
+                    {/* Tasks Tab */}
+                    <div
+                      className={cn(
+                        "space-y-6 transition-opacity duration-300",
+                        activeTab === "tasks"
+                          ? "opacity-100"
+                          : "opacity-0 hidden"
+                      )}
+                    >
+                      <div className="flex justify-between items-center">
+                        <h3 className="text-lg font-medium text-gray-800 dark:text-white">
+                          Tasks ({currentCase.tasks.length})
                         </h3>
-                        <p className="text-gray-600 dark:text-gray-300">
-                          Add tasks to keep track of deadlines and
-                          responsibilities for this case.
-                        </p>
-                        <Button className="mt-4 bg-indigo-600 hover:bg-indigo-700 gap-2">
+                        <Button className="bg-indigo-600 hover:bg-indigo-700 gap-2">
                           <Plus className="h-4 w-4" /> Add Task
                         </Button>
                       </div>
-                    )}
+
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        {/* Tasks by Status */}
+                        <div className="bg-white/30 dark:bg-white/10 backdrop-blur-sm rounded-xl border border-white/20 p-4">
+                          <h4 className="font-medium text-gray-800 dark:text-white mb-4">
+                            Tasks by Status
+                          </h4>
+
+                          <div className="space-y-2">
+                            {[
+                              "pending",
+                              "in-progress",
+                              "completed",
+                              "overdue",
+                            ].map((status) => {
+                              const count = currentCase.tasks.filter(
+                                (task) => task.status === status
+                              ).length;
+                              return (
+                                <div
+                                  key={status}
+                                  className="flex items-center justify-between p-2 bg-white/20 dark:bg-white/5 rounded-lg"
+                                >
+                                  <div className="flex items-center gap-2">
+                                    {getTaskStatusIcon(status)}
+                                    <span className="capitalize text-gray-800 dark:text-white">
+                                      {status}
+                                    </span>
+                                  </div>
+                                  <span
+                                    className={cn(
+                                      "px-2 py-0.5 rounded-full text-xs font-medium",
+                                      getTaskStatusColor(status)
+                                    )}
+                                  >
+                                    {count}
+                                  </span>
+                                </div>
+                              );
+                            })}
+                          </div>
+                        </div>
+
+                        {/* Upcoming Deadlines */}
+                        <div className="bg-white/30 dark:bg-white/10 backdrop-blur-sm rounded-xl border border-white/20 p-4">
+                          <h4 className="font-medium text-gray-800 dark:text-white mb-4">
+                            Upcoming Deadlines
+                          </h4>
+
+                          <div className="space-y-2">
+                            {currentCase.tasks
+                              .filter((task) => task.status !== "completed")
+                              .sort(
+                                (a, b) =>
+                                  a.dueDate.getTime() - b.dueDate.getTime()
+                              )
+                              .slice(0, 3)
+                              .map((task) => (
+                                <div
+                                  key={task.id}
+                                  className="flex items-center justify-between p-2 bg-white/20 dark:bg-white/5 rounded-lg"
+                                >
+                                  <div className="flex items-center gap-2">
+                                    <Calendar className="h-4 w-4 text-indigo-600" />
+                                    <span className="text-gray-800 dark:text-white">
+                                      {task.title}
+                                    </span>
+                                  </div>
+                                  <span className="text-sm text-gray-600 dark:text-gray-400">
+                                    {formatDate(task.dueDate)}
+                                  </span>
+                                </div>
+                              ))}
+
+                            {currentCase.tasks.filter(
+                              (task) => task.status !== "completed"
+                            ).length === 0 && (
+                              <div className="text-center py-4 text-gray-600 dark:text-gray-400">
+                                No upcoming deadlines
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Task List */}
+                      <div className="bg-white/30 dark:bg-white/10 backdrop-blur-sm rounded-xl border border-white/20 overflow-hidden">
+                        <div className="grid grid-cols-6 gap-4 p-4 border-b border-white/20 bg-white/10 font-medium text-gray-700 dark:text-gray-300">
+                          <div className="col-span-2">Task</div>
+                          <div>Assigned To</div>
+                          <div>Due Date</div>
+                          <div>Status</div>
+                          <div className="text-right">Actions</div>
+                        </div>
+
+                        {currentCase.tasks.map((task) => (
+                          <div
+                            key={task.id}
+                            className="grid grid-cols-6 gap-4 p-4 border-b border-white/20 last:border-0 items-center"
+                          >
+                            <div className="col-span-2">
+                              <p className="font-medium text-gray-800 dark:text-white">
+                                {task.title}
+                              </p>
+                              <p className="text-xs text-gray-600 dark:text-gray-400">
+                                {task.description}
+                              </p>
+                            </div>
+                            <div className="text-gray-800 dark:text-white">
+                              {task.assignedTo}
+                            </div>
+                            <div className="text-gray-800 dark:text-white">
+                              {formatDate(task.dueDate)}
+                            </div>
+                            <div>
+                              <span
+                                className={cn(
+                                  "px-2 py-1 rounded-full text-xs font-medium border flex items-center gap-1 w-fit",
+                                  getTaskStatusColor(task.status)
+                                )}
+                              >
+                                {getTaskStatusIcon(task.status)}
+                                <span className="capitalize">
+                                  {task.status}
+                                </span>
+                              </span>
+                            </div>
+                            <div className="flex gap-2 justify-end">
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                className="h-8 w-8 p-0"
+                              >
+                                <Edit className="h-4 w-4 text-gray-600 dark:text-gray-300" />
+                              </Button>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                className="h-8 w-8 p-0"
+                              >
+                                <Trash2 className="h-4 w-4 text-red-600" />
+                              </Button>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+
+                      {currentCase.tasks.length === 0 && (
+                        <div className="text-center py-12 bg-white/20 backdrop-blur-sm rounded-xl border border-white/20">
+                          <Clock className="h-12 w-12 mx-auto text-gray-400 mb-4" />
+                          <h3 className="text-xl font-medium text-gray-800 dark:text-white mb-2">
+                            No tasks yet
+                          </h3>
+                          <p className="text-gray-600 dark:text-gray-300">
+                            Add tasks to keep track of deadlines and
+                            responsibilities for this case.
+                          </p>
+                          <Button className="mt-4 bg-indigo-600 hover:bg-indigo-700 gap-2">
+                            <Plus className="h-4 w-4" /> Add Task
+                          </Button>
+                        </div>
+                      )}
+                    </div>
                   </div>
                 </div>
-              </div>
-            </ScrollArea>
-          </div>
-        ) : (
-          <div className="flex-1 flex items-center justify-center bg-gradient-to-r from-[#4f46e5]/40 via-[#ec4899]/40 to-[#3b82f6]/40">
-            <div className="text-center max-w-md px-4">
-              <Briefcase className="h-16 w-16 mx-auto text-white/60 mb-6" />
-              <h2 className="text-2xl font-bold text-white/90 mb-4">
-                Case Management
-              </h2>
-              <p className="text-white/70 mb-6">
-                Select a case from the sidebar to view details, manage
-                documents, add notes, and track tasks.
-              </p>
-              <Button className="bg-white/20 hover:bg-white/30 backdrop-blur-sm border border-white/40 gap-2">
-                <Plus className="h-4 w-4" /> Create New Case
-              </Button>
+              </ScrollArea>
             </div>
-          </div>
-        )}
+          ) : (
+            <div className="flex-1 flex items-center justify-center">
+              <div className="text-center max-w-md px-4">
+                <Briefcase className="h-16 w-16 mx-auto text-white/60 mb-6" />
+                <h2 className="text-2xl font-bold text-white/90 mb-4">
+                  Case Management
+                </h2>
+                <p className="text-white/70 mb-6">
+                  Select a case from the sidebar to view details, manage
+                  documents, add notes, and track tasks.
+                </p>
+                <Button className="bg-transparent text-white hover:text-black hover:bg-white backdrop-blur-sm border-2 border-white gap-2">
+                  <Plus className="h-4 w-4" /> Create New Case
+                </Button>
+              </div>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

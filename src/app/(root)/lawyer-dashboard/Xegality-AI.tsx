@@ -248,8 +248,10 @@ export default function XegalityAI() {
       {/* Header */}
       <div className="relative h-24 overflow-hidden bg-gradient-to-r from-[#3b82f6]/10 to-[#3b82f6]/40">
         <div className="absolute inset-0 flex items-center justify-center">
-          <div className="w-full h-fit flex items-center justify-center">
-            <SiriWave isWaveMode={false} />
+          <div className="w-full h-fit flex items-center justify-center  opacity-60">
+            <SiriWave
+              isWaveMode={isListening || isTyping || inputValue != ""}
+            />
           </div>
         </div>
         <div className="absolute inset-0 flex items-center justify-center">
@@ -258,7 +260,7 @@ export default function XegalityAI() {
               " cursor-help text-white/85 text-6xl p-4 relative shadow-none"
             )}
           >
-            {(() => {
+            {/* {(() => {
               const currentHour = new Date().getHours();
               if (currentHour < 12) {
                 return "Good Morning";
@@ -267,7 +269,7 @@ export default function XegalityAI() {
               } else {
                 return "Good Evening";
               }
-            })()}{" "}
+            })()} */}
           </div>
         </div>
       </div>

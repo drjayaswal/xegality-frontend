@@ -165,388 +165,391 @@ export default function BillingPayments() {
   };
 
   return (
-    <div className="w-full h-full bg-white dark:bg-black rounded-lg overflow-hidden flex flex-col relative">
-      {/* Header */}
-      <div className="relative h-24 overflow-hidden bg-gradient-to-r from-[#4f46e5]/40 via-[#ec4899]/40 to-[#3b82f6]/40">
-        <div className="absolute inset-0 flex items-center justify-center">
-          <div className="w-full h-fit flex items-center justify-center">
-            <SiriWave isWaveMode={false} />
+    <div className="w-full h-full dark:bg-black bg-white rounded-2xl">
+      <div className="w-full h-full bg-gradient-to-r from-[#3b82f6]/10 to-[#3b82f6]/40 rounded-2xl overflow-hidden flex relative">
+        {/* <div className="w-full h-full bg-white dark:bg-black rounded-lg overflow-hidden flex flex-col relative"> */}
+        {/* Header */}
+        <div className="relative h-24 overflow-hidden bg-gradient-to-r from-[#4f46e5]/40 via-[#ec4899]/40 to-[#3b82f6]/40">
+          <div className="absolute inset-0 flex items-center justify-center">
+            <div className="w-full h-fit flex items-center justify-center">
+              <SiriWave isWaveMode={false} />
+            </div>
+          </div>
+          <div className="absolute inset-0 flex items-center justify-center">
+            <h1 className="text-5xl font-bold text-white/80">
+              Biiling & Payment
+            </h1>
           </div>
         </div>
-        <div className="absolute inset-0 flex items-center justify-center">
-          <h1 className="text-5xl font-bold text-white/80">
-            Biiling & Payment
-          </h1>
+
+        {/* Tabs */}
+        <div className="flex border-b border-white/20 bg-gradient-to-r from-[#4f46e5]/40 via-[#ec4899]/40 to-[#3b82f6]/40 backdrop-blur-sm">
+          <button
+            onClick={() => setActiveTab("invoices")}
+            className={cn(
+              "flex-1 py-4 text-center font-medium transition-colors",
+              activeTab === "invoices"
+                ? "text-indigo-600 border-b-2 border-indigo-600"
+                : "text-gray-600 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400"
+            )}
+          >
+            Invoices
+          </button>
+          <button
+            onClick={() => setActiveTab("payments")}
+            className={cn(
+              "flex-1 py-4 text-center font-medium transition-colors",
+              activeTab === "payments"
+                ? "text-indigo-600 border-b-2 border-indigo-600"
+                : "text-gray-600 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400"
+            )}
+          >
+            Payment Methods
+          </button>
         </div>
-      </div>
 
-      {/* Tabs */}
-      <div className="flex border-b border-white/20 bg-gradient-to-r from-[#4f46e5]/40 via-[#ec4899]/40 to-[#3b82f6]/40 backdrop-blur-sm">
-        <button
-          onClick={() => setActiveTab("invoices")}
-          className={cn(
-            "flex-1 py-4 text-center font-medium transition-colors",
-            activeTab === "invoices"
-              ? "text-indigo-600 border-b-2 border-indigo-600"
-              : "text-gray-600 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400"
-          )}
-        >
-          Invoices
-        </button>
-        <button
-          onClick={() => setActiveTab("payments")}
-          className={cn(
-            "flex-1 py-4 text-center font-medium transition-colors",
-            activeTab === "payments"
-              ? "text-indigo-600 border-b-2 border-indigo-600"
-              : "text-gray-600 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400"
-          )}
-        >
-          Payment Methods
-        </button>
-      </div>
-
-      {/* Content */}
-      <div className="flex-1 bg-gradient-to-r from-[#4f46e5]/40 via-[#ec4899]/40 to-[#3b82f6]/40 p-6">
-        <ScrollArea className="h-full">
-          {activeTab === "invoices" ? (
-            <div className="space-y-6">
-              {/* Search and Filter */}
-              <div className="flex flex-col md:flex-row gap-4 mb-6">
-                <div className="relative flex-1">
-                  <Search className="absolute left-3 top-2.5 h-5 w-5 text-gray-400" />
-                  <Input
-                    placeholder="Search invoices..."
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    className="pl-10 bg-white/20 focus-visible:ring-0 focus-visible:border-indigo-600 placeholder:text-black/40 dark:placeholder:text-white/40"
-                  />
-                </div>
-                <div className="flex gap-2">
-                  <div className="relative inline-block">
-                    <select
-                      value={filterStatus}
-                      onChange={(e) => setFilterStatus(e.target.value as any)}
-                      className="appearance-none bg-white/20 backdrop-blur-sm border border-white/20 rounded-lg px-4 py-2 text-gray-800 dark:text-white focus:outline-none focus:border-indigo-600"
-                    >
-                      <option value="all">All Status</option>
-                      <option value="paid">Paid</option>
-                      <option value="pending">Pending</option>
-                      <option value="overdue">Overdue</option>
-                    </select>
+        {/* Content */}
+        <div className="flex-1 bg-gradient-to-r from-[#4f46e5]/40 via-[#ec4899]/40 to-[#3b82f6]/40 p-6">
+          <ScrollArea className="h-full">
+            {activeTab === "invoices" ? (
+              <div className="space-y-6">
+                {/* Search and Filter */}
+                <div className="flex flex-col md:flex-row gap-4 mb-6">
+                  <div className="relative flex-1">
+                    <Search className="absolute left-3 top-2.5 h-5 w-5 text-gray-400" />
+                    <Input
+                      placeholder="Search invoices..."
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      className="pl-10 bg-white/20 focus-visible:ring-0 focus-visible:border-indigo-600 placeholder:text-black/40 dark:placeholder:text-white/40"
+                    />
                   </div>
-                  <Button className="bg-indigo-600 hover:bg-indigo-700">
-                    <Plus className="h-4 w-4 mr-2" /> New Invoice
-                  </Button>
-                </div>
-              </div>
-
-              {/* Invoices List */}
-              <div className="space-y-4">
-                {filteredInvoices.length > 0 ? (
-                  filteredInvoices.map((invoice) => (
-                    <motion.div
-                      key={invoice.id}
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      className="bg-white/30 dark:bg-white/10 backdrop-blur-sm rounded-xl border border-white/20 overflow-hidden"
-                    >
-                      <div
-                        className="p-4 cursor-pointer flex flex-wrap md:flex-nowrap items-center justify-between gap-4"
-                        onClick={() => toggleInvoiceExpand(invoice.id)}
+                  <div className="flex gap-2">
+                    <div className="relative inline-block">
+                      <select
+                        value={filterStatus}
+                        onChange={(e) => setFilterStatus(e.target.value as any)}
+                        className="appearance-none bg-white/20 backdrop-blur-sm border border-white/20 rounded-lg px-4 py-2 text-gray-800 dark:text-white focus:outline-none focus:border-indigo-600"
                       >
-                        <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 bg-indigo-100 dark:bg-indigo-900/50 rounded-lg flex items-center justify-center">
-                            <FileText className="h-5 w-5 text-indigo-600" />
-                          </div>
-                          <div>
-                            <h3 className="font-medium text-gray-800 dark:text-white">
-                              {invoice.id}
-                            </h3>
-                            <p className="text-sm text-gray-600 dark:text-gray-300">
-                              {invoice.client}
-                            </p>
-                          </div>
-                        </div>
+                        <option value="all">All Status</option>
+                        <option value="paid">Paid</option>
+                        <option value="pending">Pending</option>
+                        <option value="overdue">Overdue</option>
+                      </select>
+                    </div>
+                    <Button className="bg-indigo-600 hover:bg-indigo-700">
+                      <Plus className="h-4 w-4 mr-2" /> New Invoice
+                    </Button>
+                  </div>
+                </div>
 
-                        <div className="flex items-center gap-2 ml-auto md:ml-0">
-                          <div
-                            className={cn(
-                              "px-3 py-1 rounded-full text-xs font-medium border",
-                              getStatusColor(invoice.status)
-                            )}
-                          >
-                            <div className="flex items-center gap-1">
-                              {getStatusIcon(invoice.status)}
-                              <span className="capitalize">
-                                {invoice.status}
-                              </span>
+                {/* Invoices List */}
+                <div className="space-y-4">
+                  {filteredInvoices.length > 0 ? (
+                    filteredInvoices.map((invoice) => (
+                      <motion.div
+                        key={invoice.id}
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="bg-white/30 dark:bg-white/10 backdrop-blur-sm rounded-xl border border-white/20 overflow-hidden"
+                      >
+                        <div
+                          className="p-4 cursor-pointer flex flex-wrap md:flex-nowrap items-center justify-between gap-4"
+                          onClick={() => toggleInvoiceExpand(invoice.id)}
+                        >
+                          <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 bg-indigo-100 dark:bg-indigo-900/50 rounded-lg flex items-center justify-center">
+                              <FileText className="h-5 w-5 text-indigo-600" />
+                            </div>
+                            <div>
+                              <h3 className="font-medium text-gray-800 dark:text-white">
+                                {invoice.id}
+                              </h3>
+                              <p className="text-sm text-gray-600 dark:text-gray-300">
+                                {invoice.client}
+                              </p>
                             </div>
                           </div>
-                        </div>
 
-                        <div className="flex items-center gap-6 w-full md:w-auto justify-between md:justify-end">
-                          <div className="text-right">
-                            <p className="text-sm text-gray-600 dark:text-gray-300">
-                              Amount
-                            </p>
-                            <p className="font-medium text-gray-800 dark:text-white">
-                              {formatCurrency(invoice.amount)}
-                            </p>
-                          </div>
-                          <div className="text-right">
-                            <p className="text-sm text-gray-600 dark:text-gray-300">
-                              Due Date
-                            </p>
-                            <p className="font-medium text-gray-800 dark:text-white">
-                              {formatDate(invoice.dueDate)}
-                            </p>
-                          </div>
-                          {expandedInvoice === invoice.id ? (
-                            <ChevronUp className="h-5 w-5 text-gray-400" />
-                          ) : (
-                            <ChevronDown className="h-5 w-5 text-gray-400" />
-                          )}
-                        </div>
-                      </div>
-
-                      {expandedInvoice === invoice.id && (
-                        <motion.div
-                          initial={{ height: 0, opacity: 0 }}
-                          animate={{ height: "auto", opacity: 1 }}
-                          exit={{ height: 0, opacity: 0 }}
-                          className="px-4 pb-4 border-t border-white/20"
-                        >
-                          <div className="pt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div>
-                              <h4 className="text-sm font-medium text-gray-600 dark:text-gray-300 mb-2">
-                                Description
-                              </h4>
-                              <p className="text-gray-800 dark:text-white">
-                                {invoice.description}
-                              </p>
-
-                              <h4 className="text-sm font-medium text-gray-600 dark:text-gray-300 mt-4 mb-2">
-                                Invoice Details
-                              </h4>
-                              <div className="space-y-1">
-                                <div className="flex justify-between">
-                                  <span className="text-sm text-gray-600 dark:text-gray-300">
-                                    Invoice Date:
-                                  </span>
-                                  <span className="text-sm text-gray-800 dark:text-white">
-                                    {formatDate(invoice.date)}
-                                  </span>
-                                </div>
-                                <div className="flex justify-between">
-                                  <span className="text-sm text-gray-600 dark:text-gray-300">
-                                    Due Date:
-                                  </span>
-                                  <span className="text-sm text-gray-800 dark:text-white">
-                                    {formatDate(invoice.dueDate)}
-                                  </span>
-                                </div>
-                                <div className="flex justify-between">
-                                  <span className="text-sm text-gray-600 dark:text-gray-300">
-                                    Status:
-                                  </span>
-                                  <span
-                                    className={cn(
-                                      "text-sm capitalize",
-                                      invoice.status === "paid"
-                                        ? "text-green-600"
-                                        : invoice.status === "pending"
-                                        ? "text-yellow-600"
-                                        : "text-red-600"
-                                    )}
-                                  >
-                                    {invoice.status}
-                                  </span>
-                                </div>
+                          <div className="flex items-center gap-2 ml-auto md:ml-0">
+                            <div
+                              className={cn(
+                                "px-3 py-1 rounded-full text-xs font-medium border",
+                                getStatusColor(invoice.status)
+                              )}
+                            >
+                              <div className="flex items-center gap-1">
+                                {getStatusIcon(invoice.status)}
+                                <span className="capitalize">
+                                  {invoice.status}
+                                </span>
                               </div>
                             </div>
+                          </div>
 
-                            <div className="flex flex-col justify-between">
+                          <div className="flex items-center gap-6 w-full md:w-auto justify-between md:justify-end">
+                            <div className="text-right">
+                              <p className="text-sm text-gray-600 dark:text-gray-300">
+                                Amount
+                              </p>
+                              <p className="font-medium text-gray-800 dark:text-white">
+                                {formatCurrency(invoice.amount)}
+                              </p>
+                            </div>
+                            <div className="text-right">
+                              <p className="text-sm text-gray-600 dark:text-gray-300">
+                                Due Date
+                              </p>
+                              <p className="font-medium text-gray-800 dark:text-white">
+                                {formatDate(invoice.dueDate)}
+                              </p>
+                            </div>
+                            {expandedInvoice === invoice.id ? (
+                              <ChevronUp className="h-5 w-5 text-gray-400" />
+                            ) : (
+                              <ChevronDown className="h-5 w-5 text-gray-400" />
+                            )}
+                          </div>
+                        </div>
+
+                        {expandedInvoice === invoice.id && (
+                          <motion.div
+                            initial={{ height: 0, opacity: 0 }}
+                            animate={{ height: "auto", opacity: 1 }}
+                            exit={{ height: 0, opacity: 0 }}
+                            className="px-4 pb-4 border-t border-white/20"
+                          >
+                            <div className="pt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
                               <div>
                                 <h4 className="text-sm font-medium text-gray-600 dark:text-gray-300 mb-2">
-                                  Payment Summary
+                                  Description
+                                </h4>
+                                <p className="text-gray-800 dark:text-white">
+                                  {invoice.description}
+                                </p>
+
+                                <h4 className="text-sm font-medium text-gray-600 dark:text-gray-300 mt-4 mb-2">
+                                  Invoice Details
                                 </h4>
                                 <div className="space-y-1">
                                   <div className="flex justify-between">
                                     <span className="text-sm text-gray-600 dark:text-gray-300">
-                                      Subtotal:
+                                      Invoice Date:
                                     </span>
                                     <span className="text-sm text-gray-800 dark:text-white">
-                                      {formatCurrency(invoice.amount * 0.9)}
+                                      {formatDate(invoice.date)}
                                     </span>
                                   </div>
                                   <div className="flex justify-between">
                                     <span className="text-sm text-gray-600 dark:text-gray-300">
-                                      Tax (10%):
+                                      Due Date:
                                     </span>
                                     <span className="text-sm text-gray-800 dark:text-white">
-                                      {formatCurrency(invoice.amount * 0.1)}
+                                      {formatDate(invoice.dueDate)}
                                     </span>
                                   </div>
-                                  <div className="flex justify-between font-medium pt-1 border-t border-white/20">
-                                    <span className="text-gray-800 dark:text-white">
-                                      Total:
+                                  <div className="flex justify-between">
+                                    <span className="text-sm text-gray-600 dark:text-gray-300">
+                                      Status:
                                     </span>
-                                    <span className="text-gray-800 dark:text-white">
-                                      {formatCurrency(invoice.amount)}
+                                    <span
+                                      className={cn(
+                                        "text-sm capitalize",
+                                        invoice.status === "paid"
+                                          ? "text-green-600"
+                                          : invoice.status === "pending"
+                                          ? "text-yellow-600"
+                                          : "text-red-600"
+                                      )}
+                                    >
+                                      {invoice.status}
                                     </span>
                                   </div>
                                 </div>
                               </div>
 
-                              <div className="flex gap-2 mt-4 justify-end">
-                                <Button variant="outline" className="gap-2">
-                                  <Download className="h-4 w-4" /> Download
-                                </Button>
-                                {invoice.status !== "paid" && (
-                                  <Button className="bg-indigo-600 hover:bg-indigo-700 gap-2">
-                                    <DollarSign className="h-4 w-4" /> Pay Now
+                              <div className="flex flex-col justify-between">
+                                <div>
+                                  <h4 className="text-sm font-medium text-gray-600 dark:text-gray-300 mb-2">
+                                    Payment Summary
+                                  </h4>
+                                  <div className="space-y-1">
+                                    <div className="flex justify-between">
+                                      <span className="text-sm text-gray-600 dark:text-gray-300">
+                                        Subtotal:
+                                      </span>
+                                      <span className="text-sm text-gray-800 dark:text-white">
+                                        {formatCurrency(invoice.amount * 0.9)}
+                                      </span>
+                                    </div>
+                                    <div className="flex justify-between">
+                                      <span className="text-sm text-gray-600 dark:text-gray-300">
+                                        Tax (10%):
+                                      </span>
+                                      <span className="text-sm text-gray-800 dark:text-white">
+                                        {formatCurrency(invoice.amount * 0.1)}
+                                      </span>
+                                    </div>
+                                    <div className="flex justify-between font-medium pt-1 border-t border-white/20">
+                                      <span className="text-gray-800 dark:text-white">
+                                        Total:
+                                      </span>
+                                      <span className="text-gray-800 dark:text-white">
+                                        {formatCurrency(invoice.amount)}
+                                      </span>
+                                    </div>
+                                  </div>
+                                </div>
+
+                                <div className="flex gap-2 mt-4 justify-end">
+                                  <Button variant="outline" className="gap-2">
+                                    <Download className="h-4 w-4" /> Download
                                   </Button>
-                                )}
+                                  {invoice.status !== "paid" && (
+                                    <Button className="bg-indigo-600 hover:bg-indigo-700 gap-2">
+                                      <DollarSign className="h-4 w-4" /> Pay Now
+                                    </Button>
+                                  )}
+                                </div>
                               </div>
                             </div>
-                          </div>
-                        </motion.div>
-                      )}
-                    </motion.div>
-                  ))
-                ) : (
-                  <div className="text-center py-12 bg-white/20 backdrop-blur-sm rounded-xl border border-white/20">
-                    <FileText className="h-12 w-12 mx-auto text-gray-400 mb-4" />
-                    <h3 className="text-xl font-medium text-gray-800 dark:text-white mb-2">
-                      No invoices found
-                    </h3>
-                    <p className="text-gray-600 dark:text-gray-300">
-                      {searchQuery || filterStatus !== "all"
-                        ? "Try adjusting your search or filter criteria"
-                        : "You don't have any invoices yet"}
-                    </p>
-                  </div>
-                )}
+                          </motion.div>
+                        )}
+                      </motion.div>
+                    ))
+                  ) : (
+                    <div className="text-center py-12 bg-white/20 backdrop-blur-sm rounded-xl border border-white/20">
+                      <FileText className="h-12 w-12 mx-auto text-gray-400 mb-4" />
+                      <h3 className="text-xl font-medium text-gray-800 dark:text-white mb-2">
+                        No invoices found
+                      </h3>
+                      <p className="text-gray-600 dark:text-gray-300">
+                        {searchQuery || filterStatus !== "all"
+                          ? "Try adjusting your search or filter criteria"
+                          : "You don't have any invoices yet"}
+                      </p>
+                    </div>
+                  )}
+                </div>
               </div>
-            </div>
-          ) : (
-            <div className="space-y-6">
-              <div className="flex justify-between items-center mb-6">
-                <h2 className="text-xl font-semibold text-gray-800 dark:text-white">
-                  Your Payment Methods
-                </h2>
-                <Button className="bg-indigo-600 hover:bg-indigo-700">
-                  <Plus className="h-4 w-4 mr-2" /> Add Payment Method
-                </Button>
-              </div>
+            ) : (
+              <div className="space-y-6">
+                <div className="flex justify-between items-center mb-6">
+                  <h2 className="text-xl font-semibold text-gray-800 dark:text-white">
+                    Your Payment Methods
+                  </h2>
+                  <Button className="bg-indigo-600 hover:bg-indigo-700">
+                    <Plus className="h-4 w-4 mr-2" /> Add Payment Method
+                  </Button>
+                </div>
 
-              <div className="space-y-4">
-                {paymentMethods.map((method) => (
-                  <motion.div
-                    key={method.id}
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className="bg-white/30 dark:bg-white/10 backdrop-blur-sm rounded-xl border border-white/20 p-4"
-                  >
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 bg-indigo-100 dark:bg-indigo-900/50 rounded-lg flex items-center justify-center">
-                          {method.type === "card" ? (
-                            <CreditCard className="h-5 w-5 text-indigo-600" />
-                          ) : (
-                            <DollarSign className="h-5 w-5 text-indigo-600" />
-                          )}
-                        </div>
-                        <div>
-                          <div className="flex items-center gap-2">
-                            <h3 className="font-medium text-gray-800 dark:text-white">
-                              {method.name} •••• {method.last4}
-                            </h3>
-                            {method.isDefault && (
-                              <span className="px-2 py-0.5 bg-indigo-100 dark:bg-indigo-900/50 text-indigo-600 text-xs rounded-full">
-                                Default
-                              </span>
+                <div className="space-y-4">
+                  {paymentMethods.map((method) => (
+                    <motion.div
+                      key={method.id}
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      className="bg-white/30 dark:bg-white/10 backdrop-blur-sm rounded-xl border border-white/20 p-4"
+                    >
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                          <div className="w-10 h-10 bg-indigo-100 dark:bg-indigo-900/50 rounded-lg flex items-center justify-center">
+                            {method.type === "card" ? (
+                              <CreditCard className="h-5 w-5 text-indigo-600" />
+                            ) : (
+                              <DollarSign className="h-5 w-5 text-indigo-600" />
                             )}
                           </div>
-                          {method.expiryDate && (
-                            <p className="text-sm text-gray-600 dark:text-gray-300">
-                              Expires {method.expiryDate}
-                            </p>
+                          <div>
+                            <div className="flex items-center gap-2">
+                              <h3 className="font-medium text-gray-800 dark:text-white">
+                                {method.name} •••• {method.last4}
+                              </h3>
+                              {method.isDefault && (
+                                <span className="px-2 py-0.5 bg-indigo-100 dark:bg-indigo-900/50 text-indigo-600 text-xs rounded-full">
+                                  Default
+                                </span>
+                              )}
+                            </div>
+                            {method.expiryDate && (
+                              <p className="text-sm text-gray-600 dark:text-gray-300">
+                                Expires {method.expiryDate}
+                              </p>
+                            )}
+                          </div>
+                        </div>
+
+                        <div className="flex gap-2">
+                          {!method.isDefault && (
+                            <Button variant="outline" size="sm">
+                              Set as Default
+                            </Button>
                           )}
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="text-red-600 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-900/20"
+                          >
+                            Remove
+                          </Button>
                         </div>
                       </div>
+                    </motion.div>
+                  ))}
+                </div>
 
-                      <div className="flex gap-2">
-                        {!method.isDefault && (
-                          <Button variant="outline" size="sm">
-                            Set as Default
-                          </Button>
-                        )}
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          className="text-red-600 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-900/20"
-                        >
-                          Remove
-                        </Button>
-                      </div>
+                <div className="mt-8 rounded-xl border border-white/20 p-6">
+                  <h3 className="text-lg font-medium text-gray-800 dark:text-white mb-4">
+                    Billing Information
+                  </h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                      <h4 className="text-sm font-medium text-gray-600 dark:text-gray-300 mb-2">
+                        Billing Address
+                      </h4>
+                      <p className="text-gray-800 dark:text-white">John Doe</p>
+                      <p className="text-gray-800 dark:text-white">
+                        123 Legal Street
+                      </p>
+                      <p className="text-gray-800 dark:text-white">
+                        Law City, LC 12345
+                      </p>
+                      <p className="text-gray-800 dark:text-white">
+                        United States
+                      </p>
+
+                      <Button
+                        variant="link"
+                        className="p-0 h-auto mt-2 text-indigo-600 hover:text-indigo-700"
+                      >
+                        Edit Billing Address
+                      </Button>
                     </div>
-                  </motion.div>
-                ))}
-              </div>
 
-              <div className="mt-8 bg-white/30 dark:bg-white/10 backdrop-blur-sm rounded-xl border border-white/20 p-6">
-                <h3 className="text-lg font-medium text-gray-800 dark:text-white mb-4">
-                  Billing Information
-                </h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div>
-                    <h4 className="text-sm font-medium text-gray-600 dark:text-gray-300 mb-2">
-                      Billing Address
-                    </h4>
-                    <p className="text-gray-800 dark:text-white">John Doe</p>
-                    <p className="text-gray-800 dark:text-white">
-                      123 Legal Street
-                    </p>
-                    <p className="text-gray-800 dark:text-white">
-                      Law City, LC 12345
-                    </p>
-                    <p className="text-gray-800 dark:text-white">
-                      United States
-                    </p>
+                    <div>
+                      <h4 className="text-sm font-medium text-gray-600 dark:text-gray-300 mb-2">
+                        Billing Contact
+                      </h4>
+                      <p className="text-gray-800 dark:text-white">
+                        john.doe@example.com
+                      </p>
+                      <p className="text-gray-800 dark:text-white">
+                        +1 (555) 123-4567
+                      </p>
 
-                    <Button
-                      variant="link"
-                      className="p-0 h-auto mt-2 text-indigo-600 hover:text-indigo-700"
-                    >
-                      Edit Billing Address
-                    </Button>
-                  </div>
-
-                  <div>
-                    <h4 className="text-sm font-medium text-gray-600 dark:text-gray-300 mb-2">
-                      Billing Contact
-                    </h4>
-                    <p className="text-gray-800 dark:text-white">
-                      john.doe@example.com
-                    </p>
-                    <p className="text-gray-800 dark:text-white">
-                      +1 (555) 123-4567
-                    </p>
-
-                    <Button
-                      variant="link"
-                      className="p-0 h-auto mt-2 text-indigo-600 hover:text-indigo-700"
-                    >
-                      Edit Billing Contact
-                    </Button>
+                      <Button
+                        variant="link"
+                        className="p-0 h-auto mt-2 text-indigo-600 hover:text-indigo-700"
+                      >
+                        Edit Billing Contact
+                      </Button>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-          )}
-        </ScrollArea>
+            )}
+          </ScrollArea>
+        </div>
       </div>
     </div>
   );
