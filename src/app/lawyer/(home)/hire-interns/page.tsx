@@ -1,9 +1,12 @@
-export default function Home() {
+
+export default function HireInterns() {
   return (
     <>
       <div className="container mt-20">
-        Landing Page
+        Hire Interns Page
       </div>
     </>
   )
 }
+
+

@@ -228,23 +228,23 @@ export function AdvancedSearch({
   return (
     <div className={cn("relative backdrop-blur-xl", className)} ref={searchContainerRef}>
       {/* Search Input Container */}
-<div
-  className={cn(
-    "flex items-center h-14 px-1 w-full border rounded-full transition-all",
-    "backdrop-blur-lg bg-white/60 shadow-md border-gray-300 focus-within:ring-2 focus-within:ring-indigo-500 focus-within:border-indigo-500",
-    isFocused ? "shadow-lg" : "shadow-sm",
-    variant === "minimal" ? "border-gray-200" : "border-gray-300"
-  )}
->        <div className="flex-1 flex items-center">
-        {query ?
-          <Search className="h-7 w-7 ml-3 text-indigo-500 flex-shrink-0" />
-          :
-          <Button
-            className="h-12 rounded-full bg-transparent shadow-none hover:scale-105 hover:bg-transparent px-4"
-          >
-            <Sparkles className="text-indigo-600 size-6 stroke-[1.5px] m-0.5" />
-          </Button>
-        }
+      <div
+        className={cn(
+          "flex items-center h-14 px-1 w-full border rounded-full transition-all",
+          "backdrop-blur-lg bg-white/60 shadow-md border-gray-300 focus-within:ring-2 focus-within:ring-indigo-500 focus-within:border-indigo-500",
+          isFocused ? "shadow-lg" : "shadow-sm",
+          variant === "minimal" ? "border-gray-200" : "border-gray-300"
+        )}
+      >        <div className="flex-1 flex items-center">
+          {query ?
+            <Search className="h-7 w-7 ml-3 text-indigo-500 flex-shrink-0" />
+            :
+            <Button
+              className="h-12 rounded-full bg-transparent shadow-none hover:scale-105 hover:bg-transparent px-4"
+            >
+              <Sparkles className="text-indigo-600 size-6 stroke-[1.5px] m-0.5" />
+            </Button>
+          }
 
           <Input
             ref={inputRef}
@@ -317,15 +317,15 @@ export function AdvancedSearch({
           <Mic className={cn("h-6 w-6 hover:scale-110", isListening ? "text-indigo-800 animate-pulse" : "text-indigo-700")} />
         </button>
 
-          <Button
-            className="group h-12 rounded-full bg-transparent shadow-none hover:bg-indigo-700 flex items-center justify-center gap-2 **:transition-all **:duration-500"
-            onClick={() => handleSearch()}
-          >
-            <ArrowUp className="size-6 stroke-2 text-indigo-600 group-hover:text-white" />
-            <span className="overflow-hidden whitespace-nowrap opacity-0 max-w-0 group-hover:opacity-100 group-hover:max-w-xs">
-              Search
-            </span>
-          </Button>
+        <Button
+          className="group h-12 rounded-full bg-transparent shadow-none hover:bg-indigo-700 flex items-center justify-center gap-2 **:transition-all **:duration-500"
+          onClick={() => handleSearch()}
+        >
+          <ArrowUp className="size-6 stroke-2 text-indigo-600 group-hover:text-white" />
+          <span className="overflow-hidden whitespace-nowrap opacity-0 max-w-0 group-hover:opacity-100 group-hover:max-w-xs">
+            Search
+          </span>
+        </Button>
       </div>
       {/* Selected Filters */}
       {hasSelectedFilters && variant === "default" && (
@@ -382,3 +382,4 @@ export function AdvancedSearch({
     </div>
   )
 }
+

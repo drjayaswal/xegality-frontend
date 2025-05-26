@@ -18,14 +18,14 @@ import {
   User,
   Users,
 } from "lucide-react";
-import XegalityAI from "./Xegality-AI";
-import HelpSupport from "./Help&Support";
-import Subscription from "./Subscription";
-import BillingPayments from "./Billing&Payment";
-import CaseManagement from "./Case-Management";
-import Appointments from "./Appointment";
-import Clients from "./Clients";
-import SettingsLite from "./Settings";
+import XegalityAI from "@/components/lawyer/dashboard/xegality-ai";
+import HelpSupport from "@/components/lawyer/dashboard/help-and-support";
+import Subscription from "@/components/lawyer/dashboard/subscription";
+import BillingPayments from "@/components/lawyer/dashboard/billing-and-payment";
+import CaseManagement from "@/components/lawyer/dashboard/case-management";
+import Appointments from "@/components/lawyer/dashboard/appointment";
+import Clients from "@/components/lawyer/dashboard/clients";
+import SettingsLite from "@/components/lawyer/dashboard/settings";
 
 type Tab = {
   title: string;
@@ -264,7 +264,7 @@ export default function LawyerDashboard() {
   );
 }
 
-export const FadeInDiv = ({
+const FadeInDiv = ({
   tabs,
   active,
   className,
