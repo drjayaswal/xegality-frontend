@@ -165,31 +165,25 @@ export default function BillingPayments() {
   };
 
   return (
-    <div className="w-full h-full dark:bg-black bg-white rounded-2xl">
-      <div className="w-full h-full bg-gradient-to-r from-[#3b82f6]/10 to-[#3b82f6]/40 rounded-2xl overflow-hidden flex relative">
-        {/* <div className="w-full h-full bg-white dark:bg-black rounded-lg overflow-hidden flex flex-col relative"> */}
+    <div className="w-full h-full dark:bg-black bg-white bg-gradient-to-r from-[#3b82f6]/10 to-[#3b82f6]/40 rounded-2xl">
+      <div className="w-full h-full rounded-lg overflow-hidden flex flex-col relative">
         {/* Header */}
-        <div className="relative h-24 overflow-hidden bg-gradient-to-r from-[#4f46e5]/40 via-[#ec4899]/40 to-[#3b82f6]/40">
+        <div className="relative h-24 overflow-hidden ">
           <div className="absolute inset-0 flex items-center justify-center">
             <div className="w-full h-fit flex items-center justify-center">
-              <SiriWave isWaveMode={false} />
+              <SiriWave opacity={0.5} isWaveMode={false} />
             </div>
-          </div>
-          <div className="absolute inset-0 flex items-center justify-center">
-            <h1 className="text-5xl font-bold text-white/80">
-              Biiling & Payment
-            </h1>
           </div>
         </div>
 
         {/* Tabs */}
-        <div className="flex border-b border-white/20 bg-gradient-to-r from-[#4f46e5]/40 via-[#ec4899]/40 to-[#3b82f6]/40 backdrop-blur-sm">
+        <div className="flex border-b border-white/20">
           <button
             onClick={() => setActiveTab("invoices")}
             className={cn(
               "flex-1 py-4 text-center font-medium transition-colors",
               activeTab === "invoices"
-                ? "text-indigo-600 border-b-2 border-indigo-600"
+                ? "dark:text-indigo-400 text-indigo-600 border-b-2 border-indigo-600"
                 : "text-gray-600 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400"
             )}
           >
@@ -200,8 +194,8 @@ export default function BillingPayments() {
             className={cn(
               "flex-1 py-4 text-center font-medium transition-colors",
               activeTab === "payments"
-                ? "text-indigo-600 border-b-2 border-indigo-600"
-                : "text-gray-600 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400"
+                ? "dark:text-indigo-400 text-indigo-600 border-b-2 border-indigo-600"
+                : "text-gray-600 dark:text-gray-300 hover:text-indigo-400 dark:hover:text-indigo-400"
             )}
           >
             Payment Methods
@@ -209,7 +203,7 @@ export default function BillingPayments() {
         </div>
 
         {/* Content */}
-        <div className="flex-1 bg-gradient-to-r from-[#4f46e5]/40 via-[#ec4899]/40 to-[#3b82f6]/40 p-6">
+        <div className="flex-1 p-6">
           <ScrollArea className="h-full">
             {activeTab === "invoices" ? (
               <div className="space-y-6">
@@ -224,12 +218,12 @@ export default function BillingPayments() {
                       className="pl-10 bg-white/20 focus-visible:ring-0 focus-visible:border-indigo-600 placeholder:text-black/40 dark:placeholder:text-white/40"
                     />
                   </div>
-                  <div className="flex gap-2">
+                  <div className="flex gap-4 justify-center items-center">
                     <div className="relative inline-block">
                       <select
                         value={filterStatus}
                         onChange={(e) => setFilterStatus(e.target.value as any)}
-                        className="appearance-none bg-white/20 backdrop-blur-sm border border-white/20 rounded-lg px-4 py-2 text-gray-800 dark:text-white focus:outline-none focus:border-indigo-600"
+                        className="px-3 py-1 rounded-lg focus-visible:outline-0 text-sm"
                       >
                         <option value="all">All Status</option>
                         <option value="paid">Paid</option>
@@ -237,7 +231,7 @@ export default function BillingPayments() {
                         <option value="overdue">Overdue</option>
                       </select>
                     </div>
-                    <Button className="bg-indigo-600 hover:bg-indigo-700">
+                    <Button className="text-white bg-indigo-600 hover:bg-indigo-700 ml-2">
                       <Plus className="h-4 w-4 mr-2" /> New Invoice
                     </Button>
                   </div>
@@ -268,22 +262,6 @@ export default function BillingPayments() {
                               <p className="text-sm text-gray-600 dark:text-gray-300">
                                 {invoice.client}
                               </p>
-                            </div>
-                          </div>
-
-                          <div className="flex items-center gap-2 ml-auto md:ml-0">
-                            <div
-                              className={cn(
-                                "px-3 py-1 rounded-full text-xs font-medium border",
-                                getStatusColor(invoice.status)
-                              )}
-                            >
-                              <div className="flex items-center gap-1">
-                                {getStatusIcon(invoice.status)}
-                                <span className="capitalize">
-                                  {invoice.status}
-                                </span>
-                              </div>
                             </div>
                           </div>
 
@@ -438,7 +416,7 @@ export default function BillingPayments() {
                   <h2 className="text-xl font-semibold text-gray-800 dark:text-white">
                     Your Payment Methods
                   </h2>
-                  <Button className="bg-indigo-600 hover:bg-indigo-700">
+                  <Button className="bg-indigo-600 hover:bg-indigo-700 text-white">
                     <Plus className="h-4 w-4 mr-2" /> Add Payment Method
                   </Button>
                 </div>
@@ -488,7 +466,7 @@ export default function BillingPayments() {
                           <Button
                             variant="outline"
                             size="sm"
-                            className="text-red-600 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-900/20"
+                            className="text-red-600 hover:text-red-600 hover:bg-red-50 dark:hover:bg-white/50"
                           >
                             Remove
                           </Button>

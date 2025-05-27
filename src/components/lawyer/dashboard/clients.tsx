@@ -476,18 +476,6 @@ export default function Clients() {
             >
               {/* Header */}
               <div className="p-5">
-                <div className="flex items-center justify-between mb-4">
-                  {isMobileView && selectedConversation && (
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="h-8 w-8 p-0"
-                      onClick={toggleSidebar}
-                    >
-                      <X className="h-5 w-5" />
-                    </Button>
-                  )}
-                </div>
                 <div className="relative">
                   {searchQuery && (
                     <>
@@ -499,7 +487,7 @@ export default function Clients() {
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     className={cn(
-                      "bg-white/20 rounded-2xl text-left focus-visible:ring-0 border-1 border-[#3b82f6]/40 focus-visible:scale-105 focus-visible:border-[#3b82f6]/40 transition-all duration-150 dark:placeholder:text-white/40 placeholder:text-black/40",
+                      "bg-transparent rounded-2xl text-left focus-visible:ring-0 border-2 border-[#3b82f6]/40 focus-visible:scale-105 focus-visible:border-[#3b82f6]/40 transition-all duration-150 dark:placeholder:text-white/40 placeholder:text-black/40",
                       searchQuery != "" ? "text-center" : "text-left"
                     )}
                   />
@@ -507,8 +495,8 @@ export default function Clients() {
               </div>
 
               {/* Conversations List */}
-              <ScrollArea className="flex-1 h-[calc(100vh-140px)]">
-                <div className="px-3 py-2">
+              <ScrollArea className="flex border-t-2 border-[#3b82f6]/50 ">
+                <div className="p-5 h-[calc(100vh-20rem)]">
                   {conversations
                     .filter(
                       (conv) =>
@@ -542,7 +530,7 @@ export default function Clients() {
                             ? "bg-white/30 backdrop-blur-lg shadow-lg"
                             : "hover:bg-white/20 backdrop-blur-sm m-2"
                         )}
-                        whileHover={{ scale: 1.02 }}
+                        whileHover={{ scale: 1.01 }}
                         whileTap={{ scale: 0.98 }}
                       >
                         <div className="flex items-start gap-3">
@@ -554,7 +542,7 @@ export default function Clients() {
                           <div className="flex-1 min-w-0">
                             <div className="flex items-center justify-between">
                               <h3 className="font-medium text-gray-800 dark:text-white truncate">
-                                {conversation.client.name}
+                                {conversation.client.name.split(" ")[0]}
                               </h3>
                               <div className="flex items-center gap-1 justify-center mr-6">
                                 <span className="text-xs text-black dark:text-white/40">
@@ -595,7 +583,7 @@ export default function Clients() {
               {/* Chat Header */}
               <div className="px-4 py-6 bg-[#3b82f6]/10">
                 <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
+                  <div className="flex items-center gap-3 p-2">
                     {isMobileView && !showSidebar && (
                       <Button
                         variant="ghost"
@@ -607,7 +595,7 @@ export default function Clients() {
                       </Button>
                     )}
                     <div className="relative">
-                      <div className="w-10 h-10 bg-[#3b82f6] rounded-full flex items-center justify-center">
+                      <div className="w-10 h-10 p-2 bg-[#3b82f6] rounded-full flex items-center justify-center">
                         <User className="h-5 w-5 text-white" />
                       </div>
                     </div>
@@ -933,14 +921,14 @@ export default function Clients() {
           ) : (
             <div className="flex-1 flex items-center justify-center">
               <div className="text-center max-w-md px-4">
-                <User className="h-16 w-16 mx-auto text-white/60 mb-6" />
-                <h2 className="text-2xl font-bold text-white/90 mb-4">
+                <User className="h-16 w-16 mx-auto text-[#3b82f6] dark:text-white/60 mb-6" />
+                <h2 className="text-2xl font-bold text-[#3b82f6] dark:text-white/90 mb-4">
                   Client Conversation
                 </h2>
-                <p className="text-white/70 mb-6">
+                <p className="dark:text-white/70 text-[#3b82f6] mb-6">
                   Choose a client from the sidebar to start conversation
                 </p>
-                <Button className="bg-transparent text-white hover:text-black hover:bg-white backdrop-blur-sm border-2 border-white gap-2">
+                <Button className="bg-transparent dark:text-white text-[#3b82f6] hover:text-white hover:bg-[#3b82f6] backdrop-blur-sm border-2 border-[#3b82f6] gap-2">
                   <Plus className="h-4 w-4" /> Start New Conversation
                 </Button>
               </div>

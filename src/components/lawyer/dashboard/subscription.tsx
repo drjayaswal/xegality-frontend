@@ -145,7 +145,7 @@ export default function Subscription() {
   return (
     <div className="w-full h-full bg-white dark:bg-black rounded-lg overflow-auto flex flex-col relative">
       {/* Content */}
-      <div className="flex-1 bg-gradient-to-r from-[#4f46e5]/40 via-[#ec4899]/40 to-[#3b82f6]/40 p-8">
+      <div className="flex-1 bg-gradient-to-r from-[#3b82f6]/15 to-[#3b82f6]/40 p-8">
         <ScrollArea className="h-full">
           {/* Current Plan */}
           <div className="bg-white/30 dark:bg-white/10 backdrop-blur-sm rounded-xl p-6 mb-8">
@@ -155,7 +155,7 @@ export default function Subscription() {
                   <h2 className="text-xl font-semibold text-gray-800 dark:text-white">
                     Professional Plan
                   </h2>
-                  <span className="px-3 py-1 text-xs dark:bg-indigo-600/30 font-bold bg-indigo-600/60 text-white dark:text-white/80 rounded-full">
+                  <span className="px-3 py-1 text-xs dark:bg-[#3b82f6]/30 font-bold bg-[#3b82f6]/60 text-white dark:text-white/80 rounded-full">
                     Current Plan
                   </span>
                 </div>
@@ -167,11 +167,11 @@ export default function Subscription() {
               <div className="flex flex-col md:flex-row gap-2">
                 <Button
                   //   variant="outline"
-                  className="bg-transparent rounded-3xl rounded-r-none border-r-1 border-2 border-indigo-600/60 dark:border-white/40 hover:border-transparent dark: hover:bg-indigo-600/60 dark: hover:text-white dark:text-white text-indigo-600/60 dark:hover:text-white"
+                  className="bg-transparent rounded-3xl rounded-r-none border-r-1 border-2 border-[#3b82f6]/60 dark:border-white/40 hover:border-transparent dark: hover:bg-[#3b82f6]/60 dark: hover:text-white dark:text-white text-[#3b82f6]/60 dark:hover:text-white"
                 >
                   Manage Payment Methods
                 </Button>
-                <Button className="bg-transparent rounded-3xl -ml-2 rounded-l-none border-l-1 border-2 border-indigo-600/60 dark:border-white/40 hover:border-transparent dark: hover:bg-indigo-600/60 dark: hover:text-white dark:text-white text-indigo-600/60 dark:hover:text-white">
+                <Button className="bg-transparent rounded-3xl -ml-2 rounded-l-none border-l-1 border-2 border-[#3b82f6]/60 dark:border-white/40 hover:border-transparent dark: hover:bg-[#3b82f6]/60 dark: hover:text-white dark:text-white text-[#3b82f6]/60 dark:hover:text-white">
                   Upgrade Plan
                 </Button>
               </div>
@@ -223,12 +223,12 @@ export default function Subscription() {
                   className={cn(
                     "bg-white/30 dark:bg-white/10 backdrop-blur-sm rounded-[36px] relative",
                     plan.isPopular
-                      ? " border-4 border-indigo-600/60 shadow-lg shadow-indigo-500/10"
+                      ? " border-4 border-[#3b82f6]/60 shadow-lg shadow-[#3b82f6]/10"
                       : ""
                   )}
                 >
                   {plan.isPopular && (
-                    <div className="absolute top-0 right-0 bg-indigo-600/60 text-white text-xs font-medium py-2 px-3 rounded-full m-3">
+                    <div className="absolute top-0 right-0 bg-[#3b82f6]/60 text-white text-xs font-medium py-2 px-3 rounded-full m-3">
                       Most Popular
                     </div>
                   )}
@@ -265,8 +265,8 @@ export default function Subscription() {
                       className={cn(
                         "w-full",
                         plan.isCurrent
-                          ? "bg-indigo-600/60 rounded-3xl text-white hover:text-black"
-                          : "bg-transparent rounded-3xl border-2 border-indigo-600/60 hover:bg-indigo-600/60 hover:text-white hover:border-transparent text-indigo-600/60 dark:border-white dark:hover:text-white dark:text-white"
+                          ? "bg-[#3b82f6]/60 rounded-3xl text-white hover:text-black"
+                          : "bg-transparent rounded-3xl border-2 border-[#3b82f6]/60 hover:bg-[#3b82f6]/60 hover:text-white hover:border-transparent text-[#3b82f6]/60 dark:border-white dark:hover:text-white dark:text-white"
                       )}
                       disabled={plan.isCurrent}
                     >

@@ -1,39 +1,61 @@
-"use client"
+"use client";
 
-import type React from "react"
+import type React from "react";
 
-import { useState, useRef, useEffect } from "react"
-import { Search, Mic, X, Filter, Clock, Tag, ArrowRight, ChevronDown, ArrowUp, Sparkles } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Badge } from "@/components/ui/badge"
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
-import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command"
+import { useState, useRef, useEffect } from "react";
+import {
+  Search,
+  Mic,
+  X,
+  Filter,
+  Clock,
+  Tag,
+  ArrowRight,
+  ChevronDown,
+  ArrowUp,
+  Sparkles,
+} from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "@/components/ui/command";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import { cn } from "@/lib/utils"
+} from "@/components/ui/dropdown-menu";
+import { cn } from "@/lib/utils";
 
 declare global {
   interface Window {
-    webkitSpeechRecognition: any
+    webkitSpeechRecognition: any;
   }
 }
 
 interface AdvancedSearchProps {
-  placeholder?: string
-  onSearch?: (query: string, filters: Record<string, string[]>) => void
-  suggestions?: string[]
+  placeholder?: string;
+  onSearch?: (query: string, filters: Record<string, string[]>) => void;
+  suggestions?: string[];
   filters?: {
-    name: string
-    options: string[]
-  }[]
-  className?: string
-  variant?: "default" | "minimal"
+    name: string;
+    options: string[];
+  }[];
+  className?: string;
+  variant?: "default" | "minimal";
 }
 
 export function AdvancedSearch({
@@ -44,207 +66,222 @@ export function AdvancedSearch({
   className,
   variant = "default",
 }: AdvancedSearchProps) {
-  const [query, setQuery] = useState("")
-  const [isListening, setIsListening] = useState(false)
-  const [showSuggestions, setShowSuggestions] = useState(false)
-  const [recentSearches, setRecentSearches] = useState<string[]>([])
-  const [isFocused, setIsFocused] = useState(false)
-  const inputRef = useRef<HTMLInputElement>(null)
-  const searchContainerRef = useRef<HTMLDivElement>(null)
-  const filtersRef = useRef<Record<string, string[]>>({})
+  const [query, setQuery] = useState("");
+  const [isListening, setIsListening] = useState(false);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const [recentSearches, setRecentSearches] = useState<string[]>([]);
+  const [isFocused, setIsFocused] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
+  const searchContainerRef = useRef<HTMLDivElement>(null);
+  const filtersRef = useRef<Record<string, string[]>>({});
 
   // Initialize filters ref on first render
   if (Object.keys(filtersRef.current).length === 0 && filters.length > 0) {
-    const initialFilters: Record<string, string[]> = {}
+    const initialFilters: Record<string, string[]> = {};
     filters.forEach((filter) => {
-      initialFilters[filter.name] = []
-    })
-    filtersRef.current = initialFilters
+      initialFilters[filter.name] = [];
+    });
+    filtersRef.current = initialFilters;
   }
 
   // Load recent searches from localStorage on component mount
   useEffect(() => {
-    const saved = localStorage.getItem("recentSearches")
+    const saved = localStorage.getItem("recentSearches");
     if (saved) {
       try {
-        const parsed = JSON.parse(saved)
-        setRecentSearches(Array.isArray(parsed) ? parsed.slice(0, 5) : [])
+        const parsed = JSON.parse(saved);
+        setRecentSearches(Array.isArray(parsed) ? parsed.slice(0, 5) : []);
       } catch (e) {
-        console.error("Failed to parse recent searches:", e)
+        console.error("Failed to parse recent searches:", e);
       }
     }
-  }, [])
+  }, []);
 
   // Handle click outside to close suggestions
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (searchContainerRef.current && !searchContainerRef.current.contains(event.target as Node)) {
-        setShowSuggestions(false)
+      if (
+        searchContainerRef.current &&
+        !searchContainerRef.current.contains(event.target as Node)
+      ) {
+        setShowSuggestions(false);
       }
-    }
+    };
 
-    document.addEventListener("mousedown", handleClickOutside)
+    document.addEventListener("mousedown", handleClickOutside);
     return () => {
-      document.removeEventListener("mousedown", handleClickOutside)
-    }
-  }, [])
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   // Handle voice search
   const handleVoiceSearch = () => {
     // Check if the browser supports the Web Speech API
     if (typeof window !== "undefined" && window.webkitSpeechRecognition) {
-      const SpeechRecognition = window.webkitSpeechRecognition
-      const recognition = new SpeechRecognition()
-      recognition.continuous = false
-      recognition.interimResults = false
-      recognition.lang = "en-US"
+      const SpeechRecognition = window.webkitSpeechRecognition;
+      const recognition = new SpeechRecognition();
+      recognition.continuous = false;
+      recognition.interimResults = false;
+      recognition.lang = "en-US";
 
-      setIsListening(true)
+      setIsListening(true);
 
       recognition.onresult = (event: any) => {
-        const transcript = event.results[0][0].transcript
-        setQuery(transcript)
-        handleSearch(transcript)
-        setIsListening(false)
-      }
+        const transcript = event.results[0][0].transcript;
+        setQuery(transcript);
+        handleSearch(transcript);
+        setIsListening(false);
+      };
 
       recognition.onerror = () => {
-        setIsListening(false)
-      }
+        setIsListening(false);
+      };
 
       recognition.onend = () => {
-        setIsListening(false)
-      }
+        setIsListening(false);
+      };
 
-      recognition.start()
+      recognition.start();
     } else {
-      alert("Voice search is not supported in your browser")
+      alert("Voice search is not supported in your browser");
     }
-  }
+  };
 
   // Handle search
   const handleSearch = (searchQuery: string = query) => {
-    if (!searchQuery.trim()) return
+    if (!searchQuery.trim()) return;
 
     // Save to recent searches
-    const updatedRecents = [searchQuery, ...recentSearches.filter((item) => item !== searchQuery)].slice(0, 5)
+    const updatedRecents = [
+      searchQuery,
+      ...recentSearches.filter((item) => item !== searchQuery),
+    ].slice(0, 5);
 
-    setRecentSearches(updatedRecents)
-    localStorage.setItem("recentSearches", JSON.stringify(updatedRecents))
+    setRecentSearches(updatedRecents);
+    localStorage.setItem("recentSearches", JSON.stringify(updatedRecents));
 
     // Call onSearch callback with query and filters
-    onSearch?.(searchQuery, filtersRef.current)
-    setShowSuggestions(false)
-  }
+    onSearch?.(searchQuery, filtersRef.current);
+    setShowSuggestions(false);
+  };
 
   // Handle filter selection
   const toggleFilter = (filterName: string, option: string) => {
-    const current = [...(filtersRef.current[filterName] || [])]
-    const index = current.indexOf(option)
+    const current = [...(filtersRef.current[filterName] || [])];
+    const index = current.indexOf(option);
 
     if (index >= 0) {
-      current.splice(index, 1)
+      current.splice(index, 1);
     } else {
-      current.push(option)
+      current.push(option);
     }
 
     filtersRef.current = {
       ...filtersRef.current,
       [filterName]: current,
-    }
+    };
 
     // Force re-render
-    setIsFocused((prev) => prev)
-  }
+    setIsFocused((prev) => prev);
+  };
 
   // Clear all filters
   const clearFilters = () => {
-    const clearedFilters: Record<string, string[]> = {}
+    const clearedFilters: Record<string, string[]> = {};
     filters.forEach((filter) => {
-      clearedFilters[filter.name] = []
-    })
-    filtersRef.current = clearedFilters
+      clearedFilters[filter.name] = [];
+    });
+    filtersRef.current = clearedFilters;
 
     // Force re-render
-    setIsFocused((prev) => prev)
-  }
+    setIsFocused((prev) => prev);
+  };
 
   // Clear specific filter
   const clearFilter = (filterName: string, option: string) => {
-    const current = [...(filtersRef.current[filterName] || [])]
-    const index = current.indexOf(option)
+    const current = [...(filtersRef.current[filterName] || [])];
+    const index = current.indexOf(option);
 
     if (index >= 0) {
-      current.splice(index, 1)
+      current.splice(index, 1);
     }
 
     filtersRef.current = {
       ...filtersRef.current,
       [filterName]: current,
-    }
+    };
 
     // Force re-render
-    setIsFocused((prev) => prev)
-  }
+    setIsFocused((prev) => prev);
+  };
 
   // Get all selected filter options
   const getSelectedFilterOptions = () => {
-    const options: { filter: string; option: string }[] = []
+    const options: { filter: string; option: string }[] = [];
 
-    Object.entries(filtersRef.current).forEach(([filterName, filterOptions]) => {
-      filterOptions.forEach((option) => {
-        options.push({ filter: filterName, option })
-      })
-    })
+    Object.entries(filtersRef.current).forEach(
+      ([filterName, filterOptions]) => {
+        filterOptions.forEach((option) => {
+          options.push({ filter: filterName, option });
+        });
+      }
+    );
 
-    return options
-  }
+    return options;
+  };
 
   // Check if any filters are selected
-  const hasSelectedFilters = Object.values(filtersRef.current).some((options) => options.length > 0)
+  const hasSelectedFilters = Object.values(filtersRef.current).some(
+    (options) => options.length > 0
+  );
 
   // Handle suggestion click
   const handleSuggestionClick = (suggestion: string) => {
-    setQuery(suggestion)
-    handleSearch(suggestion)
-  }
+    setQuery(suggestion);
+    handleSearch(suggestion);
+  };
 
   // Handle input focus
   const handleInputFocus = () => {
-    setIsFocused(true)
-    setShowSuggestions(true)
-  }
+    setIsFocused(true);
+    setShowSuggestions(true);
+  };
 
   // Handle key down
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
-      handleSearch()
+      handleSearch();
     }
-  }
+  };
 
   // Filtered suggestions based on current query
-  const filteredSuggestions = suggestions.filter((suggestion) => suggestion.toLowerCase().includes(query.toLowerCase()))
+  const filteredSuggestions = suggestions.filter((suggestion) =>
+    suggestion.toLowerCase().includes(query.toLowerCase())
+  );
 
   return (
-    <div className={cn("relative backdrop-blur-xl", className)} ref={searchContainerRef}>
+    <div
+      className={cn("relative backdrop-blur-xl", className)}
+      ref={searchContainerRef}
+    >
       {/* Search Input Container */}
       <div
         className={cn(
           "flex items-center h-14 px-1 w-full border rounded-full transition-all",
-          "backdrop-blur-lg bg-white/60 shadow-md border-gray-300 focus-within:ring-2 focus-within:ring-indigo-500 focus-within:border-indigo-500",
-          isFocused ? "shadow-lg" : "shadow-sm",
+          "backdrop-blur-lg bg-white/20 border-transparent ring-transparent focus-within:ring-[#3b82f6] focus-within:border-[#3b82f6]",
+          isFocused ? "shadow-sm" : "shadow-2xl",
           variant === "minimal" ? "border-gray-200" : "border-gray-300"
         )}
-      >        <div className="flex-1 flex items-center">
-          {query ?
-            <Search className="h-7 w-7 ml-3 text-indigo-500 flex-shrink-0" />
-            :
-            <Button
-              className="h-12 rounded-full bg-transparent shadow-none hover:scale-105 hover:bg-transparent px-4"
-            >
-              <Sparkles className="text-indigo-600 size-6 stroke-[1.5px] m-0.5" />
+      >
+        {" "}
+        <div className="flex-1 flex items-center">
+          {query ? (
+            <Search className="h-7 w-7 ml-3 text-[#3b82f6] flex-shrink-0" />
+          ) : (
+            <Button className="h-12 rounded-full bg-transparent shadow-none hover:scale-105 hover:bg-transparent px-4">
+              <Sparkles className="text-[#3b82f6] size-6 stroke-[1.5px] m-0.5" />
             </Button>
-          }
+          )}
 
           <Input
             ref={inputRef}
@@ -257,21 +294,27 @@ export function AdvancedSearch({
             onKeyDown={handleKeyDown}
           />
         </div>
-
         {query && (
-          <Button variant="ghost" size="icon" className="h-8 w-8 mr-1" onClick={() => setQuery("")}>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-8 w-8 mr-1"
+            onClick={() => setQuery("")}
+          >
             <X className="h-4 w-4 text-gray-400" />
             <span className="sr-only">Clear search</span>
           </Button>
         )}
-
         {variant === "default" && (
           <Popover>
             <PopoverTrigger asChild>
               <Button
                 variant="ghost"
                 size="icon"
-                className={cn("h-10 w-10 mr-1", hasSelectedFilters && "bg-white text-indigo-700")}
+                className={cn(
+                  "h-10 w-10 mr-1",
+                  hasSelectedFilters && "bg-white text-[#3b82f6]"
+                )}
               >
                 <Filter className="h-6 w-6 hover:scale-110" />
                 <span className="sr-only">Filter</span>
@@ -285,7 +328,8 @@ export function AdvancedSearch({
                   {filters.map((filter) => (
                     <CommandGroup key={filter.name} heading={filter.name}>
                       {filter.options.map((option) => {
-                        const isSelected = filtersRef.current[filter.name]?.includes(option)
+                        const isSelected =
+                          filtersRef.current[filter.name]?.includes(option);
                         return (
                           <CommandItem
                             key={option}
@@ -293,18 +337,29 @@ export function AdvancedSearch({
                             className="flex items-center justify-between"
                           >
                             <span>{option}</span>
-                            {isSelected && <div className="h-4 w-4 bg-indigo-500 rounded-full"></div>}
+                            {isSelected && (
+                              <div className="h-4 w-4 bg-[#3b82f6] rounded-full"></div>
+                            )}
                           </CommandItem>
-                        )
+                        );
                       })}
                     </CommandGroup>
                   ))}
                 </CommandList>
                 <div className="border-t p-2 flex justify-between">
-                  <Button variant="ghost" size="sm" onClick={clearFilters} disabled={!hasSelectedFilters}>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={clearFilters}
+                    disabled={!hasSelectedFilters}
+                  >
                     Clear all
                   </Button>
-                  <Button size="sm" className="bg-indigo-700" onClick={() => handleSearch()}>
+                  <Button
+                    size="sm"
+                    className="bg-[#3b82f6]"
+                    onClick={() => handleSearch()}
+                  >
                     Apply filters
                   </Button>
                 </div>
@@ -312,16 +367,23 @@ export function AdvancedSearch({
             </PopoverContent>
           </Popover>
         )}
-
-        <button className="h-8 w-8 mr-1" onClick={handleVoiceSearch} disabled={isListening}>
-          <Mic className={cn("h-6 w-6 hover:scale-110", isListening ? "text-indigo-800 animate-pulse" : "text-indigo-700")} />
+        <button
+          className="h-8 w-8 mr-1"
+          onClick={handleVoiceSearch}
+          disabled={isListening}
+        >
+          <Mic
+            className={cn(
+              "h-6 w-6 hover:scale-110",
+              isListening ? "text-[#3b82f6] animate-pulse" : "text-[#3b82f6]"
+            )}
+          />
         </button>
-
         <Button
-          className="group h-12 rounded-full bg-transparent shadow-none hover:bg-indigo-700 flex items-center justify-center gap-2 **:transition-all **:duration-500"
+          className="group h-12 rounded-full bg-transparent shadow-none hover:bg-[#3b82f6] flex items-center justify-center gap-2 **:transition-all **:duration-500"
           onClick={() => handleSearch()}
         >
-          <ArrowUp className="size-6 stroke-2 text-indigo-600 group-hover:text-white" />
+          <ArrowUp className="size-6 stroke-2 text-[#3b82f6] group-hover:text-white" />
           <span className="overflow-hidden whitespace-nowrap opacity-0 max-w-0 group-hover:opacity-100 group-hover:max-w-xs">
             Search
           </span>
@@ -334,7 +396,7 @@ export function AdvancedSearch({
             <Badge
               key={`${filter}-${option}`}
               variant="outline"
-              className="bg-indigo-50 text-indigo-700 border-indigo-200 py-1"
+              className="bg-[#3b82f6] text-[#3b82f6] border-[#3b82f6] py-1"
             >
               {filter}: {option}
               <Button
@@ -348,7 +410,12 @@ export function AdvancedSearch({
             </Badge>
           ))}
           {getSelectedFilterOptions().length > 0 && (
-            <Button variant="ghost" size="sm" className="h-6 text-xs text-gray-500" onClick={clearFilters}>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="h-6 text-xs text-gray-500"
+              onClick={clearFilters}
+            >
               Clear all
             </Button>
           )}
@@ -369,7 +436,7 @@ export function AdvancedSearch({
                   >
                     <div className="flex items-center">
                       <Clock className="h-3 w-3 mr-2 text-gray-400" />
-                      <span className="text-gray-400" >{search}</span>
+                      <span className="text-gray-400">{search}</span>
                     </div>
                     <ArrowRight className="h-5 w-5 text-gray-400" />
                   </div>
@@ -380,6 +447,5 @@ export function AdvancedSearch({
         </div>
       )}
     </div>
-  )
+  );
 }
-

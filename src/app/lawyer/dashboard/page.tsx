@@ -2,15 +2,15 @@
 
 import type React from "react";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
 import {
   Bell,
+  Contact,
   CreditCard,
   DoorOpen,
   HelpCircle,
-  LinkIcon,
   Moon,
   ReceiptText,
   Settings,
@@ -64,8 +64,8 @@ const NavItem = ({
     className={cn(
       "flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors",
       active
-        ? "bg-indigo-500 text-white"
-        : "text-gray-700 hover:bg-indigo-100 dark:text-gray-200 dark:hover:bg-indigo-950"
+        ? "bg-[#3b82f6] text-white"
+        : "text-gray-700 hover:bg-[#3b82f6]/50 dark:text-gray-200 dark:hover:bg-[#3b82f6]/50"
     )}
     onClick={onClick}
     onMouseEnter={onMouseEnter}
@@ -76,7 +76,7 @@ const NavItem = ({
     <span className="flex h-5 w-5 items-center justify-center">{icon}</span>
     <span className="flex-1">{label}</span>
     {badge && (
-      <span className="flex h-5 w-5 items-center justify-center rounded-full bg-indigo-200 text-xs font-semibold text-indigo-700 dark:bg-indigo-800 dark:text-indigo-200">
+      <span className="flex h-5 w-5 items-center justify-center rounded-full bg-[#3b82f6] text-xs font-semibold text-[#3b82f6] dark:bg-[#3b82f6] dark:text-[#3b82f6]">
         {badge}
       </span>
     )}
@@ -99,7 +99,7 @@ export default function LawyerDashboard() {
     {
       title: "Clients",
       value: "clients",
-      category: "services",
+      category: "account",
       content: (
         <>
           <Clients />
@@ -115,7 +115,7 @@ export default function LawyerDashboard() {
     {
       title: "Case Management",
       value: "case-management",
-      category: "services",
+      category: "account",
       content: <CaseManagement />,
     },
     {
@@ -139,7 +139,7 @@ export default function LawyerDashboard() {
     {
       title: "Settings",
       value: "settings",
-      category: "account",
+      category: "services",
       content: (
         <>
           <SettingsLite />
@@ -153,7 +153,13 @@ export default function LawyerDashboard() {
 
   const [active, setActive] = useState<Tab>(allTabs[0]);
   const [tabs, setTabs] = useState<Tab[]>(allTabs);
-  const [isDarkMode, setIsDarkMode] = useState(false);
+
+  // useEffect(() => {
+  //   const storedTheme = localStorage.getItem("theme");
+  //   if (storedTheme === "dark") {
+  //     setIsDarkMode(true);
+  //   }
+  // }, []);
 
   const moveSelectedTabToTop = (tabValue: string) => {
     const clickedTab = allTabs.find((tab) => tab.value === tabValue);
@@ -172,15 +178,20 @@ export default function LawyerDashboard() {
   };
 
   const [hovering, setHovering] = useState(false);
-  const toggleTheme = () => {
-    setIsDarkMode((prev) => {
-      const newTheme = !prev ? "dark" : "light";
-      localStorage.setItem("theme", newTheme);
-      document.documentElement.classList.toggle("dark", newTheme === "dark");
-      return !prev;
-    });
-  };
+  const [isDarkMode, setIsDarkMode] = useState(false);
 
+  useEffect(() => {
+    const storedTheme = localStorage.getItem("theme") || "light";
+    setIsDarkMode(storedTheme === "dark");
+    document.documentElement.classList.toggle("dark", storedTheme === "dark");
+  }, []);
+
+  const toggleTheme = () => {
+    const newTheme = isDarkMode ? "light" : "dark";
+    localStorage.setItem("theme", newTheme);
+    document.documentElement.classList.toggle("dark", newTheme === "dark");
+    setIsDarkMode(!isDarkMode);
+  };
   const getTabIcon = (title: string) => {
     switch (title) {
       case "Xegality AI":
@@ -188,7 +199,7 @@ export default function LawyerDashboard() {
       case "Clients":
         return <Users className="h-4 w-4" />;
       case "Appointments":
-        return <LinkIcon className="h-4 w-4" />;
+        return <Contact className="h-4 w-4" />;
       case "Case Management":
         return <DoorOpen className="h-4 w-4" />;
       case "Billing & Payments":
@@ -211,11 +222,11 @@ export default function LawyerDashboard() {
   };
 
   return (
-    <div className="flex h-screen bg-white/10 backdrop-blur-[2px] gap-1 justify-center dark:bg-gray-900">
+    <div className="flex h-screen bg-white backdrop-blur-[2px] gap-1 justify-center dark:bg-black">
       {/* Sidebar */}
-      <div className="flex h-full w-64 flex-col border-r bg-white dark:border-gray-800 dark:bg-gray-950">
-        <div className="flex h-14 items-center border-b px-4">
-          <h1 className="text-lg font-semibold">Dashboard</h1>
+      <div className="flex h-full w-64 flex-col border-r">
+        <div className="flex h-[86px] items-center flex justify-center border-b-2 border-[#3b82f6]/50 p-2">
+          <h1 className="text-2xl font-semibold">Xegality</h1>
         </div>
 
         <div className="flex-1 overflow-auto py-4">
@@ -260,13 +271,20 @@ export default function LawyerDashboard() {
               ))}
             </div>
           </div>
-        </div>
-        <div className="flex items-center justify-between">
-          <Switch
-            checked={isDarkMode}
-            onCheckedChange={toggleTheme}
-            className="data-[state=checked]:bg-[#3b82f6] data-[state=unchecked]:bg-transparent data-[state=unchecked]:border-transparent data-[state=unchecked]:shadow-none"
-          />
+
+          <div className="border-t-2 border-[#3b82f6]/50 flex gap-1 mt-5 items-center justify-center p-6">
+            {isDarkMode ? (
+              <Moon className="h-5 w-5 dark:text-[#3b82f6] text-[#3b82f6]" />
+            ) : (
+              <Sun className="h-5 w-5 dark:text-[#3b82f6] text-[#3b82f6]" />
+            )}
+            <span className="text-[#3b82f6]"> - - - </span>
+            <Switch
+              checked={isDarkMode}
+              onCheckedChange={toggleTheme}
+              className="data-[state=checked]:bg-[#3b82f6] data-[state=unchecked]:bg-[#3b82f6] data-[state=unchecked]:border-transparent data-[state=unchecked]:shadow-none"
+            />
+          </div>
         </div>
       </div>
 

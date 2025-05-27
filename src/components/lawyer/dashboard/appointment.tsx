@@ -207,7 +207,7 @@ export default function Appointments() {
         <div className="relative h-24 overflow-hidden">
           <div className="absolute inset-0 flex items-center justify-center">
             <div className="w-full h-fit flex items-center justify-center">
-              <SiriWave isWaveMode={false} />
+              <SiriWave opacity={0.5} isWaveMode={false} />
             </div>
           </div>
         </div>

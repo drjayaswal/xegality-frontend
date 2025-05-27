@@ -3,10 +3,12 @@
 import { useEffect, useRef, useState } from "react";
 
 interface SiriWaveProps {
-  isWaveMode: boolean; // Prop to determine wave or streamline mode
+  opacity: number;
+  isWaveMode: boolean;
 }
 
-const SiriWave: React.FC<SiriWaveProps> = ({ isWaveMode }) => {
+const SiriWave: React.FC<SiriWaveProps> = ({ isWaveMode, opacity }) => {
+  const [animatedOpacity, setAnimatedOpacity] = useState(opacity);
   const svgRef = useRef<SVGSVGElement | null>(null);
   const [amplitude, setAmplitude] = useState(isWaveMode ? 30 : 0);
 
@@ -78,6 +80,21 @@ const SiriWave: React.FC<SiriWaveProps> = ({ isWaveMode }) => {
     return () => clearInterval(interval);
   }, [isWaveMode]);
 
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setAnimatedOpacity((current) => {
+        const delta = 0.05;
+        if (Math.abs(current - opacity) < delta) {
+          clearInterval(interval);
+          return opacity;
+        }
+        return current + (opacity > current ? delta : -delta);
+      });
+    }, 25);
+
+    return () => clearInterval(interval);
+  }, [opacity]);
+
   return (
     <div
       style={{
@@ -104,10 +121,19 @@ const SiriWave: React.FC<SiriWaveProps> = ({ isWaveMode }) => {
         }}
       >
         <g fill="none" strokeWidth={isWaveMode ? "2" : "1"}>
-          <path id="wave1" stroke="#4f46e570" />
-          <path id="wave2" stroke="#3b82f670" />
-          <path id="wave3" stroke="#9c2dec60" />
-        </g>
+          <path
+            id="wave1"
+            stroke={`rgba(79, 70, 229, ${opacity})`} // #4f46e5 with dynamic alpha
+          />
+          <path
+            id="wave2"
+            stroke={`rgba(59, 130, 246, ${opacity})`} // #3b82f6
+          />
+          <path
+            id="wave3"
+            stroke={`rgba(156, 45, 236, ${opacity})`} // #9c2dec
+          />
+        </g>{" "}
       </svg>
     </div>
   );

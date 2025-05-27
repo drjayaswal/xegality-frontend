@@ -612,7 +612,7 @@ export default function SettingsLite() {
       <div className="relative h-24 overflow-hidden bg-gradient-to-r from-[#3b82f6]/15 to-[#3b82f6]/40">
         <div className="absolute inset-0 flex items-center justify-center">
           <div className="w-full h-fit flex items-center justify-center">
-            <SiriWave isWaveMode={isAnimating} />
+            <SiriWave opacity={0.5} isWaveMode={isAnimating} />
           </div>
         </div>
       </div>

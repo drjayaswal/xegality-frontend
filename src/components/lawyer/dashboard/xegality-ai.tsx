@@ -234,7 +234,7 @@ export default function XegalityAI() {
   }, [messages, isTyping]);
 
   return (
-    <div className="w-full h-full bg-white dark:bg-black rounded-lg overflow-hidden flex flex-col relative">
+    <div className="w-full h-full rounded-lg overflow-hidden flex flex-col relative">
       {/* Hidden file input */}
       <input
         ref={fileInputRef}
@@ -248,8 +248,9 @@ export default function XegalityAI() {
       {/* Header */}
       <div className="relative h-24 overflow-hidden bg-gradient-to-r from-[#3b82f6]/10 to-[#3b82f6]/40">
         <div className="absolute inset-0 flex items-center justify-center">
-          <div className="w-full h-fit flex items-center justify-center  opacity-60">
+          <div className="w-full h-fit flex items-center justify-center">
             <SiriWave
+              opacity={0.5}
               isWaveMode={isListening || isTyping || inputValue != ""}
             />
           </div>

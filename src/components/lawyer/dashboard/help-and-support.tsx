@@ -169,283 +169,285 @@ export default function HelpSupport() {
 
   return (
     <div className="w-full h-full bg-white dark:bg-black rounded-lg overflow-auto flex flex-col relative">
-      {/* <div className="absolute inset-0 -z-1 flex items-center justify-center">
+      <div className="w-full h-full bg-gradient-to-r from-[#3b82f6]/15 to-[#3b82f6]/40">
+        {/* <div className="absolute inset-0 -z-1 flex items-center justify-center">
         <div className="w-full h-fit flex items-center justify-center">
           <SiriWave isWaveMode={false} />
         </div>
       </div> */}
 
-      {/* Tab Switcher */}
-      <div className="px-10 pt-10 pb-2 bg-gradient-to-r from-[#4f46e5]/40 via-[#ec4899]/40 to-[#3b82f6]/40 flex bg-backdrop-blur-sm">
-        {[
-          { id: "faq", label: "FAQs", icon: HelpCircle },
-          { id: "articles", label: "Articles", icon: Book },
-          { id: "contact", label: "Contact Support", icon: MessageSquare },
-        ].map((tab) => {
-          const Icon = tab.icon;
-          return (
-            <button
-              key={tab.id}
-              onClick={() =>
-                setActiveTab(tab.id as "faq" | "articles" | "contact")
-              }
-              className={cn(
-                "flex-1 py-4 text-center font-medium cursor-pointer transition-colors",
-                activeTab === tab.id
-                  ? "border-b-2 border-indigo-600 text-gray-600 dark:text-gray-300 dark:hover:text-white"
-                  : "text-gray-600 dark:text-gray-300 border-b-2hover:text-indigo-600"
-              )}
-            >
-              <div className="flex items-center justify-center gap-2 hover:scale-105 duration-100">
-                <Icon className="h-5 w-5" />
-                <span>{tab.label}</span>
+        {/* Tab Switcher */}
+        <div className="px-10 pt-10 pb-2 flex">
+          {[
+            { id: "faq", label: "FAQs", icon: HelpCircle },
+            { id: "articles", label: "Articles", icon: Book },
+            { id: "contact", label: "Contact Support", icon: MessageSquare },
+          ].map((tab) => {
+            const Icon = tab.icon;
+            return (
+              <button
+                key={tab.id}
+                onClick={() =>
+                  setActiveTab(tab.id as "faq" | "articles" | "contact")
+                }
+                className={cn(
+                  "flex-1 py-4 text-center font-medium cursor-pointer transition-colors",
+                  activeTab === tab.id
+                    ? "border-b-2 border-[#3b82f6] text-gray-600 dark:text-gray-300 dark:hover:text-white"
+                    : "text-gray-600 dark:text-gray-300 border-b-2hover:text-[#3b82f6]"
+                )}
+              >
+                <div className="flex items-center justify-center gap-2 hover:scale-105 duration-100">
+                  <Icon className="h-5 w-5" />
+                  <span>{tab.label}</span>
+                </div>
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Content */}
+        <div className="flex-1 pt-6">
+          <ScrollArea className="h-full">
+            {/* Search Bar */}
+            <div className="backdrop-blur-sm pb-8">
+              <div className="max-w-2xl mx-auto relative">
+                <Search className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
+                <Input
+                  placeholder="Search for help, articles, FAQs..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="pl-10 py-6 bg-white/20 focus-visible:ring-0 focus-visible:border-[#3b82f6] placeholder:text-black/40 dark:placeholder:text-white/40 text-lg"
+                />
               </div>
-            </button>
-          );
-        })}
-      </div>
-
-      {/* Content */}
-      <div className="flex-1 bg-gradient-to-r from-[#4f46e5]/40 via-[#ec4899]/40 to-[#3b82f6]/40 pt-6">
-        <ScrollArea className="h-full">
-          {/* Search Bar */}
-          <div className="backdrop-blur-sm pb-8">
-            <div className="max-w-2xl mx-auto relative">
-              <Search className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
-              <Input
-                placeholder="Search for help, articles, FAQs..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-10 py-6 bg-white/20 focus-visible:ring-0 focus-visible:border-indigo-600 placeholder:text-black/40 dark:placeholder:text-white/40 text-lg"
-              />
             </div>
-          </div>
 
-          <div className="max-w-4xl mx-auto">
-            {activeTab === "faq" && (
-              <div className="space-y-6">
-                <h2 className="text-xl font-semibold text-gray-800 dark:text-white mb-6">
-                  Frequently Asked Questions
-                </h2>
+            <div className="max-w-4xl mx-auto">
+              {activeTab === "faq" && (
+                <div className="space-y-6">
+                  <h2 className="text-xl font-semibold text-gray-800 dark:text-white mb-6">
+                    Frequently Asked Questions
+                  </h2>
 
-                {filteredFAQs.length > 0 ? (
-                  <div className="space-y-4">
-                    {filteredFAQs.map((faq) => (
-                      <div
-                        key={faq.question}
-                        className="bg-white/10 rounded-lg overflow-hidden"
-                      >
-                        {/* Header Section */}
+                  {filteredFAQs.length > 0 ? (
+                    <div className="space-y-4">
+                      {filteredFAQs.map((faq) => (
                         <div
-                          className="p-4 flex justify-between items-center cursor-pointer"
-                          onClick={() => toggleFAQ(faq.question)}
+                          key={faq.question}
+                          className="bg-white/10 rounded-lg overflow-hidden"
                         >
-                          <div className="flex items-center gap-3">
-                            <div className="w-8 h-8 bg-transparent rounded-full flex items-center justify-center">
-                              <HelpCircle className="text-black dark:text-white/40" />
+                          {/* Header Section */}
+                          <div
+                            className="p-4 flex justify-between items-center cursor-pointer"
+                            onClick={() => toggleFAQ(faq.question)}
+                          >
+                            <div className="flex items-center gap-3">
+                              <div className="w-8 h-8 bg-transparent rounded-full flex items-center justify-center">
+                                <HelpCircle className="text-black dark:text-white/40" />
+                              </div>
+                              <h3 className="text-gray-900 dark:text-white">
+                                {faq.question}
+                              </h3>
                             </div>
-                            <h3 className="text-gray-900 dark:text-white">
-                              {faq.question}
-                            </h3>
+                            <div className="flex items-center gap-2">
+                              {expandedFAQ === faq.question ? (
+                                <ChevronDown className="text-black dark:text-gray-400" />
+                              ) : (
+                                <ChevronRight className="text-black dark:text-gray-400" />
+                              )}
+                            </div>
                           </div>
-                          <div className="flex items-center gap-2">
-                            {expandedFAQ === faq.question ? (
-                              <ChevronDown className="text-black dark:text-gray-400" />
-                            ) : (
-                              <ChevronRight className="text-black dark:text-gray-400" />
-                            )}
+
+                          {/* Animated Content Section */}
+                          <div
+                            className={`transition-all duration-500 ease-in-out overflow-hidden ${
+                              expandedFAQ === faq.question
+                                ? "max-h-[1000px] opacity-100"
+                                : "max-h-0 opacity-0"
+                            }`}
+                            style={{
+                              transitionProperty: "max-height, opacity",
+                              willChange: "max-height, opacity",
+                            }}
+                          >
+                            <div className="px-6 pb-4 pt-0">
+                              <p className="pt-4 text-gray-700 dark:text-gray-300">
+                                {faq.answer}
+                              </p>
+                            </div>
                           </div>
                         </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="text-center py-12 bg-white/20 backdrop-blur-sm rounded-xl border border-white/20">
+                      <HelpCircle className="h-12 w-12 mx-auto text-gray-400 mb-4" />
+                      <h3 className="text-xl font-medium text-gray-800 dark:text-white mb-2">
+                        No FAQs found
+                      </h3>
+                      <p className="text-gray-600 dark:text-gray-300">
+                        {searchQuery
+                          ? "Try adjusting your search criteria"
+                          : "We're working on adding more FAQs"}
+                      </p>
+                    </div>
+                  )}
+                </div>
+              )}
+              {activeTab === "articles" && (
+                <div className="space-y-6">
+                  <h2 className="text-xl font-semibold text-gray-800 dark:text-white mb-6">
+                    Help Articles
+                  </h2>
 
-                        {/* Animated Content Section */}
+                  {filteredArticles.length > 0 ? (
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      {filteredArticles.map((article) => (
                         <div
-                          className={`transition-all duration-500 ease-in-out overflow-hidden ${
-                            expandedFAQ === faq.question
-                              ? "max-h-[1000px] opacity-100"
-                              : "max-h-0 opacity-0"
-                          }`}
-                          style={{
-                            transitionProperty: "max-height, opacity",
-                            willChange: "max-height, opacity",
-                          }}
+                          key={article.id}
+                          className="bg-transparent hover:bg-white/30 hover:dark:bg-white/10 backdrop-blur-sm rounded-xl border border-transparent p-6 hover:shadow-2xl transition-all"
                         >
-                          <div className="px-6 pb-4 pt-0">
-                            <p className="pt-4 text-gray-700 dark:text-gray-300">
-                              {faq.answer}
-                            </p>
-                          </div>
+                          <h3 className="text-lg font-medium text-gray-800 dark:text-white mb-2">
+                            {article.title}
+                          </h3>
+                          <p className="text-gray-600 dark:text-gray-300 mb-4">
+                            {article.excerpt}
+                          </p>
+
+                          <Button className="dark:text-white text-black hover:text-white border-black hover:border-white border-2 dark:border-white bg-transparent hover:bg-[#3b82f6] gap-2">
+                            Read Article <ExternalLink className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="text-center py-12 bg-white/20 backdrop-blur-sm rounded-xl border border-white/20">
+                      <Book className="h-12 w-12 mx-auto text-gray-400 mb-4" />
+                      <h3 className="text-xl font-medium text-gray-800 dark:text-white mb-2">
+                        No articles found
+                      </h3>
+                      <p className="text-gray-600 dark:text-gray-300">
+                        {searchQuery
+                          ? "Try adjusting your search criteria"
+                          : "We're working on adding more articles"}
+                      </p>
+                    </div>
+                  )}
+                </div>
+              )}
+              {activeTab === "contact" && (
+                <div className="space-y-8">
+                  <h2 className="text-xl font-semibold text-gray-800 dark:text-white mb-6">
+                    Contact Support
+                  </h2>
+                  <div className="bg-white/10 backdrop-blur-md rounded-xl p-6">
+                    <h3 className="text-lg font-medium text-black dark:text-white mb-4">
+                      Send us a message
+                    </h3>
+
+                    <form onSubmit={handleContactSubmit} className="space-y-4">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                          <label
+                            htmlFor="name"
+                            className="block text-sm font-medium text-black dark:text-white mb-1"
+                          >
+                            Your Name
+                          </label>
+                          <Input
+                            id="name"
+                            value={contactForm.name}
+                            onChange={(e) =>
+                              setContactForm({
+                                ...contactForm,
+                                name: e.target.value,
+                              })
+                            }
+                            required
+                            className="bg-white/30 focus:ring-0 focus:border-[#3b82f6]"
+                          />
+                        </div>
+
+                        <div>
+                          <label
+                            htmlFor="email"
+                            className="block text-sm font-medium text-black dark:text-white mb-1"
+                          >
+                            Email Address
+                          </label>
+                          <Input
+                            id="email"
+                            type="email"
+                            value={contactForm.email}
+                            onChange={(e) =>
+                              setContactForm({
+                                ...contactForm,
+                                email: e.target.value,
+                              })
+                            }
+                            required
+                            className="bg-white/30 focus:ring-0 focus:border-[#3b82f6]"
+                          />
                         </div>
                       </div>
-                    ))}
-                  </div>
-                ) : (
-                  <div className="text-center py-12 bg-white/20 backdrop-blur-sm rounded-xl border border-white/20">
-                    <HelpCircle className="h-12 w-12 mx-auto text-gray-400 mb-4" />
-                    <h3 className="text-xl font-medium text-gray-800 dark:text-white mb-2">
-                      No FAQs found
-                    </h3>
-                    <p className="text-gray-600 dark:text-gray-300">
-                      {searchQuery
-                        ? "Try adjusting your search criteria"
-                        : "We're working on adding more FAQs"}
-                    </p>
-                  </div>
-                )}
-              </div>
-            )}
-            {activeTab === "articles" && (
-              <div className="space-y-6">
-                <h2 className="text-xl font-semibold text-gray-800 dark:text-white mb-6">
-                  Help Articles
-                </h2>
 
-                {filteredArticles.length > 0 ? (
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    {filteredArticles.map((article) => (
-                      <div
-                        key={article.id}
-                        className="bg-transparent hover:bg-white/30 hover:dark:bg-white/10 backdrop-blur-sm rounded-xl border border-transparent p-6 hover:shadow-2xl transition-all"
-                      >
-                        <h3 className="text-lg font-medium text-gray-800 dark:text-white mb-2">
-                          {article.title}
-                        </h3>
-                        <p className="text-gray-600 dark:text-gray-300 mb-4">
-                          {article.excerpt}
-                        </p>
+                      <div>
+                        <label
+                          htmlFor="subject"
+                          className="block text-sm font-medium text-black dark:text-white mb-1"
+                        >
+                          Subject
+                        </label>
+                        <Input
+                          id="subject"
+                          value={contactForm.subject}
+                          onChange={(e) =>
+                            setContactForm({
+                              ...contactForm,
+                              subject: e.target.value,
+                            })
+                          }
+                          required
+                          className="bg-white/30 focus:ring-0 focus:border-[#3b82f6]"
+                        />
+                      </div>
 
-                        <Button className="dark:text-white text-black hover:text-white border-black hover:border-white border-2 dark:border-white bg-transparent hover:bg-indigo-700 gap-2">
-                          Read Article <ExternalLink className="h-4 w-4" />
+                      <div>
+                        <label
+                          htmlFor="message"
+                          className="block text-sm font-medium text-black dark:text-white mb-1"
+                        >
+                          Message
+                        </label>
+                        <Textarea
+                          id="message"
+                          value={contactForm.message}
+                          onChange={(e) =>
+                            setContactForm({
+                              ...contactForm,
+                              message: e.target.value,
+                            })
+                          }
+                          required
+                          className="min-h-[150px] bg-white/30 focus:ring-0 focus:border-[#3b82f6]"
+                        />
+                      </div>
+
+                      <div className="flex justify-end">
+                        <Button
+                          type="submit"
+                          className="bg-[#3b82f6] hover:bg-[#3b82f6] text-white font-medium px-4 py-2 rounded-lg"
+                        >
+                          <Send className="h-4 w-4 mr-2" /> Send Message
                         </Button>
                       </div>
-                    ))}
+                    </form>
                   </div>
-                ) : (
-                  <div className="text-center py-12 bg-white/20 backdrop-blur-sm rounded-xl border border-white/20">
-                    <Book className="h-12 w-12 mx-auto text-gray-400 mb-4" />
-                    <h3 className="text-xl font-medium text-gray-800 dark:text-white mb-2">
-                      No articles found
-                    </h3>
-                    <p className="text-gray-600 dark:text-gray-300">
-                      {searchQuery
-                        ? "Try adjusting your search criteria"
-                        : "We're working on adding more articles"}
-                    </p>
-                  </div>
-                )}
-              </div>
-            )}
-            {activeTab === "contact" && (
-              <div className="space-y-8">
-                <h2 className="text-xl font-semibold text-gray-800 dark:text-white mb-6">
-                  Contact Support
-                </h2>
-                <div className="bg-white/20 backdrop-blur-md rounded-xl p-6">
-                  <h3 className="text-lg font-medium text-black dark:text-white mb-4">
-                    Send us a message
-                  </h3>
-
-                  <form onSubmit={handleContactSubmit} className="space-y-4">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div>
-                        <label
-                          htmlFor="name"
-                          className="block text-sm font-medium text-black dark:text-white mb-1"
-                        >
-                          Your Name
-                        </label>
-                        <Input
-                          id="name"
-                          value={contactForm.name}
-                          onChange={(e) =>
-                            setContactForm({
-                              ...contactForm,
-                              name: e.target.value,
-                            })
-                          }
-                          required
-                          className="bg-white/30 focus:ring-0 focus:border-indigo-600"
-                        />
-                      </div>
-
-                      <div>
-                        <label
-                          htmlFor="email"
-                          className="block text-sm font-medium text-black dark:text-white mb-1"
-                        >
-                          Email Address
-                        </label>
-                        <Input
-                          id="email"
-                          type="email"
-                          value={contactForm.email}
-                          onChange={(e) =>
-                            setContactForm({
-                              ...contactForm,
-                              email: e.target.value,
-                            })
-                          }
-                          required
-                          className="bg-white/30 focus:ring-0 focus:border-indigo-600"
-                        />
-                      </div>
-                    </div>
-
-                    <div>
-                      <label
-                        htmlFor="subject"
-                        className="block text-sm font-medium text-black dark:text-white mb-1"
-                      >
-                        Subject
-                      </label>
-                      <Input
-                        id="subject"
-                        value={contactForm.subject}
-                        onChange={(e) =>
-                          setContactForm({
-                            ...contactForm,
-                            subject: e.target.value,
-                          })
-                        }
-                        required
-                        className="bg-white/30 focus:ring-0 focus:border-indigo-600"
-                      />
-                    </div>
-
-                    <div>
-                      <label
-                        htmlFor="message"
-                        className="block text-sm font-medium text-black dark:text-white mb-1"
-                      >
-                        Message
-                      </label>
-                      <Textarea
-                        id="message"
-                        value={contactForm.message}
-                        onChange={(e) =>
-                          setContactForm({
-                            ...contactForm,
-                            message: e.target.value,
-                          })
-                        }
-                        required
-                        className="min-h-[150px] bg-white/30 focus:ring-0 focus:border-indigo-600"
-                      />
-                    </div>
-
-                    <div className="flex justify-end">
-                      <Button
-                        type="submit"
-                        className="bg-indigo-600 hover:bg-indigo-700 text-white font-medium px-4 py-2 rounded-lg"
-                      >
-                        <Send className="h-4 w-4 mr-2" /> Send Message
-                      </Button>
-                    </div>
-                  </form>
                 </div>
-              </div>
-            )}
-          </div>
-        </ScrollArea>
+              )}
+            </div>
+          </ScrollArea>
+        </div>
       </div>
     </div>
   );

@@ -28,6 +28,7 @@ import {
   BarChart,
   Briefcase,
   Folder,
+  ArrowRight,
 } from "lucide-react";
 import { motion } from "framer-motion";
 
@@ -492,104 +493,151 @@ export default function CaseManagement() {
         />
 
         {/* Main Content */}
-        <div className="flex-1 flex flex-col md:flex-row">
-          {/* Case List Sidebar */}
+        <div className="flex-1 flex flex-col md:flex-row ">
           <div
             className={cn(
-              "p-6",
               isMobileView
                 ? "absolute inset-y-0 left-0 z-20 w-full md:w-80"
                 : "w-80"
             )}
           >
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-xl font-bold text-gray-800 dark:text-white">
-                Cases
-              </h2>
-            </div>
-
             {/* Search */}
-            <div className="relative mb-4">
-              <Search className="absolute left-3 top-2 h-5 w-5 text-[#3b82f6]" />
-              <Input
-                placeholder="Search cases..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-10 bg-white/20 focus-visible:ring-0 border-2 focus-visible:border-white/40 dark:placeholder:text-white/40 placeholder:text-black/40"
-              />
+            <div className="p-5">
+              <div className="relative">
+                {searchQuery && (
+                  <>
+                    <ArrowRight className="absolute left-3 top-2 h-5 w-5 text-[#3b82f6]" />
+                  </>
+                )}
+                <Input
+                  placeholder="Search Cases"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className={cn(
+                    "bg-transparent rounded-2xl text-left focus-visible:ring-0 border-2 border-[#3b82f6]/40 focus-visible:scale-105 focus-visible:border-[#3b82f6]/40 transition-all duration-150 dark:placeholder:text-white/40 placeholder:text-black/40",
+                    searchQuery != "" ? "text-center" : "text-left"
+                  )}
+                />
+              </div>
             </div>
 
-            <div className="flex justify-between items-center mb-4">
-              <Button className=" text-white rounded-2xl hover:text-black bg-[#3b82f6] hover:bg-white backdrop-blur-sm border-2 border-white gap-2">
-                <Plus className="h-4 w-4 mr-2" /> New Case
-              </Button>
-            </div>
             {/* Case List */}
-            <div className="h-[calc(100vh-20rem)] overflow-y-auto">
-              {isLoading ? (
-                <></>
-              ) : filteredCases.length > 0 ? (
-                filteredCases.map((caseItem) => (
-                  <motion.div
-                    key={caseItem.id}
-                    onClick={() => {
-                      setSelectedCase(caseItem.id);
-                      if (isMobileView) {
-                        //   setShowSidebar(false);
-                      }
-                    }}
-                    className={cn(
-                      "p-4 rounded-[36px] cursor-pointer transition-all duration-200 mb-2 relative",
-                      selectedCase === caseItem.id
-                        ? "bg-white/30 backdrop-blur-lg shadow-lg"
-                        : "hover:bg-white/20 backdrop-blur-sm m-2"
-                    )}
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
-                  >
-                    <div className="flex items-start gap-3">
-                      <div className="relative">
-                        <div className="w-12 h-12 bg-[#3b82f6] rounded-full flex items-center justify-center">
-                          <Briefcase className="h-6 w-6 text-white" />
-                        </div>
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center justify-between">
-                          <h3 className="font-medium text-gray-800 dark:text-white truncate">
-                            {caseItem.title.split(" ")[0]}
-                          </h3>
-                          <div className="flex items-center gap-1 justify-center mr-2">
-                            <span className="text-xs text-black dark:text-white/40">
-                              {formatDate(caseItem.openDate)}
-                            </span>
+            <ScrollArea className="flex border-t-2 border-[#3b82f6]/50 ">
+              <div className="p-5 h-[calc(100vh-20rem)]">
+                {isLoading ? (
+                  <></>
+                ) : cases
+                    .filter(
+                      (caseItem) =>
+                        caseItem.title
+                          .toLowerCase()
+                          .includes(searchQuery.toLowerCase()) ||
+                        (caseItem.type &&
+                          caseItem.type
+                            .toLowerCase()
+                            .includes(searchQuery.toLowerCase()))
+                    )
+                    .sort((a, b) => {
+                      // if (a.isPinned && !b.isPinned) return -1;
+                      // if (!a.isPinned && b.isPinned) return 1;
+                      return (
+                        new Date(b.openDate).getTime() -
+                        new Date(a.openDate).getTime()
+                      );
+                    }).length > 0 ? (
+                  cases
+                    .filter(
+                      (caseItem) =>
+                        caseItem.title
+                          .toLowerCase()
+                          .includes(searchQuery.toLowerCase()) ||
+                        (caseItem.type &&
+                          caseItem.type
+                            .toLowerCase()
+                            .includes(searchQuery.toLowerCase()))
+                    )
+                    .sort((a, b) => {
+                      // if (a.isPinned && !b.isPinned) return -1;
+                      // if (!a.isPinned && b.isPinned) return 1;
+                      return (
+                        new Date(b.openDate).getTime() -
+                        new Date(a.openDate).getTime()
+                      );
+                    })
+                    .map((caseItem) => (
+                      <motion.div
+                        key={caseItem.id}
+                        onClick={() => {
+                          setSelectedCase(caseItem.id);
+                          if (isMobileView) {
+                            // setShowSidebar(false);
+                          }
+                        }}
+                        className={cn(
+                          "px-4 py-3 rounded-[36px] cursor-pointer transition-all duration-200 mb-2 relative",
+                          selectedCase === caseItem.id
+                            ? "bg-white/30 backdrop-blur-lg shadow-lg"
+                            : "hover:bg-white/20 backdrop-blur-sm m-2"
+                        )}
+                        whileHover={{ scale: 1.01 }}
+                        whileTap={{ scale: 0.98 }}
+                      >
+                        <div className="flex items-center justify-center">
+                          <div className="relative">
+                            <div className="w-12 h-12 bg-[#3b82f6] rounded-full flex items-center justify-center">
+                              <Briefcase className="h-6 w-6 text-white" />
+                            </div>
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center justify-around">
+                              <h3
+                                className={cn(
+                                  "font-medium text-gray-800 text-[14px] dark:text-white truncate transition-all duration-200"
+                                )}
+                              >
+                                {selectedCase === caseItem.id
+                                  ? caseItem.title.split(" ")[0]
+                                  : caseItem.title.slice(0, 4)}
+                              </h3>
+                              <div className="flex items-center gap-1 justify-center mr-6">
+                                <span className="text-xs text-black dark:text-white/40">
+                                  {formatDate(caseItem.openDate)}
+                                </span>
+                              </div>
+                            </div>
                           </div>
                         </div>
-                      </div>
-                    </div>
-                  </motion.div>
-                ))
-              ) : (
-                <div className="text-center py-12 rounded-xl border border-white/40">
-                  <Briefcase className="h-12 w-12 mx-auto text-gray-400 mb-4" />
-                  <h3 className="text-xl font-medium text-gray-800 dark:text-white mb-2">
-                    No cases found
-                  </h3>
-                  <p className="text-gray-600 dark:text-gray-300">
-                    {searchQuery || filterStatus !== "all"
-                      ? "Try adjusting your search or filter criteria"
-                      : "You don't have any cases yet"}
-                  </p>
-                  <Button className="mt-4 bg-indigo-600 hover:bg-indigo-700">
-                    <Plus className="h-4 w-4 mr-2" /> Create New Case
-                  </Button>
-                </div>
-              )}
-            </div>
+                      </motion.div>
+                    ))
+                ) : (
+                  <div className="text-center py-12 rounded-xl border border-white/40">
+                    <Briefcase className="h-12 w-12 mx-auto text-gray-400 mb-4" />
+                    <h3 className="text-xl font-medium text-gray-800 dark:text-white mb-2">
+                      No cases found
+                    </h3>
+                    <p className="text-gray-600 dark:text-gray-300">
+                      {searchQuery
+                        ? "Try adjusting your search criteria"
+                        : "You don't have any cases yet"}
+                    </p>
+                    <Button className="mt-4 bg-indigo-600 hover:bg-indigo-700 gap-2">
+                      <Plus className="h-4 w-4 mr-2" /> Create New Case
+                    </Button>
+                  </div>
+                )}
+              </div>
+              {/* New Case Button */}
+              <div className="flex justify-center items-center mb-4 mx-auto">
+                <Button className="text-white rounded-2xl hover:text-black bg-[#3b82f6] hover:bg-white backdrop-blur-sm border-2 border-white gap-2">
+                  <Plus className="h-4 w-4 mr-2" /> New Case
+                </Button>
+              </div>
+            </ScrollArea>
           </div>
 
           {/* Case Details */}
           {currentCase ? (
-            <div className="flex-1">
+            <div className="flex-1 p-10">
               {/* Case Header */}
               <div className="p-4 border-b border-white/20  bg-[#3b82f6]/10">
                 <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
@@ -1270,15 +1318,15 @@ export default function CaseManagement() {
           ) : (
             <div className="flex-1 flex items-center justify-center">
               <div className="text-center max-w-md px-4">
-                <Briefcase className="h-16 w-16 mx-auto text-white/60 mb-6" />
-                <h2 className="text-2xl font-bold text-white/90 mb-4">
+                <User className="h-16 w-16 mx-auto text-[#3b82f6] dark:text-white/60 mb-6" />
+                <h2 className="text-2xl font-bold text-[#3b82f6] dark:text-white/90 mb-4">
                   Case Management
                 </h2>
-                <p className="text-white/70 mb-6">
+                <p className="dark:text-white/70 text-[#3b82f6] mb-6">
                   Select a case from the sidebar to view details, manage
                   documents, add notes, and track tasks.
                 </p>
-                <Button className="bg-transparent text-white hover:text-black hover:bg-white backdrop-blur-sm border-2 border-white gap-2">
+                <Button className="bg-transparent dark:text-white text-[#3b82f6] hover:text-white hover:bg-[#3b82f6] backdrop-blur-sm border-2 border-[#3b82f6] gap-2">
                   <Plus className="h-4 w-4" /> Create New Case
                 </Button>
               </div>
