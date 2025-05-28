@@ -314,7 +314,7 @@ export default function HelpSupport() {
                             {article.excerpt}
                           </p>
 
-                          <Button className="dark:text-white text-black hover:text-white border-black hover:border-white border-2 dark:border-white bg-transparent hover:bg-[#3b82f6] gap-2">
+                          <Button className="dark:text-white text-black hover:text-white border-black hover:border-white dark:border-white bg-transparent hover:bg-[#3b82f6] gap-2">
                             Read Article <ExternalLink className="h-4 w-4" />
                           </Button>
                         </div>

@@ -117,7 +117,7 @@ export function AIAssistantInterface({
   return (
     <div className="w-full max-w-4xl mx-auto p-3 sm:p-5">
       {/* Main Input Container */}
-      <div className="bg-white/50 dark:bg-white-900/10 backdrop-blur-lg rounded-2xl sm:rounded-3xl dark:border-white-900/10 shadow-lg focus-within:shadow-xl focus-within:bg-white/60 dark:focus-within:bg-white-900/10 transition-all duration-300 mb-4">
+      <div className="bg-transparent backdrop-blur-lg rounded-2xl sm:rounded-3xl dark:border-white-900/10 shadow-none focus-within:shadow-xl focus-within:bg-white/60 dark:focus-within:bg-white-900/10 transition-all duration-300 mb-4">
         {/* Input Field */}
         <div className="flex items-center gap-3 p-4 sm:p-6">
           <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-gradient-to-r from-[#3b82f6] to-[#6366f1] flex items-center justify-center shadow-md">
