@@ -71,12 +71,12 @@ export default function Home() {
   const isWaveActive = inputValue.trim() !== "" || inputFocused;
 
   return (
-    <div className="min-h-screen max-w-[90rem] mx-auto relative overflow-hidden">
+    <div className="min-h-full max-w-[90rem] mx-auto relative overflow-hidden">
       {/* Enhanced SiriWave Background - Fixed positioning for full coverage */}
       <div className="fixed inset-0 flex items-center justify-center pointer-events-none z-0">
         <div
           className={`w-full h-full flex items-center justify-center transition-all transform  duration-1000 ease-in-out scale-180 ${
-            isWaveActive ? "-translate-y-45" : "-translate-y-53"
+            isWaveActive ? "-translate-y-55" : "-translate-y-60"
           } transform opacity-30`}
         >
           <SiriWave isWaveMode={isWaveActive} opacity={1} />

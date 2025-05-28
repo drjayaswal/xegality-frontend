@@ -7,22 +7,18 @@ import {
 } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/lawyer/dashboard/sidebar";
 import clsx from "clsx";
-import { ArrowLeft, ArrowRight } from "lucide-react";
 
 function SidebarToggleButton() {
-  const { open: isOpen = false } = useSidebar(); // Fallback to false if undefined
+  const { open: isOpen = false } = useSidebar();
 
   return (
     <div
       className={clsx(
-        "fixed top-1 z-50 transition-all duration-300",
-        isOpen ? "left-[260px]" : "left-2.5"
+        "fixed top-3 z-50 transition-all duration-300",
+        isOpen ? "left-[268px]" : "left-5 top-5"
       )}
     >
-      <SidebarTrigger
-        icon={isOpen ? <ArrowLeft /> : <ArrowRight />}
-        className="stroke-2.5 text-[#3b82f6] hover:text-white hover:bg-[#3b82f6] rounded-md shadow-none hover:shadow-xl bg-[#3b82f6]/10 rounded-xl backdrop-blur-sm"
-      />
+      <SidebarTrigger className="stroke-2.5 text-[#3b82f6] hover:text-white hover:bg-[#3b82f6] rounded-md shadow-none hover:shadow-xl bg-[#3b82f6]/20 rounded-xl backdrop-blur-sm" />
     </div>
   );
 }
@@ -35,7 +31,7 @@ export default function DashboardLayout({
   return (
     <SidebarProvider>
       <AppSidebar />
-      <main>
+      <main className="p-2">
         <SidebarToggleButton />
         {children}
       </main>

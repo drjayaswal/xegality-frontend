@@ -143,7 +143,7 @@ export default function Subscription() {
   };
 
   return (
-    <div className="w-full h-full bg-white dark:bg-black rounded-lg overflow-auto flex flex-col relative">
+    <div className="m-0 w-full h-full bg-white dark:bg-black rounded-2xl overflow-auto flex flex-col relative">
       {/* Content */}
       <div className="flex-1 bg-gradient-to-r from-[#3b82f6]/15 to-[#3b82f6]/40 p-8">
         <ScrollArea className="h-full">

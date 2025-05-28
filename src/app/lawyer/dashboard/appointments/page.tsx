@@ -201,7 +201,7 @@ export default function Appointments() {
   };
 
   return (
-    <div className="w-full h-full dark:bg-black bg-white bg-gradient-to-r from-[#3b82f6]/10 to-[#3b82f6]/40 rounded-2xl">
+    <div className=" h-full dark:bg-black bg-white bg-gradient-to-r from-[#3b82f6]/10 to-[#3b82f6]/40 rounded-2xl">
       <div className="w-full h-full rounded-lg overflow-hidden flex flex-col relative">
         {/* Header */}
         <div className="relative h-24 overflow-hidden">

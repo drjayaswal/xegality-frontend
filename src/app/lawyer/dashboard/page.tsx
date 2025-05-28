@@ -74,7 +74,7 @@ export default function SelectService({ onSelectService }: SelectServiceProps) {
               className="group cursor-pointer hover:shadow-xl transition-all border border-muted bg-background rounded-2xl"
             >
               <CardContent className="p-6 flex flex-col h-full">
-                <div className="mb-4 p-3 rounded-full bg-primary/10 w-fit group-hover:bg-primary/20 transition">
+                <div className="mb-4 p-3 rounded-full w-fit transition">
                   <service.icon className="h-6 w-6 text-primary" />
                 </div>
                 <h3 className="text-xl font-semibold mb-2 text-foreground">

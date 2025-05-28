@@ -1,4 +1,5 @@
 "use client";
+
 import {
   Briefcase,
   DollarSign,
@@ -8,6 +9,8 @@ import {
   Search,
   Settings,
   Users,
+  GraduationCap,
+  Clock,
 } from "lucide-react";
 
 import {
@@ -21,18 +24,25 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
 
-// Menu items.
-
 import { usePathname } from "next/navigation";
 import clsx from "clsx";
 
 // Menu items
-
 const items = [
   { title: "Home", url: "/lawyer/dashboard", icon: Home },
   { title: "Xegality AI", url: "/lawyer/dashboard/xegality-ai", icon: Search },
   { title: "Clients", url: "/lawyer/dashboard/clients", icon: Users },
   { title: "Cases", url: "/lawyer/dashboard/cases", icon: Briefcase },
+  {
+    title: "Appointments",
+    url: "/lawyer/dashboard/appointments",
+    icon: Clock,
+  },
+  {
+    title: "Hire an Intern",
+    url: "/lawyer/hire-an-intern",
+    icon: GraduationCap,
+  },
   {
     title: "Subscription",
     url: "/lawyer/dashboard/subscriptions",
@@ -55,14 +65,14 @@ export function AppSidebar() {
   const pathname = usePathname();
 
   return (
-    <Sidebar collapsible="icon">
+    <Sidebar collapsible="icon" variant="floating">
       <SidebarContent>
         <SidebarGroup>
           <div className="px-4 py-3">
             <SidebarGroupLabel className="text-2xl font-semibold text-[#3b82f6] tracking-wide">
               Dashboard
             </SidebarGroupLabel>
-          </div>{" "}
+          </div>
           <SidebarGroupContent>
             <SidebarMenu className="space-y-2 pt-3">
               {items.map((item) => {
@@ -83,7 +93,7 @@ export function AppSidebar() {
                           "flex items-center gap-3 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 group",
                           isActive
                             ? "bg-[#3b82f6] text-white shadow"
-                            : "text-gray-700 hover:bg-[#3b82f6] hover:text-[#3b82f6]"
+                            : "text-gray-700 hover:bg-[#3b82f6] hover:text-white dark:text-gray-300 dark:hover:text-white"
                         )}
                       >
                         <item.icon

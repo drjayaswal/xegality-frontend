@@ -234,7 +234,7 @@ export default function XegalityAI() {
   }, [messages, isTyping]);
 
   return (
-    <div className="h-screen  flex flex-col relative">
+    <div className="h-full rounded-xl bg-white flex flex-col relative">
       {/* Hidden file input */}
       <input
         ref={fileInputRef}
@@ -246,7 +246,7 @@ export default function XegalityAI() {
       />
 
       {/* Header */}
-      <div className="relative h-24 overflow-hidden bg-gradient-to-r from-[#3b82f6]/10 to-[#3b82f6]/40">
+      <div className="relative h-24 bg-gradient-to-r from-[#3b82f6]/10 to-[#3b82f6]/40 overflow-hidden rounded-t-xl">
         <div className="absolute inset-0 flex items-center justify-center">
           <div className="w-full h-fit flex items-center justify-center">
             <SiriWave
@@ -434,7 +434,7 @@ export default function XegalityAI() {
       </AnimatePresence>
 
       {/* Input Area */}
-      <div className="p-6 pt-8 bg-gradient-to-r from-[#3b82f6]/10 to-[#3b82f6]/40 relative z-30">
+      <div className="p-6 pt-8 relative rounded-b-xl bg-gradient-to-r from-[#3b82f6]/10 to-[#3b82f6]/40 z-30">
         <div className="flex gap-3 justify-center items-center">
           <div className="flex-1 relative">
             <Input
