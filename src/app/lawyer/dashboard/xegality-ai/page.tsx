@@ -234,7 +234,7 @@ export default function XegalityAI() {
   }, [messages, isTyping]);
 
   return (
-    <div className="w-full h-full rounded-lg overflow-hidden flex flex-col relative">
+    <div className="h-screen  flex flex-col relative">
       {/* Hidden file input */}
       <input
         ref={fileInputRef}

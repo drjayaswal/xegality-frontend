@@ -1,27 +1,27 @@
-"use client"
+"use client";
 
-import { useState } from "react";
-import { ArrowRight, Menu, X } from "lucide-react";
-import Link from "next/link";
+import ThemeToggle from "@/components/shared/theme-toggle";
 import { Button } from "@/components/ui/button";
+import { NAVLINKS } from "@/lib/consts";
+import { cn } from "@/lib/utils";
+import { Menu, Shield, X } from "lucide-react";
+import { motion } from "motion/react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { useState } from "react";
 
-function NavLink({ href, children }: { href: string; children: React.ReactNode }) {
+const Header = () => {
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
   return (
-    <Link href={href} className="text-gray-600 hover:text-indigo-600 font-medium transition-colors">
-      {children}
-    </Link>
-  );
-}
-
-export function Header() {
-  const [menuOpen, setMenuOpen] = useState(false);
-
-  return (
-    <header className="fixed top-0 left-0 right-0 bg-white/10 backdrop-blur-sm z-50 border-b border-gray-100">
-      <div className="container mx-auto px-4 py-4">
-        <div className="flex items-center justify-between">
+    <header className="sticky top-0 z-50 bg-white/80 dark:bg-gray-900/80 backdrop-blur-md border-b border-gray-200 dark:border-gray-700 transition-colors duration-500">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex items-center justify-between h-16">
           {/* Logo */}
-          <Link href="/" className="flex items-center gap-2">
+          <Link
+            href="/"
+            className="flex items-center gap-2 animate-slide-right-md"
+          >
             <div className="relative h-8 w-8">
               <svg viewBox="0 0 24 24" fill="none" className="h-8 w-8">
                 <path
@@ -48,60 +48,97 @@ export function Header() {
                 />
               </svg>
             </div>
-            <span className="text-xl font-bold text-gray-900">Xegality</span>
+            <span className="text-xl font-bold text-gray-900 dark:text-white">
+              Xegality
+            </span>
           </Link>
 
           {/* Desktop Navigation */}
-          <nav className="hidden lg:flex items-center space-x-8">
-            <NavLink href="/book-appointment">Book an Appointment</NavLink>
-            <NavLink href="/hire-attorney">Hire an Attorney</NavLink>
-            <NavLink href="/legal-contracts">Legal Contracts</NavLink>
+          <nav className="hidden md:flex items-center space-x-2">
+            {NAVLINKS.map(({ title, href }, index) => {
+              const isActive = href === usePathname();
+              return (
+                <Link
+                  key={index}
+                  href={href}
+                  className={cn(
+                    "text-gray-700 py-2 px-5 rounded-full dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-all duration-300 text-sm font-medium relative group",
+                    isActive && "bg-indigo-500/8 text-indigo-500"
+                  )}
+                >
+                  {title}
+                  {/* <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-blue-600 to-purple-600 group-hover:w-full transition-all duration-300"></span> */}
+                </Link>
+              );
+            })}
           </nav>
 
-          {/* Actions */}
-          <div className="flex items-center gap-4">
-            <Button
-              variant="outline"
-              className="hidden lg:flex border-2 hover:text-indigo-700 transition-all duration-100 hover:scale-102 hover:bg-transparent hover:font-bold hover:border-indigo-700"
-            >
-              Client Portal
-            </Button>
-            <Button className="bg-indigo-600 hover:bg-indigo-700">
-              <span>Get Consultation</span>
-              <ArrowRight className="ml-2 h-4 w-4" />
-            </Button>
-            {/* Mobile Menu Toggle */}
+          {/* Desktop CTA */}
+          <div className="hidden md:flex items-center space-x-4">
+            <ThemeToggle />
             <Button
               variant="ghost"
-              size="icon"
-              className="lg:hidden"
-              onClick={() => setMenuOpen(!menuOpen)}
+              className="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-all duration-300"
             >
-              {menuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+              Login
             </Button>
+            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+              <Button className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white shadow-lg hover:shadow-xl transition-all duration-300">
+                Get Started
+              </Button>
+            </motion.div>
           </div>
+
+          {/* Mobile Menu Button */}
+          <motion.button
+            className="md:hidden p-2"
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            whileTap={{ scale: 0.9 }}
+          >
+            {mobileMenuOpen ? (
+              <X className="w-6 h-6" />
+            ) : (
+              <Menu className="w-6 h-6" />
+            )}
+          </motion.button>
         </div>
 
-        {/* Mobile Navigation */}
-        <div
-          className={` p-5 rounded-b-3xl lg:hidden absolute top-full left-0 right-0 bg-white rounded-lg shadow-md transition-all duration-300 ease-in-out ${menuOpen ? "max-h-screen opacity-100 translate-y-0" : "max-h-0 opacity-0 -translate-y-4"
-            } overflow-hidden`}
-        >
-          <nav className="flex flex-col space-y-4 px-4 py-4">
-            <NavLink href="#services">Book an Appointment</NavLink>
-            <NavLink href="#expertise">Hire an Attorney</NavLink>
-            <NavLink href="#contact">Legal Contracts</NavLink>
-            <Button
-              variant="outline"
-              className="border-2 text-gray-600 hover:text-indigo-700 hover:border-indigo-700"
-            >
-              Client Portal
-            </Button>
-          </nav>
-        </div>
+        {/* Mobile Menu */}
+        {mobileMenuOpen && (
+          <motion.div
+            className="md:hidden py-4 border-t border-gray-200 dark:border-gray-700"
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            exit={{ opacity: 0, height: 0 }}
+            transition={{ duration: 0.3 }}
+          >
+            <nav className="flex flex-col space-y-4">
+              {["Find Lawyers", "Legal Services", "For Lawyers", "About"].map(
+                (item, index) => (
+                  <motion.a
+                    key={item}
+                    href="#"
+                    className="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-200"
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ duration: 0.3, delay: index * 0.1 }}
+                  >
+                    {item}
+                  </motion.a>
+                )
+              )}
+              <div className="flex flex-col space-y-2 pt-4">
+                <Button variant="ghost">Login</Button>
+                <Button className="bg-gradient-to-r from-blue-600 to-purple-600">
+                  Get Started
+                </Button>
+              </div>
+            </nav>
+          </motion.div>
+        )}
       </div>
     </header>
   );
-}
+};
 
-
+export default Header;

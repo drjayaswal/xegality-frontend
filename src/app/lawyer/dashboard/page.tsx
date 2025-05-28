@@ -1,335 +1,120 @@
 "use client";
 
-import type React from "react";
-
-import { useEffect, useState } from "react";
-import { cn } from "@/lib/utils";
-import Link from "next/link";
 import {
-  Bell,
-  Contact,
-  CreditCard,
-  DoorOpen,
-  HelpCircle,
-  Moon,
-  ReceiptText,
-  Settings,
-  Shield,
+  MousePointerClick,
+  ArrowRight,
   Sparkles,
-  Sun,
-  User,
-  Users,
+  LayoutDashboard,
+  Clock,
 } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { motion } from "framer-motion";
+import Link from "next/link";
 
-import { Switch } from "@/components/ui/switch";
-import XegalityAI from "@/components/lawyer/dashboard/xegality-ai";
-import HelpSupport from "@/components/lawyer/dashboard/help-and-support";
-import Subscription from "@/components/lawyer/dashboard/subscription";
-import BillingPayments from "@/components/lawyer/dashboard/billing-and-payment";
-import CaseManagement from "@/components/lawyer/dashboard/case-management";
-import Appointments from "@/components/lawyer/dashboard/appointment";
-import Clients from "@/components/lawyer/dashboard/clients";
-import SettingsLite from "@/components/lawyer/dashboard/settings";
-
-type Tab = {
-  title: string;
-  value: string;
-  content?: string | React.ReactNode | any;
-  category: "services" | "account";
-};
-
-interface NavItemProps {
-  icon: React.ReactNode;
-  label: string;
-  href: string;
-  active?: boolean;
-  badge?: string | number;
-  onClick?: () => void;
-  onMouseEnter?: () => void;
-  onMouseLeave?: () => void;
+interface SelectServiceProps {
+  onSelectService?: (service: string) => void;
 }
 
-const NavItem = ({
-  icon,
-  label,
-  href,
-  active,
-  badge,
-  onClick,
-  onMouseEnter,
-  onMouseLeave,
-}: NavItemProps) => (
-  <Link
-    href={href}
-    className={cn(
-      "flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors",
-      active
-        ? "bg-[#3b82f6] text-white"
-        : "text-gray-700 hover:bg-[#3b82f6]/50 dark:text-gray-200 dark:hover:bg-[#3b82f6]/50"
-    )}
-    onClick={onClick}
-    onMouseEnter={onMouseEnter}
-    onMouseLeave={onMouseLeave}
-    role={onClick ? "button" : undefined}
-    tabIndex={onClick ? 0 : undefined}
-  >
-    <span className="flex h-5 w-5 items-center justify-center">{icon}</span>
-    <span className="flex-1">{label}</span>
-    {badge && (
-      <span className="flex h-5 w-5 items-center justify-center rounded-full bg-[#3b82f6] text-xs font-semibold text-[#3b82f6] dark:bg-[#3b82f6] dark:text-[#3b82f6]">
-        {badge}
-      </span>
-    )}
-  </Link>
-);
-
-export default function LawyerDashboard() {
-  // Combine all tabs into one array with categories
-  const allTabs: Tab[] = [
+export default function SelectService({ onSelectService }: SelectServiceProps) {
+  const popularServices = [
     {
-      title: "Xegality AI",
+      name: "Xegality AI",
+      description: "AI-powered legal assistant and document analysis",
+      icon: Sparkles,
       value: "xegality-ai",
-      category: "services",
-      content: (
-        <>
-          <XegalityAI />
-        </>
-      ),
     },
     {
-      title: "Clients",
-      value: "clients",
-      category: "account",
-      content: (
-        <>
-          <Clients />
-        </>
-      ),
+      name: "Case Management",
+      description: "Organize, track, and manage all your legal cases",
+      icon: LayoutDashboard,
+      value: "cases",
     },
     {
-      title: "Appointments",
+      name: "Appointments",
+      description: "Schedule, track, and manage meetings efficiently",
+      icon: Clock,
       value: "appointments",
-      category: "services",
-      content: <Appointments />,
-    },
-    {
-      title: "Case Management",
-      value: "case-management",
-      category: "account",
-      content: <CaseManagement />,
-    },
-    {
-      title: "Billing & Payments",
-      value: "billing-payments",
-      category: "services",
-      content: <BillingPayments />,
-    },
-    {
-      title: "Subscription",
-      value: "subscription",
-      category: "account",
-      content: <Subscription />,
-    },
-    {
-      title: "Help & Support",
-      value: "help-support",
-      category: "account",
-      content: <HelpSupport />,
-    },
-    {
-      title: "Settings",
-      value: "settings",
-      category: "services",
-      content: (
-        <>
-          <SettingsLite />
-        </>
-      ),
     },
   ];
-  // Separate tabs by category for sidebar display
-  const servicesTabs = allTabs.filter((tab) => tab.category === "services");
-  const accountTabs = allTabs.filter((tab) => tab.category === "account");
-
-  const [active, setActive] = useState<Tab>(allTabs[0]);
-  const [tabs, setTabs] = useState<Tab[]>(allTabs);
-
-  // useEffect(() => {
-  //   const storedTheme = localStorage.getItem("theme");
-  //   if (storedTheme === "dark") {
-  //     setIsDarkMode(true);
-  //   }
-  // }, []);
-
-  const moveSelectedTabToTop = (tabValue: string) => {
-    const clickedTab = allTabs.find((tab) => tab.value === tabValue);
-    if (!clickedTab || clickedTab.value === active.value) {
-      return; // Do nothing if tab not found or already active
-    }
-
-    const newTabs = [...tabs];
-    const tabIndex = newTabs.findIndex((tab) => tab.value === tabValue);
-    if (tabIndex > -1) {
-      const selectedTab = newTabs.splice(tabIndex, 1)[0];
-      newTabs.unshift(selectedTab);
-      setTabs(newTabs);
-      setActive(selectedTab);
-    }
-  };
-
-  const [hovering, setHovering] = useState(false);
-  const [isDarkMode, setIsDarkMode] = useState(false);
-
-  useEffect(() => {
-    const storedTheme = localStorage.getItem("theme") || "light";
-    setIsDarkMode(storedTheme === "dark");
-    document.documentElement.classList.toggle("dark", storedTheme === "dark");
-  }, []);
-
-  const toggleTheme = () => {
-    const newTheme = isDarkMode ? "light" : "dark";
-    localStorage.setItem("theme", newTheme);
-    document.documentElement.classList.toggle("dark", newTheme === "dark");
-    setIsDarkMode(!isDarkMode);
-  };
-  const getTabIcon = (title: string) => {
-    switch (title) {
-      case "Xegality AI":
-        return <Sparkles className="h-4 w-4" />;
-      case "Clients":
-        return <Users className="h-4 w-4" />;
-      case "Appointments":
-        return <Contact className="h-4 w-4" />;
-      case "Case Management":
-        return <DoorOpen className="h-4 w-4" />;
-      case "Billing & Payments":
-        return <ReceiptText className="h-4 w-4" />;
-      case "Profile Settings":
-        return <User className="h-4 w-4" />;
-      case "Notifications":
-        return <Bell className="h-4 w-4" />;
-      case "Security":
-        return <Shield className="h-4 w-4" />;
-      case "Subscription":
-        return <CreditCard className="h-4 w-4" />;
-      case "Help & Support":
-        return <HelpCircle className="h-4 w-4" />;
-      case "Settings":
-        return <Settings className="h-4 w-4" />;
-      default:
-        return <></>;
-    }
-  };
 
   return (
-    <div className="flex h-screen bg-white backdrop-blur-[2px] gap-1 justify-center dark:bg-black">
-      {/* Sidebar */}
-      <div className="flex h-full w-64 flex-col border-r">
-        <div className="flex h-[86px] items-center flex justify-center border-b-2 border-[#3b82f6]/50 p-2">
-          <h1 className="text-2xl font-semibold">Xegality</h1>
-        </div>
-
-        <div className="flex-1 overflow-auto py-4">
-          {/* Services Section */}
-          <div className="px-3 py-2">
-            <h2 className="mb-2 px-3 text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">
-              Services
-            </h2>
-            <div className="space-y-1">
-              {servicesTabs.map((tab) => (
-                <NavItem
-                  key={tab.value}
-                  onClick={() => moveSelectedTabToTop(tab.value)}
-                  onMouseEnter={() => setHovering(true)}
-                  onMouseLeave={() => setHovering(false)}
-                  icon={getTabIcon(tab.title)}
-                  label={tab.title}
-                  href="#"
-                  active={active.value === tab.value}
-                />
-              ))}
-            </div>
-          </div>
-
-          {/* Account Section */}
-          <div className="px-3 py-2 mt-6">
-            <h2 className="mb-2 px-3 text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">
-              Account
-            </h2>
-            <div className="space-y-1">
-              {accountTabs.map((tab) => (
-                <NavItem
-                  key={tab.value}
-                  onClick={() => moveSelectedTabToTop(tab.value)}
-                  onMouseEnter={() => setHovering(true)}
-                  onMouseLeave={() => setHovering(false)}
-                  icon={getTabIcon(tab.title)}
-                  label={tab.title}
-                  href="#"
-                  active={active.value === tab.value}
-                />
-              ))}
-            </div>
-          </div>
-
-          <div className="border-t-2 border-[#3b82f6]/50 flex gap-1 mt-5 items-center justify-center p-6">
-            {isDarkMode ? (
-              <Moon className="h-5 w-5 dark:text-[#3b82f6] text-[#3b82f6]" />
-            ) : (
-              <Sun className="h-5 w-5 dark:text-[#3b82f6] text-[#3b82f6]" />
-            )}
-            <span className="text-[#3b82f6]"> - - - </span>
-            <Switch
-              checked={isDarkMode}
-              onCheckedChange={toggleTheme}
-              className="data-[state=checked]:bg-[#3b82f6] data-[state=unchecked]:bg-[#3b82f6] data-[state=unchecked]:border-transparent data-[state=unchecked]:shadow-none"
-            />
+    <div className="flex flex-col items-center justify-center h-full w-full max-w-6xl mx-auto px-4 md:px-8 py-8">
+      <motion.div
+        initial={{ opacity: 0, y: 30 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+        className="text-center mb-12"
+      >
+        <div className="flex justify-center mb-6">
+          <div className="p-4 rounded-full bg-primary/10 dark:bg-primary/20">
+            <MousePointerClick className="h-10 w-10 text-primary" />
           </div>
         </div>
+        <h1 className="text-4xl font-bold mb-4 text-foreground">
+          Welcome to Your Legal Dashboard
+        </h1>
+        <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+          Choose a service below to start managing your legal practice more
+          effectively.
+        </p>
+      </motion.div>
+
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 w-full mb-16">
+        {popularServices.map((service, index) => (
+          <motion.div
+            key={service.value}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, delay: 0.1 * (index + 1) }}
+            whileHover={{ scale: 1.03 }}
+          >
+            <Card
+              onClick={() => onSelectService?.(service.value)}
+              className="group cursor-pointer hover:shadow-xl transition-all border border-muted bg-background rounded-2xl"
+            >
+              <CardContent className="p-6 flex flex-col h-full">
+                <div className="mb-4 p-3 rounded-full bg-primary/10 w-fit group-hover:bg-primary/20 transition">
+                  <service.icon className="h-6 w-6 text-primary" />
+                </div>
+                <h3 className="text-xl font-semibold mb-2 text-foreground">
+                  {service.name}
+                </h3>
+                <p className="text-sm text-muted-foreground mb-4 flex-grow">
+                  {service.description}
+                </p>
+                <Button
+                  variant="ghost"
+                  className="justify-start p-0 hover:text-primary"
+                  asChild
+                >
+                  <Link href={`dashboard/${service.value}`}>
+                    Open <ArrowRight className="ml-2 h-4 w-4" />
+                  </Link>
+                </Button>
+              </CardContent>
+            </Card>
+          </motion.div>
+        ))}
       </div>
 
-      {/* Main Content */}
-      <div className="h-[calc(100vh-17px)] flex flex-col mx-2 w-full items-start justify-start">
-        <FadeInDiv
-          tabs={tabs}
-          active={active}
-          key={active.value}
-          hovering={hovering}
-          className="mt-2"
-        />
-      </div>
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.4, delay: 0.6 }}
+        className="text-center"
+      >
+        <div className="p-3 rounded-full bg-primary/5 mb-3 inline-flex">
+          <Sparkles className="h-5 w-5 text-primary/70" />
+        </div>
+        <h3 className="text-lg font-medium mb-1 text-foreground">
+          Need Assistance?
+        </h3>
+        <p className="text-sm text-muted-foreground max-w-md mx-auto">
+          Use <strong>Xegality AI</strong> for smart legal help or visit{" "}
+          <strong>Help & Support</strong> for guidance.
+        </p>
+      </motion.div>
     </div>
   );
 }
-
-const FadeInDiv = ({
-  tabs,
-  active,
-  className,
-  hovering,
-}: {
-  tabs: Tab[];
-  active: Tab;
-  className?: string;
-  hovering?: boolean;
-}) => {
-  const isActive = (tab: Tab) => tab.value === active.value;
-
-  return (
-    <div className="relative w-full h-full">
-      {tabs.map((tab, idx) => (
-        <div
-          key={tab.value}
-          style={{
-            opacity: isActive(tab) ? 1 : 0,
-            visibility: isActive(tab) ? "visible" : "hidden",
-            transition: "opacity 0.3s ease, visibility 0.3s ease",
-          }}
-          className={cn("w-full h-full absolute top-0 left-0", className)}
-        >
-          {tab.content}
-        </div>
-      ))}
-    </div>
-  );
-};
