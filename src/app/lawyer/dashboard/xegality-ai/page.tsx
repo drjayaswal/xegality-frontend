@@ -11,9 +11,6 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import {
   Send,
   FileText,
-  Scale,
-  Clock,
-  Users,
   Mic,
   Paperclip,
   User,
