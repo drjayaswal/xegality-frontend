@@ -234,7 +234,7 @@ export default function XegalityAI() {
   }, [messages, isTyping]);
 
   return (
-    <div className="h-full rounded-xl bg-white flex flex-col relative">
+    <div className="h-full shadow-lg border-[1.5px] bg-gray-50 flex flex-col relative rounded-lg">
       {/* Hidden file input */}
       <input
         ref={fileInputRef}
@@ -244,13 +244,12 @@ export default function XegalityAI() {
         onChange={handleFileUpload}
         className="hidden"
       />
-
       {/* Header */}
-      <div className="relative h-24 bg-gradient-to-r from-[#3b82f6]/10 to-[#3b82f6]/40 overflow-hidden rounded-t-xl">
+      <div className="relative h-24 bg-gradient-to-r from-gray-50 to-[#3b82f6]/40 overflow-hidden rounded-t-md">
         <div className="absolute inset-0 flex items-center justify-center">
           <div className="w-full h-fit flex items-center justify-center">
             <SiriWave
-              opacity={0.5}
+              opacity={0.6}
               isWaveMode={isListening || isTyping || inputValue != ""}
             />
           </div>
@@ -274,9 +273,8 @@ export default function XegalityAI() {
           </div>
         </div>
       </div>
-
       {/* Chat Messages */}
-      <div className="flex-1 px-5 py-10 bg-gradient-to-r from-[#3b82f6]/10 to-[#3b82f6]/40 overflow-hidden">
+      <div className="flex-1 px-5 py-10 bg-gradient-to-r from-gray-50 to-[#3b82f6]/40 overflow-hidden">
         <ScrollArea className="h-full" ref={scrollAreaRef}>
           <div className="space-y-4 pb-20">
             <AnimatePresence>
@@ -350,7 +348,6 @@ export default function XegalityAI() {
           </div>
         </ScrollArea>
       </div>
-
       {/* Floating Uploaded Files Display */}
       <AnimatePresence>
         {uploadedFiles.length > 0 && (
@@ -432,10 +429,9 @@ export default function XegalityAI() {
           </motion.div>
         )}
       </AnimatePresence>
-
       {/* Input Area */}
-      <div className="p-6 pt-8 relative rounded-b-xl bg-gradient-to-r from-[#3b82f6]/10 to-[#3b82f6]/40 z-30">
-        <div className="flex gap-3 justify-center items-center">
+      <div className="pt-8 relative rounded-b-md bg-gradient-to-r from-gray-50 to-[#3b82f6]/40 z-30">
+        <div className="flex gap-0 justify-center items-center">
           <div className="flex-1 relative">
             <Input
               ref={inputRef}
@@ -443,13 +439,13 @@ export default function XegalityAI() {
               onChange={(e) => setInputValue(e.target.value)}
               onKeyPress={handleKeyPress}
               placeholder="Ask Xegality AI anything about law, cases, or legal research..."
-              className="pr-20 py-3 bg-transparent focus-visible:ring-white/60 ring-2 ring-white/20 placeholder:text-black/40 dark:placeholder:text-white/40 font-bold shadow-none focus-visible::outline-none border-none"
+              className="pr-20 py-3 bg-transparent focus-visible:ring-[2px] ring-black rounded-none placeholder:text-black/40 dark:placeholder:text-white/40 font-bold shadow-none border-none"
             />
           </div>
           <Button
             onClick={handleUploadClick}
             disabled={showUploadAnimation}
-            className="flex items-center gap-2 rounded-full text-gray-600 text-sm bg-gradient-to-r from-[#4f46e5]/10 via-[#ec4899]/10 to-[#3b82f6]/10 shadow-none hover:bg-transparent px-8 py-2 hover:text-indigo-900 hover:scale-105 transition-all duration-150"
+            className="flex items-center gap-2 rounded-none text-gray-600 text-sm bg-gradient-to-r from-[#4f46e5]/10 via-[#ec4899]/10 to-[#3b82f6]/10 shadow-none hover:bg-transparent px-4 py-2 hover:text-indigo-900 hover:scale-105 transition-all duration-150"
           >
             {showUploadAnimation ? (
               <motion.div
@@ -489,40 +485,33 @@ export default function XegalityAI() {
               <Paperclip className="w-4 h-4 text-black/70 dark:text-white/70" />
             )}
             {showUploadAnimation ? (
-              <>
-                <span>Attaching...</span>
-              </>
+              <span>Attaching...</span>
             ) : (
               <span className="text-black/70 dark:text-white/70">Attach</span>
             )}
           </Button>
-
           <Button
-            className="h-10 w-10 bg-gradient-to-r from-[#3b82f6]/10 to-[#3b82f6]/40 flex justify-center items-center rounded-4xl"
+            className="h-10 w-10 bg-gradient-to-r from-[#3b82f6]/10 to-[#3b82f6]/40 flex justify-center items-center rounded-none"
             onClick={handleVoiceSearch}
           >
             {isListening ? (
-              <>
-                <EarIcon className="animate-pulse text-white" />
-              </>
+              <EarIcon className="animate-pulse text-white" />
             ) : (
-              <>
-                <Mic className="h-8 w-8 text-white" />
-              </>
+              <Mic className="h-8 w-8 text-white" />
             )}
           </Button>
           <Button
             onClick={handleSendMessage}
             disabled={!inputValue.trim() || isTyping}
-            className="h-10 w-10 animate-gradient flex justify-center items-center rounded-4xl"
+            className="h-10 w-10 animate-gradient flex justify-center items-center rounded-r-md"
           >
             <Send className="h-5 w-5 text-white" />
           </Button>
         </div>
-        <p className="text-xs text-black/40 dark:text-white/40 mt-2 text-center">
+        <p className="text-xs bg-red-300 text-black/40 dark:text-white/40 mt-2 text-center">
           Xegality AI can make mistakes. Please verify important information.
         </p>
-      </div>
+      </div>{" "}
     </div>
   );
 }

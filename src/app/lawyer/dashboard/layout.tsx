@@ -15,10 +15,10 @@ function SidebarToggleButton() {
     <div
       className={clsx(
         "fixed top-3 z-50 transition-all duration-300",
-        isOpen ? "left-[268px]" : "left-5 top-5"
+        isOpen ? "left-[216px]" : "left-5 top-5"
       )}
     >
-      <SidebarTrigger className="stroke-2.5 text-[#3b82f6] hover:text-white hover:bg-[#3b82f6] rounded-md shadow-none hover:shadow-xl bg-[#3b82f6]/20 rounded-xl backdrop-blur-sm" />
+      <SidebarTrigger className="stroke-2.5 text-[#3b82f6] hover:text-white hover:bg-[#3b82f6] rounded-[8px] shadow-none hover:shadow-xl bg-[#3b82f6]/20 py-3 backdrop-blur-sm" />
     </div>
   );
 }
@@ -31,7 +31,7 @@ export default function DashboardLayout({
   return (
     <SidebarProvider>
       <AppSidebar />
-      <main className="p-2">
+      <main className="p-2 min-h-screen w-full">
         <SidebarToggleButton />
         {children}
       </main>

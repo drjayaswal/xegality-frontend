@@ -102,7 +102,7 @@ export default function HireAnInternPage() {
   };
 
   return (
-    <div className="min-h-screen p-1 mt-5">
+    <div className="min-h-screen bg-gray-50 w-full p-6 rounded-2xl shadow-lg border-[1.5px]">
       <div className="max-w-7xl mx-auto">
         {/* Header Section */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8">
@@ -115,40 +115,43 @@ export default function HireAnInternPage() {
               Manage your legal interns and hire new talent for your practice
             </p>
           </div>
-          <Link href="/lawyer/hire-an-intern">
-            <Button className="rounded-full bg-[#3b82f6] flex text-white dark:text-[#60a5fa] hover:text-white items-center justify-center hover:bg-gradient-to-r hover:from-[#3b82f6] hover:to-[#6366f1] transition-all duration-200 active:scale-95 gap-1.5 px-3 py-1.5 h-auto shadow-none">
+          <Link href="/lawyer/dashboard/add-internships">
+            <Button className="bg-gray-50 text-black hover:bg-white shadow-none hover:shadow-xl hover:scale-102">
               <Plus className="h-4 w-4 mr-2" />
-              Hire New Intern
+              Add Internships
             </Button>
           </Link>
         </div>
-
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-5 mb-8">
-          <Card className="border-1 border-l-4 border-[#3b82f6] bg-white/70 backdrop-blur-sm shadow-xl">
-            <CardContent className="p-6">
+          {/* Total Interns */}
+          <Card className="relative overflow-hidden border-0 rounded-xl group shadow-none hover:shadow-md transform hover:-translate-y-2 duration-150 bg-transparent">
+            <div className="absolute inset-0 z-0 bg-gradient-to-r from-gray-50 to-[#3b82f6]/10 group-hover:from-[#3b82f6] group-hover:to-blue-400 transition-colors duration-300 ease-in-out backdrop-blur-sm" />
+            <CardContent className="relative z-10 p-6 transition-colors duration-300 ease-in-out">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-muted-foreground">
+                  <p className="text-sm font-medium text-muted-foreground group-hover:text-white transition-colors duration-300">
                     Total Interns
                   </p>
-                  <p className="text-2xl font-bold text-foreground">
+                  <p className="text-2xl font-bold text-foreground group-hover:text-white transition-colors duration-300">
                     {hiredInterns.length}
                   </p>
                 </div>
-                <User className="h-8 w-8 text-[#3b82f6]" />
+                <User className="h-8 w-8 text-[#3b82f6] group-hover:text-white transition-colors duration-300" />
               </div>
             </CardContent>
           </Card>
 
-          <Card className="border-1 border-l-4 border-green-500  bg-white/70 backdrop-blur-sm shadow-xl">
-            <CardContent className="p-6">
+          {/* Active Interns */}
+          <Card className="relative overflow-hidden border-0 rounded-xl group shadow-none hover:shadow-md transform hover:-translate-y-2 duration-150 bg-transparent">
+            <div className="absolute inset-0 z-0 bg-gradient-to-r from-gray-50 to-green-200 group-hover:from-green-500 group-hover:to-green-500 transition-colors duration-300 ease-in-out backdrop-blur-sm" />
+            <CardContent className="relative z-10 p-6 transition-colors duration-300 ease-in-out">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-muted-foreground">
+                  <p className="text-sm font-medium text-muted-foreground group-hover:text-white transition-colors duration-300">
                     Active Interns
                   </p>
-                  <p className="text-2xl font-bold text-foreground">
+                  <p className="text-2xl font-bold text-foreground group-hover:text-white transition-colors duration-300">
                     {
                       hiredInterns.filter(
                         (intern) => intern.status === "Active"
@@ -156,69 +159,79 @@ export default function HireAnInternPage() {
                     }
                   </p>
                 </div>
-                <Briefcase className="h-8 w-8 text-green-500" />
+                <Briefcase className="h-8 w-8 text-green-500 group-hover:text-white transition-colors duration-300" />
               </div>
             </CardContent>
           </Card>
 
-          <Card className="border-1 border-l-4 border-purple-500 bg-white/70 backdrop-blur-sm shadow-xl">
-            <CardContent className="p-6">
+          {/* Total Tasks */}
+          <Card className="relative overflow-hidden border-0 rounded-xl group shadow-none hover:shadow-md transform hover:-translate-y-2 duration-150 bg-transparent">
+            <div className="absolute inset-0 z-0 bg-gradient-to-r from-gray-50 to-purple-200 group-hover:from-purple-500 group-hover:to-purple-400 transition-colors duration-300 ease-in-out backdrop-blur-sm" />
+            <CardContent className="relative z-10 p-6 transition-colors duration-300 ease-in-out">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-muted-foreground">
+                  <p className="text-sm font-medium text-muted-foreground group-hover:text-white transition-colors duration-300">
                     Total Tasks
                   </p>
-                  <p className="text-2xl font-bold text-foreground">
+                  <p className="text-2xl font-bold text-foreground group-hover:text-white transition-colors duration-300">
                     {hiredInterns.reduce(
                       (sum, intern) => sum + intern.tasksCompleted,
                       0
                     )}
                   </p>
                 </div>
-                <Clock className="h-8 w-8 text-purple-500" />
+                <Clock className="h-8 w-8 text-purple-500 group-hover:text-white transition-colors duration-300" />
               </div>
             </CardContent>
           </Card>
 
-          <Card className="border-1 border-l-4 border-orange-500 bg-white/70 backdrop-blur-sm shadow-xl">
-            <CardContent className="p-6">
+          {/* Total Hours */}
+          <Card className="relative overflow-hidden border-0 rounded-xl group shadow-none hover:shadow-md transform hover:-translate-y-2 duration-150 bg-transparent">
+            <div className="absolute inset-0 z-0 bg-gradient-to-r from-gray-50 to-orange-200 group-hover:from-orange-500 group-hover:to-orange-400 transition-colors duration-300 ease-in-out backdrop-blur-sm" />
+            <CardContent className="relative z-10 p-6 transition-colors duration-300 ease-in-out">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-muted-foreground">
+                  <p className="text-sm font-medium text-muted-foreground group-hover:text-white transition-colors duration-300">
                     Total Hours
                   </p>
-                  <p className="text-2xl font-bold text-foreground">
+                  <p className="text-2xl font-bold text-foreground group-hover:text-white transition-colors duration-300">
                     {hiredInterns.reduce(
                       (sum, intern) => sum + intern.hoursWorked,
                       0
                     )}
                   </p>
                 </div>
-                <Calendar className="h-8 w-8 text-orange-500" />
+                <Calendar className="h-8 w-8 text-orange-500 group-hover:text-white transition-colors duration-300" />
               </div>
             </CardContent>
           </Card>
         </div>
-
+        {/* className="hover:bg-blue-600/10 hover:text-blue-600" */}
         {/* Interns List */}
         <Card className="border-0 shadow-none bg-transparent">
           <CardHeader>
-            <CardTitle className="text-xl font-semibold">
+            <CardTitle className="text-xl font-semibold flex justify-between items-center">
               Current Interns
+              <Link href="/lawyer/dashboard/hire-interns">
+                <Button className="bg-50 text-black hover:bg-white shadow-none hover:shadow-xl hover:scale-102">
+                  <Plus className="h-4 w-4 mr-2" />
+                  Hire Interns
+                </Button>
+              </Link>
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {hiredInterns.map((intern, index) => (
                 <motion.div
                   key={intern.id}
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.3, delay: index * 0.1 }}
-                  className={`p-6 rounded-3xl bg-white/70 backdrop-blur-sm shadow-xl border-2 transition-all border-transparent duration-200 cursor-pointer hover:shadow-md ${
+                  className={`p-6 rounded-3xl bg-white/70 backdrop-blur-sm shadow-xl transition-all duration-300 border-2 cursor-pointer hover:shadow-md ${
                     selectedIntern === intern.id
-                      ? ""
-                      : "border-border hover:border-[#3b82f6]/50"
+                      ? "border-[#3b82f6]/60"
+                      : "border-transparent hover:border-[#3b82f6]/40"
                   }`}
                   onClick={() =>
                     setSelectedIntern(
@@ -226,8 +239,8 @@ export default function HireAnInternPage() {
                     )
                   }
                 >
-                  <div className="flex items-start justify-between mb-4">
-                    <div className="flex items-center gap-3">
+                  <div className="flex items-start justify-between mb-4 flex-wrap gap-3">
+                    <div className="flex items-center gap-4">
                       <Avatar className="h-12 w-12">
                         <AvatarImage
                           src={intern.avatar || "/placeholder.svg"}
@@ -241,7 +254,7 @@ export default function HireAnInternPage() {
                         </AvatarFallback>
                       </Avatar>
                       <div>
-                        <h3 className="font-semibold text-foreground">
+                        <h3 className="font-semibold text-foreground text-base">
                           {intern.name}
                         </h3>
                         <p className="text-sm text-muted-foreground">
@@ -254,28 +267,28 @@ export default function HireAnInternPage() {
                     </Badge>
                   </div>
 
-                  <div className="space-y-2 mb-4">
-                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                  <div className="space-y-2 text-sm text-muted-foreground mb-4">
+                    <div className="flex items-center gap-2">
                       <GraduationCap className="h-4 w-4" />
                       <span>
                         {intern.year} • {intern.specialization}
                       </span>
                     </div>
-                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                    <div className="flex items-center gap-2">
                       <Calendar className="h-4 w-4" />
                       <span>
                         Started:{" "}
                         {new Date(intern.startDate).toLocaleDateString()}
                       </span>
                     </div>
-                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                    <div className="flex items-center gap-2">
                       <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
                       <span>{intern.rating}/5.0 Rating</span>
                     </div>
                   </div>
 
                   <div className="grid grid-cols-2 gap-4 mb-4">
-                    <div className="text-center p-3 bg-muted rounded-lg">
+                    <div className="text-center p-3 bg-muted rounded-xl">
                       <p className="text-lg font-semibold text-foreground">
                         {intern.tasksCompleted}
                       </p>
@@ -283,7 +296,7 @@ export default function HireAnInternPage() {
                         Tasks Completed
                       </p>
                     </div>
-                    <div className="text-center p-3 bg-muted rounded-lg">
+                    <div className="text-center p-3 bg-muted rounded-xl">
                       <p className="text-lg font-semibold text-foreground">
                         {intern.hoursWorked}
                       </p>
@@ -298,18 +311,18 @@ export default function HireAnInternPage() {
                       initial={{ opacity: 0, height: 0 }}
                       animate={{ opacity: 1, height: "auto" }}
                       exit={{ opacity: 0, height: 0 }}
-                      className="border-t pt-4 space-y-2"
+                      className="border-t pt-4 space-y-3 text-sm"
                     >
-                      <div className="flex items-center gap-2 text-sm">
+                      <div className="flex items-center gap-2">
                         <Mail className="h-4 w-4 text-[#3b82f6]" />
                         <a
                           href={`mailto:${intern.email}`}
-                          className="text-[#3b82f6] hover:underline"
+                          className="text-[#3b82f6] hover:underline break-all"
                         >
                           {intern.email}
                         </a>
                       </div>
-                      <div className="flex items-center gap-2 text-sm">
+                      <div className="flex items-center gap-2">
                         <Phone className="h-4 w-4 text-[#3b82f6]" />
                         <a
                           href={`tel:${intern.phone}`}
@@ -318,7 +331,7 @@ export default function HireAnInternPage() {
                           {intern.phone}
                         </a>
                       </div>
-                      <div className="flex gap-2 mt-4">
+                      <div className="flex gap-2 mt-3">
                         <Button size="sm" variant="outline" className="flex-1">
                           View Profile
                         </Button>
@@ -344,7 +357,7 @@ export default function HireAnInternPage() {
                 <p className="text-muted-foreground mb-6">
                   Start building your team by hiring your first intern
                 </p>
-                <Link href="/lawyer/hire-an-intern">
+                <Link href="/lawyer/hire-interns">
                   <Button className="bg-[#3b82f6] hover:bg-[#2563eb]">
                     <Plus className="h-4 w-4 mr-2" />
                     Hire Your First Intern
@@ -353,7 +366,7 @@ export default function HireAnInternPage() {
               </div>
             )}
           </CardContent>
-        </Card>
+        </Card>{" "}
       </div>
     </div>
   );

@@ -18,6 +18,8 @@ import type React from "react";
 import { AIAssistantInterface } from "@/components/ui/ai-assistant-interface";
 import { AuroraText } from "@/components/ui/aurora-text";
 import SiriWave from "@/components/ui/ai";
+import { Badge } from "@/components/ui/badge";
+import { CardContent } from "@/components/ui/card";
 
 interface SectionHeadingProps {
   subtitle: string;
@@ -76,7 +78,7 @@ export default function Home() {
       <div className="fixed inset-0 flex items-center justify-center pointer-events-none z-0">
         <div
           className={`w-full h-full flex items-center justify-center transition-all transform  duration-1000 ease-in-out scale-180 ${
-            isWaveActive ? "-translate-y-55" : "-translate-y-60"
+            isWaveActive ? "-translate-y-55" : "-translate-y-54"
           } transform opacity-30`}
         >
           <SiriWave isWaveMode={isWaveActive} opacity={1} />
@@ -287,7 +289,7 @@ export default function Home() {
           <div className="container mx-auto p-8 rounded-4xl bg-white/80 backdrop-blur-sm">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
               <div>
-                <div className="inline-flex items-center rounded-full border-2 bg-blue-600/20 backdrop-blur-sm border border-blue-700 px-4 py-2 text-sm font-medium text-blue-700 mb-6">
+                <div className="inline-flex items-center rounded-full bg-blue-600/20 backdrop-blur-sm border border-blue-700 px-4 py-2 text-sm font-medium text-blue-700 mb-6">
                   Our AI Expertise
                 </div>
 
@@ -407,49 +409,6 @@ export default function Home() {
           </div>
         </section>
 
-        {/* Enhanced Team Section */}
-        <section id="team" className="py-20 relative z-10">
-          <div className="container mx-auto px-4">
-            <SectionHeading
-              subtitle="Our AI-Enhanced Team"
-              title="Meet Our Legal AI Experts"
-              description="A diverse team of specialized attorneys and AI experts committed to providing exceptional legal services."
-            />
-
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mt-12">
-              <TeamMember
-                name="Alexandra Wright"
-                position="AI Corporate Law Specialist"
-                image="/placeholder.svg?height=400&width=300&query=professional female lawyer portrait"
-              />
-              <TeamMember
-                name="David Chen"
-                position="AI Intellectual Property Expert"
-                image="/placeholder.svg?height=400&width=300&query=professional male lawyer portrait asian"
-              />
-              <TeamMember
-                name="Sophia Rodriguez"
-                position="AI Litigation Specialist"
-                image="/placeholder.svg?height=400&width=300&query=professional female lawyer portrait latina"
-              />
-              <TeamMember
-                name="Marcus Johnson"
-                position="AI Regulatory Compliance Expert"
-                image="/placeholder.svg?height=400&width=300&query=professional male lawyer portrait african american"
-              />
-            </div>
-
-            <div className="text-center mt-12">
-              <Button
-                variant="outline"
-                className="px-8 py-3 rounded-xl border-2 border-[#3b82f6] dark:border-[#60a5fa] text-[#3b82f6] dark:text-[#60a5fa] bg-transparent hover:text-white hover:bg-gradient-to-r hover:from-[#3b82f6] hover:to-[#6366f1] transition-all duration-200 active:scale-95 shadow-none"
-              >
-                View Our Team
-              </Button>
-            </div>
-          </div>
-        </section>
-
         {/* Enhanced CTA Section */}
         <section
           id="contact"
@@ -466,7 +425,7 @@ export default function Home() {
                 goals with unprecedented efficiency.
               </p>
 
-              <Button className="w-full bg-transparent text-md text-white hover:bg-white hover:text-blue-600 font-bold py-6 rounded-xl border-2 border-white/20 shadow-lg shadow-xl transition-all duration-300">
+              <Button className="w-full bg-transparent text-md text-white hover:bg-white hover:text-blue-600 font-bold py-6 rounded-xl border-2 border-white/20 shadow-xl transition-all duration-300">
                 Schedule Your AI-Enhanced Consultation
               </Button>
             </div>
@@ -567,18 +526,84 @@ function TestimonialCard({
 }
 
 function TeamMember({ name, position, image }: TeamMemberProps) {
+  const team = [
+    {
+      name: "Sarah Mitchell",
+      position: "Founder & CEO",
+      image: "/placeholder.svg?height=300&width=300",
+      bio: "Harvard Law graduate with 20+ years in corporate law and AI innovation.",
+    },
+    {
+      name: "Dr. Michael Chen",
+      position: "Chief Technology Officer",
+      image: "/placeholder.svg?height=300&width=300",
+      bio: "Former Google AI researcher specializing in legal technology applications.",
+    },
+    {
+      name: "Emily Rodriguez",
+      position: "Head of Legal Operations",
+      image: "/placeholder.svg?height=300&width=300",
+      bio: "Stanford Law alumna with expertise in litigation and regulatory compliance.",
+    },
+    {
+      name: "David Thompson",
+      position: "AI Research Director",
+      image: "/placeholder.svg?height=300&width=300",
+      bio: "PhD in Machine Learning with focus on natural language processing for legal documents.",
+    },
+  ];
   return (
-    <div className="group">
-      <div className="relative h-80 rounded-2xl overflow-hidden mb-4 shadow-lg">
-        <Image
-          src={image || "/placeholder.svg"}
-          alt={name}
-          fill
-          className="object-cover transition-transform group-hover:scale-105"
-        />
+    <section className="py-20 px-4">
+      <div className="max-w-7xl mx-auto">
+        {/* Header */}
+        <div className="text-center mb-16">
+          <Badge className="mb-4 bg-blue-100 text-blue-700 hover:bg-blue-200 dark:bg-blue-900 dark:text-blue-300">
+            <Users className="w-4 h-4 mr-2" />
+            Our Dedicated Team
+          </Badge>
+          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-4">
+            Meet Our Team
+          </h2>
+          <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
+            Our diverse team of legal experts, AI researchers, and tech
+            innovators works together to shape the future of legal services.
+          </p>
+        </div>
+
+        {/* Team Grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10">
+          {team.map((member, index) => (
+            <div
+              key={index}
+              className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1"
+            >
+              <div className="flex justify-center -mt-10">
+                <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-white dark:border-gray-800 shadow-lg bg-blue-50 dark:bg-blue-900">
+                  <Image
+                    src={member.image || "/placeholder.svg"}
+                    alt={member.name}
+                    width={128}
+                    height={128}
+                    className="object-cover w-full h-full"
+                  />
+                </div>
+              </div>
+
+              <CardContent className="p-6 text-center">
+                <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-1">
+                  {member.name}
+                </h3>
+                <p className="text-blue-600 dark:text-blue-400 font-medium mb-2 text-sm uppercase tracking-wide">
+                  {member.position}
+                </p>
+                <p className="text-gray-600 dark:text-gray-300 text-sm">
+                  {member.bio}
+                </p>
+              </CardContent>
+            </div>
+          ))}
+        </div>
       </div>
-      <h3 className="text-lg font-semibold text-gray-900">{name}</h3>
-      <p className="text-gray-600">{position}</p>
-    </div>
+    </section>
   );
 }

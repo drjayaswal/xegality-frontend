@@ -2,7 +2,7 @@
 
 import ThemeToggle from "@/components/shared/theme-toggle";
 import { Button } from "@/components/ui/button";
-import { NAVLINKS } from "@/lib/consts";
+import { LAWYER_NAVLINKS, NAVLINKS } from "@/lib/consts";
 import { cn } from "@/lib/utils";
 import { Menu, Shield, X } from "lucide-react";
 import { motion } from "motion/react";
@@ -14,7 +14,7 @@ const Header = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   return (
-    <header className="sticky top-0 z-50 bg-white/80 dark:bg-gray-900/80 backdrop-blur-md border-b border-gray-200 dark:border-gray-700 transition-colors duration-500">
+    <header className="fixed w-full top-0 z-50 bg-white/20 dark:bg-gray-900/80 backdrop-blur-md border-b border-gray-200 dark:border-gray-700 transition-colors duration-500">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
@@ -55,7 +55,7 @@ const Header = () => {
 
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center space-x-2">
-            {NAVLINKS.map(({ title, href }, index) => {
+            {LAWYER_NAVLINKS.map(({ title, href }, index) => {
               const isActive = href === usePathname();
               return (
                 <Link
@@ -113,20 +113,18 @@ const Header = () => {
             transition={{ duration: 0.3 }}
           >
             <nav className="flex flex-col space-y-4">
-              {["Find Lawyers", "Legal Services", "For Lawyers", "About"].map(
-                (item, index) => (
-                  <motion.a
-                    key={item}
-                    href="#"
-                    className="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-200"
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ duration: 0.3, delay: index * 0.1 }}
-                  >
-                    {item}
-                  </motion.a>
-                )
-              )}
+              {LAWYER_NAVLINKS.map((item, index) => (
+                <motion.a
+                  key={item.title}
+                  href={`${item.href}`}
+                  className="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-200"
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ duration: 0.3, delay: index * 0.1 }}
+                >
+                  {item.title}
+                </motion.a>
+              ))}
               <div className="flex flex-col space-y-2 pt-4">
                 <Button variant="ghost">Login</Button>
                 <Button className="bg-gradient-to-r from-blue-600 to-purple-600">

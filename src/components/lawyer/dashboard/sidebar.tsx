@@ -4,13 +4,14 @@ import {
   Briefcase,
   DollarSign,
   HandHelping,
-  Home,
   Receipt,
-  Search,
   Settings,
   Users,
   GraduationCap,
   Clock,
+  ChevronLeft,
+  Sparkles,
+  SquareChartGantt,
 } from "lucide-react";
 
 import {
@@ -29,8 +30,11 @@ import clsx from "clsx";
 
 // Menu items
 const items = [
-  { title: "Home", url: "/lawyer/dashboard", icon: Home },
-  { title: "Xegality AI", url: "/lawyer/dashboard/xegality-ai", icon: Search },
+  {
+    title: "Xegality AI",
+    url: "/lawyer/dashboard/xegality-ai",
+    icon: Sparkles,
+  },
   { title: "Clients", url: "/lawyer/dashboard/clients", icon: Users },
   { title: "Cases", url: "/lawyer/dashboard/cases", icon: Briefcase },
   {
@@ -39,9 +43,14 @@ const items = [
     icon: Clock,
   },
   {
-    title: "Hire an Intern",
-    url: "/lawyer/hire-an-intern",
+    title: "Manage Interns",
+    url: "/lawyer/dashboard/manage-interns",
     icon: GraduationCap,
+  },
+  {
+    title: "Internships",
+    url: "/lawyer/dashboard/internships",
+    icon: SquareChartGantt,
   },
   {
     title: "Subscription",
@@ -59,22 +68,23 @@ const items = [
     icon: DollarSign,
   },
   { title: "Settings", url: "/lawyer/dashboard/settings", icon: Settings },
+  { title: "Back To Home", url: "/lawyer", icon: ChevronLeft },
 ];
 
 export function AppSidebar() {
   const pathname = usePathname();
 
   return (
-    <Sidebar collapsible="icon" variant="floating">
-      <SidebarContent>
+    <Sidebar collapsible="icon" variant="floating" className="bg-transparent">
+      <SidebarContent className="bg-white rounded-4xl">
         <SidebarGroup>
           <div className="px-4 py-3">
             <SidebarGroupLabel className="text-2xl font-semibold text-[#3b82f6] tracking-wide">
-              Dashboard
+              Xegality
             </SidebarGroupLabel>
           </div>
           <SidebarGroupContent>
-            <SidebarMenu className="space-y-2 pt-3">
+            <SidebarMenu className="space-y-2 mt-5">
               {items.map((item) => {
                 const isActive = pathname === item.url;
 
@@ -83,7 +93,7 @@ export function AppSidebar() {
                     <SidebarMenuButton
                       asChild
                       className={clsx(
-                        "hover:bg-[#3b82f6] hover:text-white",
+                        "rounded-full hover:bg-[#3b82f6] hover:text-white",
                         isActive ? "shadow-xl" : ""
                       )}
                     >
@@ -96,12 +106,7 @@ export function AppSidebar() {
                             : "text-gray-700 hover:bg-[#3b82f6] hover:text-white dark:text-gray-300 dark:hover:text-white"
                         )}
                       >
-                        <item.icon
-                          className={clsx(
-                            "h-5 w-5",
-                            isActive ? "text-white hover:text-white" : ""
-                          )}
-                        />
+                        <item.icon className="h-5 w-5" />
                         <span>{item.title}</span>
                       </a>
                     </SidebarMenuButton>
