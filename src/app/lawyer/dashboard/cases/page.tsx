@@ -480,8 +480,8 @@ export default function CaseManagement() {
   }, []);
 
   return (
-    <div className="w-full h-full dark:bg-black bg-white  rounded-2xl">
-      <div className="w-full h-full bg-gradient-to-r from-[#3b82f6]/10 to-[#3b82f6]/40 rounded-2xl overflow-hidden flex relative">
+    <div className="w-full h-full border-[1.5px] dark:bg-black bg-white  rounded-lg">
+      <div className="w-full h-full rounded-lg overflow-hidden flex relative">
         {/* <div className="w-full h-full rounded-2xl overflow-hidden flex flex-col relative"> */}
         {/* Hidden file input */}
         <input
@@ -588,7 +588,7 @@ export default function CaseManagement() {
                               <Briefcase className="h-6 w-6 text-white" />
                             </div>
                           </div>
-                          <div className="flex-1 min-w-0">
+                          {/* <div className="flex-1 min-w-0">
                             <div className="flex items-center justify-around">
                               <h3
                                 className={cn(
@@ -605,6 +605,30 @@ export default function CaseManagement() {
                                 </span>
                               </div>
                             </div>
+                          </div> */}
+
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center justify-between">
+                              <h3 className="font-medium text-gray-800 dark:text-white truncate">
+                                {caseItem.title.split(" ")[0]}
+                              </h3>
+                              <div className="flex items-center gap-1 justify-center mr-6">
+                                <span className="text-xs text-black dark:text-white/40">
+                                  {caseItem.lastActivity.toLocaleTimeString(
+                                    [],
+                                    {
+                                      hour: "2-digit",
+                                      minute: "2-digit",
+                                    }
+                                  )}
+                                </span>
+                              </div>
+                            </div>
+                            <div className="flex items-center gap-2 mt-1">
+                              <span className="text-xs text-gray-600 dark:text-gray-300">
+                                {caseItem.type}
+                              </span>
+                            </div>
                           </div>
                         </div>
                       </motion.div>
@@ -620,7 +644,7 @@ export default function CaseManagement() {
                         ? "Try adjusting your search criteria"
                         : "You don't have any cases yet"}
                     </p>
-                    <Button className="mt-4 bg-indigo-600 hover:bg-indigo-700 gap-2">
+                    <Button className="mt-4 bg-[#3b82f6] hover:bg-[#3b82f6] gap-2">
                       <Plus className="h-4 w-4 mr-2" /> Create New Case
                     </Button>
                   </div>
@@ -637,7 +661,7 @@ export default function CaseManagement() {
 
           {/* Case Details */}
           {currentCase ? (
-            <div className="flex-1 p-10">
+            <div className="flex-1 p-0">
               {/* Case Header */}
               <div className="p-4 border-b border-white/20  bg-[#3b82f6]/10">
                 <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
@@ -679,7 +703,7 @@ export default function CaseManagement() {
                     <Button variant="outline" className="gap-2">
                       <Edit className="h-4 w-4" /> Edit Case
                     </Button>
-                    <Button className="bg-indigo-600 hover:bg-indigo-700 gap-2">
+                    <Button className="bg-[#3b82f6] hover:bg-[#3b82f6] gap-2">
                       <MessageSquare className="h-4 w-4" /> Message Client
                     </Button>
                   </div>
@@ -692,8 +716,8 @@ export default function CaseManagement() {
                     className={cn(
                       "px-4 py-2 font-medium transition-colors",
                       activeTab === "overview"
-                        ? "text-indigo-600 border-b-2 border-indigo-600"
-                        : "text-gray-600 dark:text-gray-300 hover:text-indigo-600"
+                        ? "text-[#3b82f6] border-b-2 border-[#3b82f6-600"
+                        : "text-gray-600 dark:text-gray-300 hover:text-[#3b82f6-600"
                     )}
                   >
                     Overview
@@ -703,8 +727,8 @@ export default function CaseManagement() {
                     className={cn(
                       "px-4 py-2 font-medium transition-colors",
                       activeTab === "documents"
-                        ? "text-indigo-600 border-b-2 border-indigo-600"
-                        : "text-gray-600 dark:text-gray-300 hover:text-indigo-600"
+                        ? "text-[#3b82f6] border-b-2 border-[#3b82f6-600"
+                        : "text-gray-600 dark:text-gray-300 hover:text-[#3b82f6-600"
                     )}
                   >
                     Documents
@@ -714,8 +738,8 @@ export default function CaseManagement() {
                     className={cn(
                       "px-4 py-2 font-medium transition-colors",
                       activeTab === "notes"
-                        ? "text-indigo-600 border-b-2 border-indigo-600"
-                        : "text-gray-600 dark:text-gray-300 hover:text-indigo-600"
+                        ? "text-[#3b82f6] border-b-2 border-[#3b82f6-600"
+                        : "text-gray-600 dark:text-gray-300 hover:text-[#3b82f6-600"
                     )}
                   >
                     Notes
@@ -725,8 +749,8 @@ export default function CaseManagement() {
                     className={cn(
                       "px-4 py-2 font-medium transition-colors",
                       activeTab === "tasks"
-                        ? "text-indigo-600 border-b-2 border-indigo-600"
-                        : "text-gray-600 dark:text-gray-300 hover:text-indigo-600"
+                        ? "text-[#3b82f6] border-b-2 border-[#3b82f6-600"
+                        : "text-gray-600 dark:text-gray-300 hover:text-[#3b82f6-600"
                     )}
                   >
                     Tasks
@@ -829,9 +853,9 @@ export default function CaseManagement() {
                         </div>
 
                         {currentCase.nextHearing && (
-                          <div className="mt-6 p-4 bg-indigo-100/50 dark:bg-indigo-900/20 rounded-lg border border-indigo-200 dark:border-indigo-800">
+                          <div className="mt-6 p-4 bg-[#3b82f6]0/50 dark:bg-[#3b82f6]0/20 rounded-lg border border-[#3b82f6] dark:border-[#3b82f6-800">
                             <div className="flex items-center gap-2">
-                              <Calendar className="h-5 w-5 text-indigo-600" />
+                              <Calendar className="h-5 w-5 text-[#3b82f6-600" />
                               <h4 className="font-medium text-gray-800 dark:text-white">
                                 Next Hearing
                               </h4>
@@ -867,9 +891,9 @@ export default function CaseManagement() {
                                   key={item.id}
                                   className="flex gap-3 p-3 bg-white/20 dark:bg-white/5 rounded-lg border border-white/10"
                                 >
-                                  <div className="w-8 h-8 bg-indigo-100 dark:bg-indigo-900/50 rounded-full flex items-center justify-center">
+                                  <div className="w-8 h-8 bg-[#3b82f6] dark:bg-[#3b82f6]0/50 rounded-full flex items-center justify-center">
                                     {isNote ? (
-                                      <MessageSquare className="h-4 w-4 text-indigo-600" />
+                                      <MessageSquare className="h-4 w-4 text-[#3b82f6-600" />
                                     ) : (
                                       getTaskStatusIcon(item.status)
                                     )}
@@ -922,21 +946,21 @@ export default function CaseManagement() {
                           variant="outline"
                           className="p-6 h-auto flex flex-col items-center justify-center gap-2 bg-white/20 hover:bg-white/30"
                         >
-                          <Upload className="h-6 w-6 text-indigo-600" />
+                          <Upload className="h-6 w-6 text-[#3b82f6-600" />
                           <span className="font-medium">Upload Document</span>
                         </Button>
                         <Button
                           variant="outline"
                           className="p-6 h-auto flex flex-col items-center justify-center gap-2 bg-white/20 hover:bg-white/30"
                         >
-                          <Plus className="h-6 w-6 text-indigo-600" />
+                          <Plus className="h-6 w-6 text-[#3b82f6-600" />
                           <span className="font-medium">Add Task</span>
                         </Button>
                         <Button
                           variant="outline"
                           className="p-6 h-auto flex flex-col items-center justify-center gap-2 bg-white/20 hover:bg-white/30"
                         >
-                          <Calendar className="h-6 w-6 text-indigo-600" />
+                          <Calendar className="h-6 w-6 text-[#3b82f6-600" />
                           <span className="font-medium">Schedule Hearing</span>
                         </Button>
                       </div>
@@ -956,7 +980,7 @@ export default function CaseManagement() {
                           Documents ({currentCase.documents.length})
                         </h3>
                         <Button
-                          className="bg-indigo-600 hover:bg-indigo-700 gap-2"
+                          className="bg-[#3b82f6] hover:bg-[#3b82f6] gap-2"
                           onClick={handleUploadDocument}
                         >
                           <Upload className="h-4 w-4" /> Upload Document
@@ -1024,7 +1048,7 @@ export default function CaseManagement() {
                             everything organized.
                           </p>
                           <Button
-                            className="mt-4 bg-indigo-600 hover:bg-indigo-700 gap-2"
+                            className="mt-4 bg-[#3b82f6] hover:bg-[#3b82f6] gap-2"
                             onClick={handleUploadDocument}
                           >
                             <Upload className="h-4 w-4" /> Upload Document
@@ -1052,11 +1076,11 @@ export default function CaseManagement() {
                               placeholder="Add a note about this case..."
                               value={newNote}
                               onChange={(e) => setNewNote(e.target.value)}
-                              className="min-h-[100px] bg-white/20 focus-visible:ring-0 focus-visible:border-indigo-600"
+                              className="min-h-[100px] bg-white/20 focus-visible:ring-0 focus-visible:border-[#3b82f6-600"
                             />
                           </div>
                           <Button
-                            className="bg-indigo-600 hover:bg-indigo-700 self-end gap-2"
+                            className="bg-[#3b82f6] hover:bg-[#3b82f6] self-end gap-2"
                             onClick={handleAddNote}
                             disabled={!newNote.trim()}
                           >
@@ -1087,8 +1111,8 @@ export default function CaseManagement() {
                                   }}
                                 >
                                   <div className="flex items-start gap-3">
-                                    <div className="w-10 h-10 bg-indigo-100 dark:bg-indigo-900/50 rounded-full flex items-center justify-center">
-                                      <User className="h-5 w-5 text-indigo-600" />
+                                    <div className="w-10 h-10 bg-[#3b82f6] dark:bg-[#3b82f6]0/50 rounded-full flex items-center justify-center">
+                                      <User className="h-5 w-5 text-[#3b82f6-600" />
                                     </div>
                                     <div className="flex-1">
                                       <div className="flex items-center justify-between">
@@ -1144,7 +1168,7 @@ export default function CaseManagement() {
                         <h3 className="text-lg font-medium text-gray-800 dark:text-white">
                           Tasks ({currentCase.tasks.length})
                         </h3>
-                        <Button className="bg-indigo-600 hover:bg-indigo-700 gap-2">
+                        <Button className="bg-[#3b82f6] hover:bg-[#3b82f6] gap-2">
                           <Plus className="h-4 w-4" /> Add Task
                         </Button>
                       </div>
@@ -1211,7 +1235,7 @@ export default function CaseManagement() {
                                   className="flex items-center justify-between p-2 bg-white/20 dark:bg-white/5 rounded-lg"
                                 >
                                   <div className="flex items-center gap-2">
-                                    <Calendar className="h-4 w-4 text-indigo-600" />
+                                    <Calendar className="h-4 w-4 text-[#3b82f6-600" />
                                     <span className="text-gray-800 dark:text-white">
                                       {task.title}
                                     </span>
@@ -1305,7 +1329,7 @@ export default function CaseManagement() {
                             Add tasks to keep track of deadlines and
                             responsibilities for this case.
                           </p>
-                          <Button className="mt-4 bg-indigo-600 hover:bg-indigo-700 gap-2">
+                          <Button className="mt-4 bg-[#3b82f6] hover:bg-[#3b82f6] gap-2">
                             <Plus className="h-4 w-4" /> Add Task
                           </Button>
                         </div>
@@ -1323,8 +1347,7 @@ export default function CaseManagement() {
                   Case Management
                 </h2>
                 <p className="dark:text-white/70 text-[#3b82f6] mb-6">
-                  Select a case from the sidebar to view details, manage
-                  documents, add notes, and track tasks.
+                  Select a case from the sidebar to manage
                 </p>
                 <Button className="bg-transparent dark:text-white text-[#3b82f6] hover:text-white hover:bg-[#3b82f6] backdrop-blur-sm border-2 border-[#3b82f6] gap-2">
                   <Plus className="h-4 w-4" /> Create New Case

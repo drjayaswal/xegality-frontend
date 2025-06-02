@@ -102,7 +102,7 @@ export default function HireAnInternPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 w-full p-6 rounded-2xl shadow-lg border-[1.5px]">
+    <div className="min-h-screen bg-gray-50 w-full p-6 rounded-lg shadow-lg border-[1.5px]">
       <div className="max-w-7xl mx-auto">
         {/* Header Section */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8">

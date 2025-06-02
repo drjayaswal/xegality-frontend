@@ -77,7 +77,15 @@ export default function Clients() {
   const [selectedConversation, setSelectedConversation] = useState<
     string | null
   >(null);
-  const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>([]);
+  const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>([
+    {
+      id: "file_1",
+      name: "Merger_Agreement_Draft.pdf",
+      size: "2.4 MB",
+      type: "application/pdf",
+      uploadedAt: new Date(Date.now() - 2400000),
+    },
+  ]);
   const [searchQuery, setSearchQuery] = useState("");
   const [inputValue, setInputValue] = useState("");
   const [isTyping, setIsTyping] = useState(false);
@@ -121,6 +129,16 @@ export default function Clients() {
           timestamp: new Date(Date.now() - 3000000),
           status: "read",
           type: "text",
+        },
+        {
+          id: "file_1",
+          content: "Uploaded: Merger_Agreement_Draft.pdf",
+          sender: "lawyer",
+          timestamp: new Date(Date.now() - 2400000),
+          status: "read",
+          type: "file",
+          fileName: "Merger_Agreement_Draft.pdf",
+          fileSize: "2.4 MB",
         },
         {
           id: "3",
@@ -330,24 +348,53 @@ export default function Clients() {
 
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files;
-    if (!files) return;
+    if (!files || !selectedConversation) return;
 
     setShowUploadAnimation(true);
 
     // Process each file
-    Array.from(files).forEach((file) => {
+    Array.from(files).forEach((file, index) => {
       // Simulate upload delay
       setTimeout(() => {
+        const fileId = Date.now().toString() + Math.random();
         const newFile: UploadedFile = {
-          id: Date.now().toString() + Math.random(),
+          id: fileId,
           name: file.name,
           size: formatFileSize(file.size),
           type: file.type,
           uploadedAt: new Date(),
         };
+
+        // Add to uploaded files list
         setUploadedFiles((prev) => [...prev, newFile]);
+
+        // Create a file message
+        const fileMessage: Message = {
+          id: fileId + "_message",
+          content: `Uploaded: ${file.name}`,
+          sender: "lawyer",
+          timestamp: new Date(),
+          status: "sent",
+          type: "file",
+          fileName: file.name,
+          fileSize: formatFileSize(file.size),
+        };
+
+        // Add file message to conversation
+        setConversations((prev) =>
+          prev.map((conv) =>
+            conv.id === selectedConversation
+              ? {
+                  ...conv,
+                  messages: [...conv.messages, fileMessage],
+                  lastMessage: fileMessage,
+                }
+              : conv
+          )
+        );
+
         setShowUploadAnimation(false);
-      }, 1500);
+      }, 1500 + index * 500); // Stagger uploads
     });
 
     // Reset file input
@@ -643,20 +690,6 @@ export default function Clients() {
                       </div>
                     </div>
                     <div className="flex items-center gap-2">
-                      {/* Documents Toggle Button */}
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className={`h-8 w-8 p-0 rounded-full ${
-                          showDocuments
-                            ? "bg-purple-500 hover:bg-purple-500 hover:text-white text-white"
-                            : ""
-                        }`}
-                        onClick={() => setShowDocuments(!showDocuments)}
-                      >
-                        <FileText className="h-4 w-4" />
-                      </Button>
-
                       <Button
                         variant="ghost"
                         size="sm"
@@ -771,28 +804,96 @@ export default function Clients() {
                             )}
                             <div
                               className={cn(
-                                "max-w-[70%] p-3 rounded-2xl shadow-sm",
+                                "max-w-[70%] rounded-2xl shadow-sm",
                                 message.sender === "lawyer"
-                                  ? "-mr-2 bg-white/20 backdrop-blur-lg dark:text-white/90 text-black/90 rounded-tr-none"
-                                  : "-ml-2 bg-white/20 backdrop-blur-lg dark:text-white/90 text-black/90 rounded-tl-none"
+                                  ? "-mr-2 rounded-tr-none"
+                                  : "-ml-2 rounded-tl-none"
                               )}
                             >
-                              <p className="text-sm leading-relaxed">
-                                {message.content}
-                              </p>
-                              <div className="flex items-center justify-between mt-2">
-                                <span className="text-xs opacity-70">
-                                  {message.timestamp.toLocaleTimeString([], {
-                                    hour: "2-digit",
-                                    minute: "2-digit",
-                                  })}
-                                </span>
-                                {message.sender === "lawyer" && (
-                                  <div className="ml-2">
-                                    {getMessageStatusIcon(message.status)}
+                              {message.type === "file" ? (
+                                // File Message
+                                <div
+                                  className={cn(
+                                    "p-3 bg-white/30 backdrop-blur-lg border border-white/20",
+                                    message.sender === "lawyer"
+                                      ? "rounded-tr-none"
+                                      : "rounded-tl-none",
+                                    "rounded-2xl"
+                                  )}
+                                >
+                                  <div className="flex items-center gap-3">
+                                    <div className="flex-shrink-0 p-2 rounded-lg">
+                                      {getFileIcon(
+                                        message.fileName?.split(".").pop() ||
+                                          "",
+                                        message.fileName || ""
+                                      )}
+                                    </div>
+                                    <div className="flex-1 min-w-0">
+                                      <h4 className="text-sm font-medium text-gray-800 dark:text-white truncate">
+                                        {message.fileName?.slice(0, 4)}...
+                                        {
+                                          message.fileName?.split(".")[
+                                            message.fileName?.split(".")
+                                              .length - 1
+                                          ]
+                                        }
+                                      </h4>
+                                      <p className="text-xs text-gray-600 dark:text-gray-300 mt-1">
+                                        {message.fileSize}
+                                      </p>
+                                    </div>
                                   </div>
-                                )}
-                              </div>
+                                  <div className="flex gap-2 mt-3"></div>
+                                  <div className="flex items-center justify-between mt-2">
+                                    <span className="text-xs opacity-70">
+                                      {message.timestamp.toLocaleTimeString(
+                                        [],
+                                        {
+                                          hour: "2-digit",
+                                          minute: "2-digit",
+                                        }
+                                      )}
+                                    </span>
+                                    {message.sender === "lawyer" && (
+                                      <div className="ml-2">
+                                        {getMessageStatusIcon(message.status)}
+                                      </div>
+                                    )}
+                                  </div>
+                                </div>
+                              ) : (
+                                // Text Message
+                                <div
+                                  className={cn(
+                                    "p-3 bg-white/20 backdrop-blur-lg dark:text-white/90 text-black/90",
+                                    message.sender === "lawyer"
+                                      ? "rounded-tr-none"
+                                      : "rounded-tl-none",
+                                    "rounded-2xl"
+                                  )}
+                                >
+                                  <p className="text-sm leading-relaxed">
+                                    {message.content}
+                                  </p>
+                                  <div className="flex items-center justify-between mt-2">
+                                    <span className="text-xs opacity-70">
+                                      {message.timestamp.toLocaleTimeString(
+                                        [],
+                                        {
+                                          hour: "2-digit",
+                                          minute: "2-digit",
+                                        }
+                                      )}
+                                    </span>
+                                    {message.sender === "lawyer" && (
+                                      <div className="ml-2">
+                                        {getMessageStatusIcon(message.status)}
+                                      </div>
+                                    )}
+                                  </div>
+                                </div>
+                              )}
                             </div>
                             {message.sender === "lawyer" && (
                               <div className="w-8 h-8 rounded-l-none bg-[#3b82f6] rounded-full flex items-center justify-center">
@@ -947,148 +1048,6 @@ export default function Clients() {
                   </div>
                 </div>
               </div>
-
-              {/* Documents Panel */}
-              <AnimatePresence>
-                {showDocuments && (
-                  <motion.div
-                    initial={{ width: 0, opacity: 0 }}
-                    animate={{ width: 320, opacity: 1 }}
-                    exit={{ width: 0, opacity: 0 }}
-                    transition={{ duration: 0.3, ease: "easeInOut" }}
-                    className="border-l-2 border-[#3b82f6]/50 bg-[#3b82f6]/5 overflow-hidden"
-                  >
-                    <div className="h-full flex flex-col">
-                      {/* Documents Header */}
-                      <div className="flex-shrink-0 p-4 border-b border-[#3b82f6]/20">
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-2">
-                            <FileText className="h-5 w-5 text-[#3b82f6]" />
-                            <h3 className="font-semibold text-gray-800 dark:text-white">
-                              Documents
-                            </h3>
-                            <span className="text-xs bg-[#3b82f6]/20 text-[#3b82f6] dark:text-white px-2 py-1 rounded-full">
-                              {uploadedFiles.length}
-                            </span>
-                          </div>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            className="h-6 w-6 p-0"
-                            onClick={() => setShowDocuments(false)}
-                          >
-                            <X className="h-4 w-4" />
-                          </Button>
-                        </div>
-                      </div>
-
-                      {/* Documents List */}
-                      <div className="flex-1 overflow-hidden">
-                        <ScrollArea className="h-full">
-                          <div className="p-4 space-y-3">
-                            {uploadedFiles.length === 0 ? (
-                              <div className="text-center py-8">
-                                <FileText className="h-12 w-12 mx-auto text-gray-400 mb-3" />
-                                <p className="text-sm text-gray-500 dark:text-gray-400">
-                                  No documents uploaded yet
-                                </p>
-                                <Button
-                                  onClick={handleUploadClick}
-                                  className="mt-3 text-xs bg-[#3b82f6]/10 text-[#3b82f6] hover:bg-[#3b82f6]/20"
-                                >
-                                  Upload Document
-                                </Button>
-                              </div>
-                            ) : (
-                              uploadedFiles.map((file, index) => (
-                                <motion.div
-                                  key={file.id}
-                                  initial={{ opacity: 0, y: 20 }}
-                                  animate={{ opacity: 1, y: 0 }}
-                                  transition={{ delay: index * 0.1 }}
-                                  className={cn(
-                                    "group relative p-3 rounded-xl border backdrop-blur-sm transition-all duration-200 hover:shadow-md cursor-pointer",
-                                    getFileColor(file.type, file.name)
-                                  )}
-                                >
-                                  <div className="flex items-start gap-3">
-                                    <div className="flex-shrink-0 p-2 bg-white/50 dark:bg-black/20 rounded-lg">
-                                      {getFileIcon(file.type, file.name)}
-                                    </div>
-                                    <div className="flex-1 min-w-0">
-                                      <h4 className="text-sm font-medium text-gray-800 dark:text-white truncate">
-                                        {file.name}
-                                      </h4>
-                                      <p className="text-xs text-gray-600 dark:text-gray-300 mt-1">
-                                        {file.size}
-                                      </p>
-                                      <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                                        {file.uploadedAt.toLocaleDateString()}{" "}
-                                        at{" "}
-                                        {file.uploadedAt.toLocaleTimeString(
-                                          [],
-                                          {
-                                            hour: "2-digit",
-                                            minute: "2-digit",
-                                          }
-                                        )}
-                                      </p>
-                                    </div>
-                                    <Button
-                                      variant="ghost"
-                                      size="sm"
-                                      onClick={(e) => {
-                                        e.stopPropagation();
-                                        removeFile(file.id);
-                                      }}
-                                      className="opacity-0 group-hover:opacity-100 transition-opacity h-6 w-6 p-0 hover:bg-red-500/20 hover:text-red-600"
-                                    >
-                                      <X className="h-3 w-3" />
-                                    </Button>
-                                  </div>
-
-                                  {/* File actions */}
-                                  <div className="flex gap-1 mt-3 opacity-0 group-hover:opacity-100 transition-opacity">
-                                    <Button
-                                      size="sm"
-                                      className="h-6 text-xs bg-white/50 hover:bg-white/70 text-gray-700"
-                                    >
-                                      View
-                                    </Button>
-                                    <Button
-                                      size="sm"
-                                      className="h-6 text-xs bg-white/50 hover:bg-white/70 text-gray-700"
-                                    >
-                                      Download
-                                    </Button>
-                                    <Button
-                                      size="sm"
-                                      className="h-6 text-xs bg-white/50 hover:bg-white/70 text-gray-700"
-                                    >
-                                      Share
-                                    </Button>
-                                  </div>
-                                </motion.div>
-                              ))
-                            )}
-                          </div>
-                        </ScrollArea>
-                      </div>
-
-                      {/* Quick Upload Button */}
-                      <div className="flex-shrink-0 p-4 border-t border-[#3b82f6]/20">
-                        <Button
-                          onClick={handleUploadClick}
-                          className="w-full bg-[#3b82f6] hover:bg-[#3b82f6]/90 text-white rounded-xl"
-                        >
-                          <Plus className="h-4 w-4 mr-2" />
-                          Upload Document
-                        </Button>
-                      </div>
-                    </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
             </>
           ) : (
             <div className="flex-1 flex items-center justify-center">
