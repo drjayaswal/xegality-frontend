@@ -140,7 +140,9 @@ export function AIAssistantInterface({
           <div className="flex items-center gap-2">
             <button
               onClick={handleVoiceSearch}
-              className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-transparent border-2 border-[#3b82f6] flex text-[#3b82f6] dark:text-[#60a5fa] hover:text-white items-center justify-center hover:bg-gradient-to-r hover:from-[#3b82f6] hover:to-[#6366f1] transition-all duration-200 active:scale-95"
+              className={`w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-transparent border-2 border-[#3b82f6] flex text-[#3b82f6] dark:text-[#60a5fa] hover:text-white items-center justify-center hover:bg-gradient-to-r hover:from-[#3b82f6] hover:to-[#6366f1] transition-all duration-200 active:scale-95 ${
+                isListening ? "cursor-progress" : "cursor-pointer"
+              }`}
             >
               {isListening ? (
                 <EarIcon className="w-4 h-4 sm:w-5 sm:h-5 stroke-2" />
@@ -234,7 +236,7 @@ export function AIAssistantInterface({
                   key={key}
                   onClick={() => setter(!state)}
                   className={cn(
-                    "flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs sm:text-sm font-medium transition-all duration-200 border-2",
+                    "flex cursor-pointer active:cursor- items-center gap-1.5 px-3 py-1.5 rounded-full text-xs sm:text-sm font-medium transition-all duration-200 border-2",
                     state
                       ? "bg-gradient-to-r from-[#3b82f6] to-[#6366f1] border-transparent text-white shadow-md"
                       : "bg-[#3b82f6]/10 dark:bg-[#60a5fa]/10 text-[#3b82f6] dark:text-[#60a5fa] border-transparent hover:bg-[#3b82f6]/20 dark:hover:bg-[#60a5fa]/20"
@@ -248,13 +250,14 @@ export function AIAssistantInterface({
             <Button
               onClick={handleUploadFile}
               className="rounded-full bg-transparent border-2 border-[#3b82f6] dark:border-[#60a5fa] flex text-[#3b82f6] dark:text-[#60a5fa] hover:text-white items-center justify-center hover:bg-gradient-to-r hover:from-[#3b82f6] hover:to-[#6366f1] transition-all duration-200 active:scale-95 gap-1.5 px-3 py-1.5 h-auto shadow-none"
+              disabled={showUploadAnimation}
             >
               {showUploadAnimation ? (
                 <div className="flex gap-1">
                   {[...Array(3)].map((_, i) => (
                     <motion.div
                       key={i}
-                      className="w-1 h-1 bg-current rounded-full"
+                      className="w-1 h-1 bg-current rounded-full "
                       animate={{ y: [-2, 2, -2] }}
                       transition={{
                         duration: 0.6,
@@ -290,10 +293,10 @@ export function AIAssistantInterface({
               )
             }
             className={cn(
-              "flex flex-col items-center gap-2 p-3 sm:p-4 rounded-xl sm:rounded-2xl border transition-all duration-200",
+              "flex flex-col cursor-pointer items-center gap-2 p-3 sm:p-4 rounded-xl sm:rounded-2xl border transition-all duration-200",
               activeCommandCategory === key
                 ? "bg-gradient-to-r from-[#3b82f6] to-[#6366f1] text-white border-white/40 dark:border-gray-600/40 shadow-lg"
-                : "bg-white/80 dark:bg-gray-800/40 dark:border-gray-700/60 text-gray-600 dark:text-gray-300 hover:bg-white/60 dark:hover:bg-gray-800/60 hover:text-gray-800 dark:hover:text-gray-100"
+                : "bg-white/80 dark:bg-gray-800/40 dark:border-gray-700/60 text-gray-600 dark:text-gray-300  dark:hover:bg-gray-800/60 hover:text-gray-800 dark:hover:text-gray-100"
             )}
           >
             <Icon className="w-4 h-4 sm:w-5 sm:h-5" />
@@ -321,7 +324,7 @@ export function AIAssistantInterface({
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: index * 0.05 }}
                 onClick={() => handleCommandSelect(suggestion)}
-                className="w-full flex items-center gap-3 p-3 sm:p-4 text-left hover:bg-white/30 dark:hover:bg-gray-800/30 transition-colors border-b border-white/20 dark:border-gray-700/20 last:border-b-0"
+                className="w-full active:cursor-grabbing cursor-grab flex items-center gap-3 p-3 sm:p-4 text-left hover:bg-white/30 dark:hover:bg-gray-800/30 transition-colors border-b border-white/20 dark:border-gray-700/20 last:border-b-0"
               >
                 <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-full bg-gradient-to-r from-[#3b82f6] to-[#6366f1] flex items-center justify-center shadow-sm">
                   {activeCommandCategory === "learn" ? (

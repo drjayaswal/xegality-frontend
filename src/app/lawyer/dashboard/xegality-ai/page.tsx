@@ -18,6 +18,10 @@ import {
   EarIcon,
   X,
   ImageIcon,
+  Cross,
+  XCircle,
+  SendHorizonal,
+  SendToBack,
 } from "lucide-react";
 import SiriWave from "@/components/ui/ai";
 
@@ -52,6 +56,7 @@ export default function XegalityAI() {
     },
   ]);
   const [inputValue, setInputValue] = useState("");
+  const isReadyToSend = inputValue.trim().length > 0;
   const [isTyping, setIsTyping] = useState(false);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -271,7 +276,7 @@ export default function XegalityAI() {
         </div>
       </div>
       {/* Chat Messages */}
-      <div className="flex-1 px-5 py-10 bg-gradient-to-r from-gray-50 to-[#3b82f6]/40 overflow-hidden">
+      <div className="flex-1 px-5 py-10 bg-gradient-to-r from-gray-50 to-[#3b82f6]/40 rounded-b-2xl">
         <ScrollArea className="h-full" ref={scrollAreaRef}>
           <div className="space-y-4 pb-20">
             <AnimatePresence>
@@ -427,88 +432,134 @@ export default function XegalityAI() {
         )}
       </AnimatePresence>
       {/* Input Area */}
-      <div className="pt-8 relative rounded-b-md bg-gradient-to-r from-gray-50 to-[#3b82f6]/40 z-30">
-        <div className="flex gap-0 justify-center items-center">
-          <div className="flex-1 relative">
-            <Input
-              ref={inputRef}
-              value={inputValue}
-              onChange={(e) => setInputValue(e.target.value)}
-              onKeyPress={handleKeyPress}
-              placeholder="Ask Xegality AI anything about law, cases, or legal research..."
-              className="pr-20 py-3 bg-transparent focus-visible:ring-[2px] ring-black rounded-none placeholder:text-black/40 dark:placeholder:text-white/40 font-bold shadow-none border-none"
-            />
-          </div>
-          <Button
-            onClick={handleUploadClick}
-            disabled={showUploadAnimation}
-            className="flex items-center gap-2 rounded-none text-gray-600 text-sm bg-gradient-to-r from-[#4f46e5]/10 via-[#ec4899]/10 to-[#3b82f6]/10 shadow-none hover:bg-transparent px-4 py-2 hover:text-indigo-900 hover:scale-105 transition-all duration-150"
-          >
-            {showUploadAnimation ? (
-              <motion.div
-                className="flex space-x-1"
-                initial="hidden"
-                animate="visible"
-                variants={{
-                  hidden: {},
-                  visible: {
-                    transition: {
-                      staggerChildren: 0.1,
-                    },
-                  },
-                }}
-              >
-                {[...Array(3)].map((_, i) => (
-                  <motion.div
-                    key={i}
-                    className="w-1.5 h-1.5 bg-indigo-600 rounded-full"
-                    variants={{
-                      hidden: { opacity: 0, y: 5 },
-                      visible: {
-                        opacity: 1,
-                        y: 0,
-                        transition: {
-                          duration: 0.4,
-                          repeat: Number.POSITIVE_INFINITY,
-                          repeatType: "mirror",
-                          delay: i * 0.1,
-                        },
+      <div className="absolute bottom-0 left-0 w-full z-30 py-1 bg-gray-50/30 dark:bg-black/30 backdrop-blur-sm rounded-b-md">
+        <div className="pt-4 px-4 pb-0 rounded-none ">
+          <div className="flex items-center gap-1 py-2 rounded-none">
+            <div className="flex-1 relative">
+              <Input
+                ref={inputRef}
+                value={inputValue}
+                onChange={(e) => setInputValue(e.target.value)}
+                onKeyPress={handleKeyPress}
+                placeholder="Ask Xegality AI anything about law, cases, or legal research..."
+                className="w-full py-2.5 pr-24 pl-4 font-medium
+                 rounded-l-2xl border-none shadow-sm focus-visible:ring-0 text-gray-500
+                bg-white/30
+              dark:hover:bg-white/20 rounded-2xl focus-visible:shadow-inner
+              transition-all duration-150"
+              />
+            </div>
+
+            {/* Upload Button */}
+            <Button
+              onClick={handleUploadClick}
+              disabled={showUploadAnimation}
+              className="relative h-10 w-10 min-w-[2.5rem] flex items-center justify-center 
+bg-white/30 dark:bg-white/10 
+hover:bg-white/40 dark:hover:bg-white/20 
+rounded-2xl shadow-sm active:shadow-inner 
+transition-all duration-150"
+            >
+              {showUploadAnimation ? (
+                <motion.div
+                  className="flex space-x-1"
+                  initial="hidden"
+                  animate="visible"
+                  variants={{
+                    hidden: {},
+                    visible: {
+                      transition: {
+                        staggerChildren: 0.1,
                       },
-                    }}
-                  />
-                ))}
-              </motion.div>
-            ) : (
-              <Paperclip className="w-4 h-4 text-black/70 dark:text-white/70" />
-            )}
-            {showUploadAnimation ? (
-              <span>Attaching...</span>
-            ) : (
-              <span className="text-black/70 dark:text-white/70">Attach</span>
-            )}
-          </Button>
-          <Button
-            className="h-10 w-10 bg-gradient-to-r from-[#3b82f6]/10 to-[#3b82f6]/40 flex justify-center items-center rounded-none"
-            onClick={handleVoiceSearch}
-          >
-            {isListening ? (
-              <EarIcon className="animate-pulse text-white" />
-            ) : (
-              <Mic className="h-8 w-8 text-white" />
-            )}
-          </Button>
-          <Button
-            onClick={handleSendMessage}
-            disabled={!inputValue.trim() || isTyping}
-            className="h-10 w-10 animate-gradient flex justify-center items-center rounded-r-md"
-          >
-            <Send className="h-5 w-5 text-white" />
-          </Button>
+                    },
+                  }}
+                >
+                  {[...Array(3)].map((_, i) => (
+                    <motion.div
+                      key={i}
+                      className="w-1.5 h-1.5 bg-indigo-600 rounded-full"
+                      variants={{
+                        hidden: { opacity: 0, y: 5 },
+                        visible: {
+                          opacity: 1,
+                          y: 0,
+                          transition: {
+                            duration: 0.4,
+                            repeat: Number.POSITIVE_INFINITY,
+                            repeatType: "mirror",
+                            delay: i * 0.1,
+                          },
+                        },
+                      }}
+                    />
+                  ))}
+                </motion.div>
+              ) : (
+                <Paperclip className="w-5 h-5 text-black/70 dark:text-white/70" />
+              )}
+            </Button>
+
+            {/* Voice Button */}
+            <Button
+              className="relative h-10 w-10 min-w-[2.5rem] flex items-center justify-center 
+              bg-white/30 dark:bg-white/10 
+              hover:bg-white/40 dark:hover:bg-white/20 
+              rounded-2xl shadow-sm active:shadow-inner 
+              transition-all duration-150"
+              onClick={handleVoiceSearch}
+            >
+              {isListening ? (
+                <EarIcon className="h-5 w-5 text-black animate-pulse" />
+              ) : (
+                <Mic className="h-5 w-5 text-black" />
+              )}
+            </Button>
+
+            {/* Send Button */}
+
+            <Button
+              disabled={!isReadyToSend || isTyping}
+              onClick={handleSendMessage}
+              className={`relative h-10 w-10 min-w-[2.5rem] flex items-center justify-center
+                rounded-2xl overflow-hidden transition-all duration-200
+                ${
+                  isReadyToSend && !isTyping
+                    ? "bg-white/30 dark:bg-white/10 hover:bg-white/40 dark:hover:bg-white/20 shadow-sm active:shadow-inner"
+                    : "bg-transparent shadow-none"
+                }`}
+            >
+              {" "}
+              <AnimatePresence mode="wait">
+                {!isReadyToSend ? (
+                  <motion.div
+                    key="idle"
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0 }}
+                    className="flex items-center justify-center"
+                  >
+                    <SendHorizonal className="text-black/40" />
+                  </motion.div>
+                ) : (
+                  <motion.div
+                    key="ready"
+                    initial={{ y: 20, opacity: 0 }}
+                    animate={{ y: 0, opacity: 1 }}
+                    exit={{ y: -20, opacity: 0 }}
+                    transition={{ duration: 0.4, ease: "easeInOut" }}
+                    className="flex items-center justify-center"
+                  >
+                    <Send className="h-5 w-5 text-black -rotate-45" />
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </Button>
+          </div>
+          <p className="text-[8px] text-center mt-2 text-black/40 dark:text-white/40">
+            Xegality AI can make mistakes. Please verify important information.
+          </p>
         </div>
-        <p className="text-xs bg-red-300 text-black/40 dark:text-white/40 mt-2 text-center">
-          Xegality AI can make mistakes. Please verify important information.
-        </p>
-      </div>{" "}
+      </div>
     </div>
   );
 }

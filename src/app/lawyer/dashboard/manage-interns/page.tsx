@@ -228,16 +228,7 @@ export default function HireAnInternPage() {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.3, delay: index * 0.1 }}
-                  className={`p-6 rounded-3xl bg-white/70 backdrop-blur-sm shadow-xl transition-all duration-300 border-2 cursor-pointer hover:shadow-md ${
-                    selectedIntern === intern.id
-                      ? "border-[#3b82f6]/60"
-                      : "border-transparent hover:border-[#3b82f6]/40"
-                  }`}
-                  onClick={() =>
-                    setSelectedIntern(
-                      selectedIntern === intern.id ? null : intern.id
-                    )
-                  }
+                  className={`p-6 rounded-3xl bg-white/70 backdrop-blur-sm shadow-xl transition-all duration-300 border-2 cursor-pointer hover:shadow-none border-transparent hover:border-[#3b82f6]/40`}
                 >
                   <div className="flex items-start justify-between mb-4 flex-wrap gap-3">
                     <div className="flex items-center gap-4">
@@ -288,7 +279,7 @@ export default function HireAnInternPage() {
                   </div>
 
                   <div className="grid grid-cols-2 gap-4 mb-4">
-                    <div className="text-center p-3 bg-muted rounded-xl">
+                    <div className="text-center p-3 bg-[#2563eb]/10 rounded-xl">
                       <p className="text-lg font-semibold text-foreground">
                         {intern.tasksCompleted}
                       </p>
@@ -296,7 +287,7 @@ export default function HireAnInternPage() {
                         Tasks Completed
                       </p>
                     </div>
-                    <div className="text-center p-3 bg-muted rounded-xl">
+                    <div className="text-center p-3 bg-[#2563eb]/10 rounded-xl">
                       <p className="text-lg font-semibold text-foreground">
                         {intern.hoursWorked}
                       </p>
@@ -305,45 +296,6 @@ export default function HireAnInternPage() {
                       </p>
                     </div>
                   </div>
-
-                  {selectedIntern === intern.id && (
-                    <motion.div
-                      initial={{ opacity: 0, height: 0 }}
-                      animate={{ opacity: 1, height: "auto" }}
-                      exit={{ opacity: 0, height: 0 }}
-                      className="border-t pt-4 space-y-3 text-sm"
-                    >
-                      <div className="flex items-center gap-2">
-                        <Mail className="h-4 w-4 text-[#3b82f6]" />
-                        <a
-                          href={`mailto:${intern.email}`}
-                          className="text-[#3b82f6] hover:underline break-all"
-                        >
-                          {intern.email}
-                        </a>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <Phone className="h-4 w-4 text-[#3b82f6]" />
-                        <a
-                          href={`tel:${intern.phone}`}
-                          className="text-[#3b82f6] hover:underline"
-                        >
-                          {intern.phone}
-                        </a>
-                      </div>
-                      <div className="flex gap-2 mt-3">
-                        <Button size="sm" variant="outline" className="flex-1">
-                          View Profile
-                        </Button>
-                        <Button
-                          size="sm"
-                          className="flex-1 bg-[#3b82f6] hover:bg-[#2563eb]"
-                        >
-                          Assign Task
-                        </Button>
-                      </div>
-                    </motion.div>
-                  )}
                 </motion.div>
               ))}
             </div>
