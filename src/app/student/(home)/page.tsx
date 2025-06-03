@@ -72,8 +72,8 @@ export default function LawyerHome() {
             colors={[
               "#334155", // slate-700
               "#1e293b", // slate-800
-              "#ca8a04", // amber-600
-              "#b45309", // amber-700
+              "#059669", // emerald-600
+              "#047857", // emerald-700
             ]}
             isWaveMode={isWaveActive}
           />
@@ -96,8 +96,8 @@ export default function LawyerHome() {
                         : "opacity-100 scale-95 translate-y-44"
                     }`}
                   >
-                    <Badge className="bg-gradient-to-r from-slate-700 to-amber-600 text-white px-4 sm:px-6 py-2 text-xs sm:text-sm font-medium rounded-full shadow-lg">
-                      For Legal Professionals
+                    <Badge className="bg-gradient-to-r from-slate-700 to-emerald-600 text-white px-4 sm:px-6 py-2 text-xs sm:text-sm font-medium rounded-full shadow-lg">
+                      For Legal Students
                     </Badge>
                   </div>
                 </div>
@@ -110,7 +110,7 @@ export default function LawyerHome() {
                 >
                   <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-extralight text-gray-900 mb-4 relative">
                     <div
-                      className={`absolute inset-0 bg-gradient-to-r from-slate-600/20 via-slate-800/20 to-amber-600/20 blur-2xl sm:blur-3xl rounded-full transform transition-all duration-1000 ${
+                      className={`absolute inset-0 bg-gradient-to-r from-slate-600/20 via-slate-800/20 to-emerald-600/20 blur-2xl sm:blur-3xl rounded-full transform transition-all duration-1000 ${
                         isWaveActive || inputFocused || inputValue != ""
                           ? "scale-150 sm:scale-200 opacity-60"
                           : "scale-100 sm:scale-150 opacity-30"
@@ -120,8 +120,8 @@ export default function LawyerHome() {
                       colors={[
                         "#334155", // slate-700
                         "#1e293b", // slate-800
-                        "#ca8a04", // amber-600
-                        "#b45309", // amber-700
+                        "#059669", // emerald-600
+                        "#047857", // emerald-700
                       ]}
                       className="font-bold relative z-10 drop-shadow-sm"
                     >
@@ -138,11 +138,10 @@ export default function LawyerHome() {
                   }`}
                 >
                   <p className="text-base sm:text-lg md:text-xl text-gray-600 max-w-2xl mt-4 px-4">
-                    Professional AI-powered legal practice management
+                    AI-powered legal education and study assistance
                   </p>
-                  <p className="text-sm sm:text-md text-amber-600 font-medium mt-2 px-4">
-                    Streamline workflows • Enhance client service • Maximize
-                    efficiency
+                  <p className="text-sm sm:text-md text-emerald-600 font-medium mt-2 px-4">
+                    Master concepts • Ace exams • Build legal skills
                   </p>
                 </div>
               </div>
@@ -161,9 +160,9 @@ export default function LawyerHome() {
                   <AIAssistantInterface
                     onFocus={() => setInputFocused(true)}
                     onBlur={() => setInputFocused(false)}
-                    placeholder="Ask about case management, client communications, legal research..."
+                    placeholder="Ask about constitutional law, contracts, torts, legal writing..."
                     from="slate-800"
-                    to="amber-800"
+                    to="emerald-800"
                   />
                 </div>
               </div>
@@ -181,70 +180,70 @@ export default function LawyerHome() {
               }`}
             ></div>
             <div
-              className={`absolute top-20 sm:top-40 right-4 sm:right-10 w-56 sm:w-80 h-56 sm:h-80 bg-gradient-to-r from-amber-200 to-amber-300 rounded-full mix-blend-multiply filter blur-2xl sm:blur-3xl animate-blob animation-delay-2000 transition-opacity duration-1000 ${
+              className={`absolute top-20 sm:top-40 right-4 sm:right-10 w-56 sm:w-80 h-56 sm:h-80 bg-gradient-to-r from-emerald-200 to-emerald-300 rounded-full mix-blend-multiply filter blur-2xl sm:blur-3xl animate-blob animation-delay-2000 transition-opacity duration-1000 ${
                 isWaveActive ? "opacity-40" : "opacity-30"
               }`}
             ></div>
 
             <div className="container mx-auto px-4 relative z-10">
               <SectionHeading
-                subtitle="Professional AI Solutions"
-                title="Comprehensive Legal Practice Management"
-                description="Advanced AI-powered tools designed for legal professionals to enhance practice efficiency and client service excellence."
+                subtitle="Student AI Solutions"
+                title="Comprehensive Legal Study Support"
+                description="Advanced AI-powered tools designed for law students to enhance learning, improve grades, and build essential legal skills."
               />
 
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 md:gap-8 mt-8 sm:mt-12 relative z-10">
                 {[
                   {
                     icon: <Shield className="h-5 w-5 sm:h-6 sm:w-6" />,
-                    title: "Case Management",
+                    title: "Study Planning",
                     description:
-                      "AI-enhanced case tracking, deadline management, and workflow automation for seamless practice operations.",
+                      "AI-enhanced study schedules, exam preparation, and coursework organization for academic success.",
                   },
                   {
                     icon: <MessageSquare className="h-5 w-5 sm:h-6 sm:w-6" />,
-                    title: "Client Communications",
+                    title: "Legal Writing Assistant",
                     description:
-                      "Intelligent client portal with automated updates, secure messaging, and AI-powered response suggestions.",
+                      "Intelligent writing support with citation help, argument structuring, and legal memo guidance.",
                   },
                   {
                     icon: <Briefcase className="h-5 w-5 sm:h-6 sm:w-6" />,
-                    title: "Document Automation",
+                    title: "Case Brief Generator",
                     description:
-                      "Smart document generation, contract analysis, and legal template management with AI assistance.",
+                      "Smart case analysis tools, brief templates, and legal reasoning assistance for coursework.",
                   },
                   {
                     icon: <Users className="h-5 w-5 sm:h-6 sm:w-6" />,
-                    title: "Practice Analytics",
+                    title: "Study Groups",
                     description:
-                      "Comprehensive insights into practice performance, billing optimization, and client satisfaction metrics.",
+                      "Connect with classmates, share notes, and collaborate on assignments with AI-powered matching.",
                   },
                   {
                     icon: <Scale className="h-5 w-5 sm:h-6 sm:w-6" />,
                     title: "Legal Research",
                     description:
-                      "Advanced AI-powered legal research with case law analysis, precedent identification, and citation management.",
+                      "Advanced AI-powered legal research with case law analysis, statute lookup, and citation management.",
                   },
                   {
                     icon: <Award className="h-5 w-5 sm:h-6 sm:w-6" />,
-                    title: "Compliance Monitoring",
+                    title: "Exam Preparation",
                     description:
-                      "Automated compliance tracking, regulatory updates, and risk assessment for your practice areas.",
+                      "Personalized practice tests, flashcards, and performance analytics to maximize exam scores.",
                   },
                 ].map((service, index) => (
                   <div
                     key={index}
-                    className="group relative bg-white/80 backdrop-blur-sm rounded-2xl sm:rounded-3xl p-6 sm:p-8 shadow-lg hover:shadow-2xl transition-all duration-500 border border-white/60 hover:border-amber-200/60 overflow-hidden transform hover:-translate-y-1 sm:hover:-translate-y-2"
+                    className="group relative bg-white/80 backdrop-blur-sm rounded-2xl sm:rounded-3xl p-6 sm:p-8 shadow-lg hover:shadow-2xl transition-all duration-500 border border-white/60 hover:border-emerald-200/60 overflow-hidden transform hover:-translate-y-1 sm:hover:-translate-y-2"
                   >
-                    <div className="absolute inset-0 bg-gradient-to-br from-slate-50/60 via-gray-50/60 to-amber-50/60 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                    <div className="absolute inset-0 bg-gradient-to-br from-slate-50/60 via-gray-50/60 to-emerald-50/60 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
 
-                    <div className="absolute top-0 right-0 w-24 sm:w-32 h-24 sm:h-32 bg-gradient-to-br from-amber-100/40 to-transparent rounded-full transform translate-x-12 sm:translate-x-16 -translate-y-12 sm:-translate-y-16 group-hover:scale-150 transition-transform duration-700"></div>
+                    <div className="absolute top-0 right-0 w-24 sm:w-32 h-24 sm:h-32 bg-gradient-to-br from-emerald-100/40 to-transparent rounded-full transform translate-x-12 sm:translate-x-16 -translate-y-12 sm:-translate-y-16 group-hover:scale-150 transition-transform duration-700"></div>
 
                     <div className="relative z-10">
-                      <div className="h-12 w-12 sm:h-16 sm:w-16 rounded-xl sm:rounded-2xl bg-gradient-to-r from-slate-700 to-amber-600 flex items-center justify-center mb-4 sm:mb-6 group-hover:scale-110 group-hover:rotate-3 transition-all duration-300 shadow-lg">
+                      <div className="h-12 w-12 sm:h-16 sm:w-16 rounded-xl sm:rounded-2xl bg-gradient-to-r from-slate-700 to-emerald-600 flex items-center justify-center mb-4 sm:mb-6 group-hover:scale-110 group-hover:rotate-3 transition-all duration-300 shadow-lg">
                         <div className="text-white">{service.icon}</div>
                       </div>
-                      <h3 className="text-lg sm:text-xl font-bold text-gray-900 mb-3 sm:mb-4 group-hover:text-amber-700 transition-colors duration-300">
+                      <h3 className="text-lg sm:text-xl font-bold text-gray-900 mb-3 sm:mb-4 group-hover:text-emerald-700 transition-colors duration-300">
                         {service.title}
                       </h3>
                       <p className="text-sm sm:text-base text-gray-600 group-hover:text-gray-700 transition-colors duration-300 leading-relaxed">
@@ -252,7 +251,7 @@ export default function LawyerHome() {
                       </p>
                     </div>
 
-                    <div className="absolute -bottom-3 sm:-bottom-4 -right-3 sm:-right-4 w-20 sm:w-24 h-20 sm:h-24 bg-gradient-to-r from-slate-200/40 to-amber-200/40 rounded-full opacity-0 group-hover:opacity-100 transition-all duration-500 transform translate-x-1/2 translate-y-1/2 group-hover:scale-125"></div>
+                    <div className="absolute -bottom-3 sm:-bottom-4 -right-3 sm:-right-4 w-20 sm:w-24 h-20 sm:h-24 bg-gradient-to-r from-slate-200/40 to-emerald-200/40 rounded-full opacity-0 group-hover:opacity-100 transition-all duration-500 transform translate-x-1/2 translate-y-1/2 group-hover:scale-125"></div>
                   </div>
                 ))}
               </div>
@@ -297,7 +296,7 @@ export default function LawyerHome() {
           <div className="container mx-auto p-4 sm:p-6 lg:p-8 rounded-2xl sm:rounded-4xl bg-white/80 backdrop-blur-sm">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 sm:gap-12 lg:gap-16 items-center">
               <div className="order-2 lg:order-1">
-                <div className="inline-flex items-center rounded-full bg-amber-600/20 backdrop-blur-sm border border-amber-700 px-3 sm:px-4 py-2 text-xs sm:text-sm font-medium text-amber-700 mb-4 sm:mb-6">
+                <div className="inline-flex items-center rounded-full bg-emerald-600/20 backdrop-blur-sm border border-emerald-700 px-3 sm:px-4 py-2 text-xs sm:text-sm font-medium text-emerald-700 mb-4 sm:mb-6">
                   <Award className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
                   Professional Features
                 </div>
@@ -328,7 +327,7 @@ export default function LawyerHome() {
                 </div>
 
                 <div className="mt-8 sm:mt-10">
-                  <Button className="group bg-gradient-to-r from-slate-700 to-amber-600 hover:from-slate-800 hover:to-amber-700 text-white font-medium inline-flex items-center px-4 sm:px-6 py-2 sm:py-3 rounded-lg sm:rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 text-sm sm:text-base">
+                  <Button className="group bg-gradient-to-r from-slate-700 to-emerald-600 hover:from-slate-800 hover:to-emerald-700 text-white font-medium inline-flex items-center px-4 sm:px-6 py-2 sm:py-3 rounded-lg sm:rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 text-sm sm:text-base">
                     Explore Professional Features
                     <ChevronRight className="ml-2 h-3 w-3 sm:h-4 sm:w-4 transition-transform group-hover:translate-x-1" />
                   </Button>
@@ -379,7 +378,7 @@ export default function LawyerHome() {
                   </div>
                 </div>
 
-                <div className="absolute -z-10 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-3/4 h-3/4 bg-gradient-to-r from-slate-100/60 to-amber-100/60 rounded-full blur-2xl sm:blur-3xl"></div>
+                <div className="absolute -z-10 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-3/4 h-3/4 bg-gradient-to-r from-slate-100/60 to-emerald-100/60 rounded-full blur-2xl sm:blur-3xl"></div>
               </div>
             </div>
           </div>
@@ -421,28 +420,28 @@ export default function LawyerHome() {
         </section>
 
         {/* Professional CTA */}
-        <section className="py-12 sm:py-16 lg:py-20 bg-gradient-to-r from-slate-800 via-slate-900 to-amber-800 relative z-10 mx-4 sm:mx-0 rounded-2xl sm:rounded-none">
+        <section className="py-12 sm:py-16 lg:py-20 bg-gradient-to-r from-slate-800 via-slate-900 to-emerald-800 relative z-10 mx-4 sm:mx-0 rounded-2xl sm:rounded-none">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
             <div className="max-w-3xl mx-auto text-center">
               <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-4 sm:mb-6">
                 Ready to Transform Your Legal Practice?
               </h2>
-              <p className="text-base sm:text-lg text-amber-200 mb-8 sm:mb-10 px-4">
+              <p className="text-base sm:text-lg text-emerald-200 mb-8 sm:mb-10 px-4">
                 Schedule a consultation with our team to discover how Xegality
                 AI can enhance your practice efficiency and client service
                 excellence.
               </p>
 
               <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center px-4">
-                <Button className="bg-amber-600 text-white hover:bg-amber-700 font-bold py-3 sm:py-4 px-6 sm:px-8 rounded-lg sm:rounded-xl shadow-xl transition-all duration-300 text-sm sm:text-base">
+                <Button className="bg-emerald-600 text-white hover:bg-emerald-700 font-bold py-3 sm:py-4 px-6 sm:px-8 rounded-lg sm:rounded-xl shadow-xl transition-all duration-300 text-sm sm:text-base">
                   Schedule Demo
                 </Button>
-                <Button className="bg-transparent text-white hover:bg-white/10 font-bold py-3 sm:py-4 px-6 sm:px-8 rounded-lg sm:rounded-xl border-2 border-amber-600/40 shadow-xl transition-all duration-300 text-sm sm:text-base">
+                <Button className="bg-transparent text-white hover:bg-white/10 font-bold py-3 sm:py-4 px-6 sm:px-8 rounded-lg sm:rounded-xl border-2 border-emerald-600/40 shadow-xl transition-all duration-300 text-sm sm:text-base">
                   Request Proposal
                 </Button>
               </div>
 
-              <p className="text-amber-200/80 text-xs sm:text-sm mt-4 sm:mt-6 px-4">
+              <p className="text-emerald-200/80 text-xs sm:text-sm mt-4 sm:mt-6 px-4">
                 No commitment required • Customized to your practice • Full
                 support included
               </p>
@@ -457,7 +456,7 @@ export default function LawyerHome() {
 function SectionHeading({ subtitle, title, description }: SectionHeadingProps) {
   return (
     <div className="max-w-3xl mx-auto text-center px-4">
-      <div className="inline-flex items-center rounded-full bg-white/80 backdrop-blur-sm border border-amber-200/50 px-3 sm:px-4 py-2 text-xs sm:text-sm font-medium text-slate-700 mb-3 sm:mb-4">
+      <div className="inline-flex items-center rounded-full bg-white/80 backdrop-blur-sm border border-emerald-200/50 px-3 sm:px-4 py-2 text-xs sm:text-sm font-medium text-slate-700 mb-3 sm:mb-4">
         {subtitle}
       </div>
       <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-3 sm:mb-4">
@@ -472,7 +471,7 @@ function ProcessStep({ number, title, description }: ProcessStepProps) {
   return (
     <div className="relative bg-white/80 backdrop-blur-sm p-6 sm:p-8 lg:p-10 rounded-2xl sm:rounded-4xl md:text-center">
       <div className="md:flex md:justify-center mb-4 sm:mb-6">
-        <div className="absolute left-0 md:static flex items-center justify-center h-10 w-10 sm:h-12 sm:w-12 rounded-full bg-gradient-to-r from-slate-700 to-amber-600 text-white font-bold shadow-lg text-sm sm:text-base">
+        <div className="absolute left-0 md:static flex items-center justify-center h-10 w-10 sm:h-12 sm:w-12 rounded-full bg-gradient-to-r from-slate-700 to-emerald-600 text-white font-bold shadow-lg text-sm sm:text-base">
           {number}
         </div>
       </div>
@@ -489,7 +488,7 @@ function ProcessStep({ number, title, description }: ProcessStepProps) {
 function ExpertiseItem({ title, description }: ExpertiseItemProps) {
   return (
     <div className="flex gap-3 sm:gap-4">
-      <div className="h-5 w-5 sm:h-6 sm:w-6 mt-0.5 rounded-full bg-gradient-to-r from-slate-700 to-amber-600 flex items-center justify-center flex-shrink-0">
+      <div className="h-5 w-5 sm:h-6 sm:w-6 mt-0.5 rounded-full bg-gradient-to-r from-slate-700 to-emerald-600 flex items-center justify-center flex-shrink-0">
         <CheckCircle2 className="h-3 w-3 sm:h-4 sm:w-4 text-white" />
       </div>
       <div>
@@ -509,8 +508,8 @@ function TestimonialCard({
   image,
 }: TestimonialCardProps) {
   return (
-    <div className="bg-white/80 backdrop-blur-sm rounded-xl sm:rounded-2xl p-4 sm:p-6 shadow-lg hover:shadow-xl transition-all duration-300 border border-white/60 hover:border-amber-200/60">
-      <div className="flex items-center gap-1 mb-3 sm:mb-4 text-amber-500">
+    <div className="bg-white/80 backdrop-blur-sm rounded-xl sm:rounded-2xl p-4 sm:p-6 shadow-lg hover:shadow-xl transition-all duration-300 border border-white/60 hover:border-emerald-200/60">
+      <div className="flex items-center gap-1 mb-3 sm:mb-4 text-emerald-500">
         {[1, 2, 3, 4, 5].map((star) => (
           <svg
             key={star}

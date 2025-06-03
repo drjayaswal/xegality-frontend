@@ -126,7 +126,7 @@ export default function HireAnInternPage() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-5 mb-8">
           {/* Total Interns */}
           <Card className="relative overflow-hidden border-0 rounded-xl group shadow-none hover:shadow-md transform hover:-translate-y-2 duration-150 bg-transparent">
-            <div className="absolute inset-0 z-0 bg-gradient-to-r from-gray-50 to-[#3b82f6]/10 group-hover:from-[#3b82f6] group-hover:to-blue-400 transition-colors duration-300 ease-in-out backdrop-blur-sm" />
+            <div className="absolute inset-0 z-0 bg-gradient-to-r from-gray-50 to-blue-200 group-hover:from-blue-400 group-hover:to-blue-400 transition-colors duration-300 ease-in-out backdrop-blur-sm" />
             <CardContent className="relative z-10 p-6 transition-colors duration-300 ease-in-out">
               <div className="flex items-center justify-between">
                 <div>
@@ -137,7 +137,7 @@ export default function HireAnInternPage() {
                     {hiredInterns.length}
                   </p>
                 </div>
-                <User className="h-8 w-8 text-[#3b82f6] group-hover:text-white transition-colors duration-300" />
+                <User className="h-8 w-8 text-blue-400 group-hover:text-white transition-colors duration-300" />
               </div>
             </CardContent>
           </Card>
@@ -228,7 +228,7 @@ export default function HireAnInternPage() {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.3, delay: index * 0.1 }}
-                  className={`p-6 rounded-3xl bg-white/70 backdrop-blur-sm shadow-xl transition-all duration-300 border-2 cursor-pointer hover:shadow-none border-transparent hover:border-[#3b82f6]/40`}
+                  className={`p-6 rounded-3xl bg-white/70 backdrop-blur-sm shadow-xl transition-all duration-300 border-2 cursor-pointer hover:shadow-none border-transparent hover:border-amber-700/40`}
                 >
                   <div className="flex items-start justify-between mb-4 flex-wrap gap-3">
                     <div className="flex items-center gap-4">
@@ -237,7 +237,7 @@ export default function HireAnInternPage() {
                           src={intern.avatar || "/placeholder.svg"}
                           alt={intern.name}
                         />
-                        <AvatarFallback className="bg-[#3b82f6] text-white">
+                        <AvatarFallback className="bg-amber-700 text-white">
                           {intern.name
                             .split(" ")
                             .map((n) => n[0])
@@ -310,7 +310,7 @@ export default function HireAnInternPage() {
                   Start building your team by hiring your first intern
                 </p>
                 <Link href="/lawyer/hire-interns">
-                  <Button className="bg-[#3b82f6] hover:bg-[#2563eb]">
+                  <Button className="bg-amber-700 hover:bg-amber-700">
                     <Plus className="h-4 w-4 mr-2" />
                     Hire Your First Intern
                   </Button>

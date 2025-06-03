@@ -506,7 +506,7 @@ export default function CaseManagement() {
               <div className="relative">
                 {searchQuery && (
                   <>
-                    <ArrowRight className="absolute left-3 top-2 h-5 w-5 text-[#3b82f6]" />
+                    <ArrowRight className="absolute left-3 top-2 h-5 w-5 text-amber-700" />
                   </>
                 )}
                 <Input
@@ -514,7 +514,7 @@ export default function CaseManagement() {
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   className={cn(
-                    "bg-transparent rounded-2xl text-left focus-visible:ring-0 border-2 border-[#3b82f6]/40 focus-visible:scale-105 focus-visible:border-[#3b82f6]/40 transition-all duration-150 dark:placeholder:text-white/40 placeholder:text-black/40",
+                    "bg-transparent rounded-2xl text-left focus-visible:ring-0 border-2 border-amber-700/40 focus-visible:scale-105 focus-visible:border-amber-700/40 transition-all duration-150 dark:placeholder:text-white/40 placeholder:text-black/40",
                     searchQuery != "" ? "text-center" : "text-left"
                   )}
                 />
@@ -522,7 +522,7 @@ export default function CaseManagement() {
             </div>
 
             {/* Case List */}
-            <ScrollArea className="flex border-t-2 border-[#3b82f6]/50 ">
+            <ScrollArea className="flex border-t-2 border-amber-700/50 ">
               <div className="p-5 h-[calc(100vh-20rem)]">
                 {isLoading ? (
                   <></>
@@ -584,30 +584,11 @@ export default function CaseManagement() {
                       >
                         <div className="flex items-center justify-center">
                           <div className="relative">
-                            <div className="w-12 h-12 bg-[#3b82f6] rounded-full flex items-center justify-center">
+                            <div className="w-12 h-12 bg-amber-700 mr-4 rounded-full flex items-center justify-center">
                               <Briefcase className="h-6 w-6 text-white" />
                             </div>
                           </div>
-                          {/* <div className="flex-1 min-w-0">
-                            <div className="flex items-center justify-around">
-                              <h3
-                                className={cn(
-                                  "font-medium text-gray-800 text-[14px] dark:text-white truncate transition-all duration-200"
-                                )}
-                              >
-                                {selectedCase === caseItem.id
-                                  ? caseItem.title.split(" ")[0]
-                                  : caseItem.title.slice(0, 4)}
-                              </h3>
-                              <div className="flex items-center gap-1 justify-center mr-6">
-                                <span className="text-xs text-black dark:text-white/40">
-                                  {formatDate(caseItem.openDate)}
-                                </span>
-                              </div>
-                            </div>
-                          </div> */}
-
-                          <div className="flex-1 min-w-0">
+                          <div className="flex-1 min-w-0 mt-0">
                             <div className="flex items-center justify-between">
                               <h3 className="font-medium text-gray-800 dark:text-white truncate">
                                 {caseItem.title.split(" ")[0]}
@@ -644,7 +625,7 @@ export default function CaseManagement() {
                         ? "Try adjusting your search criteria"
                         : "You don't have any cases yet"}
                     </p>
-                    <Button className="mt-4 bg-[#3b82f6] hover:bg-[#3b82f6] gap-2">
+                    <Button className="mt-4 bg-amber-700 hover:bg-amber-700 gap-2">
                       <Plus className="h-4 w-4 mr-2" /> Create New Case
                     </Button>
                   </div>
@@ -652,7 +633,7 @@ export default function CaseManagement() {
               </div>
               {/* New Case Button */}
               <div className="flex justify-center items-center mb-4 mx-auto">
-                <Button className="text-white rounded-2xl hover:text-black bg-[#3b82f6] hover:bg-white backdrop-blur-sm border-2 border-white gap-2">
+                <Button className="text-white rounded-2xl hover:text-black bg-amber-700 hover:bg-white backdrop-blur-sm border-2 border-white gap-2">
                   <Plus className="h-4 w-4 mr-2" /> New Case
                 </Button>
               </div>
@@ -663,7 +644,7 @@ export default function CaseManagement() {
           {currentCase ? (
             <div className="flex-1 p-0">
               {/* Case Header */}
-              <div className="p-4 border-b border-white/20  bg-[#3b82f6]/10">
+              <div className="p-4 border-b border-white/20  bg-amber-700/10">
                 <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                   <div>
                     <div className="flex items-center gap-2">
@@ -703,7 +684,7 @@ export default function CaseManagement() {
                     <Button variant="outline" className="gap-2">
                       <Edit className="h-4 w-4" /> Edit Case
                     </Button>
-                    <Button className="bg-[#3b82f6] hover:bg-[#3b82f6] gap-2">
+                    <Button className="bg-amber-700 hover:bg-amber-700 gap-2">
                       <MessageSquare className="h-4 w-4" /> Message Client
                     </Button>
                   </div>
@@ -716,7 +697,7 @@ export default function CaseManagement() {
                     className={cn(
                       "px-4 py-2 font-medium transition-colors",
                       activeTab === "overview"
-                        ? "text-[#3b82f6] border-b-2 border-[#3b82f6-600"
+                        ? "text-amber-700 border-b-2 border-[#3b82f6-600"
                         : "text-gray-600 dark:text-gray-300 hover:text-[#3b82f6-600"
                     )}
                   >
@@ -727,7 +708,7 @@ export default function CaseManagement() {
                     className={cn(
                       "px-4 py-2 font-medium transition-colors",
                       activeTab === "documents"
-                        ? "text-[#3b82f6] border-b-2 border-[#3b82f6-600"
+                        ? "text-amber-700 border-b-2 border-[#3b82f6-600"
                         : "text-gray-600 dark:text-gray-300 hover:text-[#3b82f6-600"
                     )}
                   >
@@ -738,7 +719,7 @@ export default function CaseManagement() {
                     className={cn(
                       "px-4 py-2 font-medium transition-colors",
                       activeTab === "notes"
-                        ? "text-[#3b82f6] border-b-2 border-[#3b82f6-600"
+                        ? "text-amber-700 border-b-2 border-[#3b82f6-600"
                         : "text-gray-600 dark:text-gray-300 hover:text-[#3b82f6-600"
                     )}
                   >
@@ -749,7 +730,7 @@ export default function CaseManagement() {
                     className={cn(
                       "px-4 py-2 font-medium transition-colors",
                       activeTab === "tasks"
-                        ? "text-[#3b82f6] border-b-2 border-[#3b82f6-600"
+                        ? "text-amber-700 border-b-2 border-[#3b82f6-600"
                         : "text-gray-600 dark:text-gray-300 hover:text-[#3b82f6-600"
                     )}
                   >
@@ -853,7 +834,7 @@ export default function CaseManagement() {
                         </div>
 
                         {currentCase.nextHearing && (
-                          <div className="mt-6 p-4 bg-[#3b82f6]0/50 dark:bg-[#3b82f6]0/20 rounded-lg border border-[#3b82f6] dark:border-[#3b82f6-800">
+                          <div className="mt-6 p-4 bg-amber-7000/50 dark:bg-amber-7000/20 rounded-lg border border-amber-700 dark:border-[#3b82f6-800">
                             <div className="flex items-center gap-2">
                               <Calendar className="h-5 w-5 text-[#3b82f6-600" />
                               <h4 className="font-medium text-gray-800 dark:text-white">
@@ -891,7 +872,7 @@ export default function CaseManagement() {
                                   key={item.id}
                                   className="flex gap-3 p-3 bg-white/20 dark:bg-white/5 rounded-lg border border-white/10"
                                 >
-                                  <div className="w-8 h-8 bg-[#3b82f6] dark:bg-[#3b82f6]0/50 rounded-full flex items-center justify-center">
+                                  <div className="w-8 h-8 bg-amber-700 dark:bg-amber-7000/50 rounded-full flex items-center justify-center">
                                     {isNote ? (
                                       <MessageSquare className="h-4 w-4 text-[#3b82f6-600" />
                                     ) : (
@@ -980,7 +961,7 @@ export default function CaseManagement() {
                           Documents ({currentCase.documents.length})
                         </h3>
                         <Button
-                          className="bg-[#3b82f6] hover:bg-[#3b82f6] gap-2"
+                          className="bg-amber-700 hover:bg-amber-700 gap-2"
                           onClick={handleUploadDocument}
                         >
                           <Upload className="h-4 w-4" /> Upload Document
@@ -1048,7 +1029,7 @@ export default function CaseManagement() {
                             everything organized.
                           </p>
                           <Button
-                            className="mt-4 bg-[#3b82f6] hover:bg-[#3b82f6] gap-2"
+                            className="mt-4 bg-amber-700 hover:bg-amber-700 gap-2"
                             onClick={handleUploadDocument}
                           >
                             <Upload className="h-4 w-4" /> Upload Document
@@ -1080,7 +1061,7 @@ export default function CaseManagement() {
                             />
                           </div>
                           <Button
-                            className="bg-[#3b82f6] hover:bg-[#3b82f6] self-end gap-2"
+                            className="bg-amber-700 hover:bg-amber-700 self-end gap-2"
                             onClick={handleAddNote}
                             disabled={!newNote.trim()}
                           >
@@ -1111,7 +1092,7 @@ export default function CaseManagement() {
                                   }}
                                 >
                                   <div className="flex items-start gap-3">
-                                    <div className="w-10 h-10 bg-[#3b82f6] dark:bg-[#3b82f6]0/50 rounded-full flex items-center justify-center">
+                                    <div className="w-10 h-10 bg-amber-700 dark:bg-amber-7000/50 rounded-full flex items-center justify-center">
                                       <User className="h-5 w-5 text-[#3b82f6-600" />
                                     </div>
                                     <div className="flex-1">
@@ -1168,7 +1149,7 @@ export default function CaseManagement() {
                         <h3 className="text-lg font-medium text-gray-800 dark:text-white">
                           Tasks ({currentCase.tasks.length})
                         </h3>
-                        <Button className="bg-[#3b82f6] hover:bg-[#3b82f6] gap-2">
+                        <Button className="bg-amber-700 hover:bg-amber-700 gap-2">
                           <Plus className="h-4 w-4" /> Add Task
                         </Button>
                       </div>
@@ -1329,7 +1310,7 @@ export default function CaseManagement() {
                             Add tasks to keep track of deadlines and
                             responsibilities for this case.
                           </p>
-                          <Button className="mt-4 bg-[#3b82f6] hover:bg-[#3b82f6] gap-2">
+                          <Button className="mt-4 bg-amber-700 hover:bg-amber-700 gap-2">
                             <Plus className="h-4 w-4" /> Add Task
                           </Button>
                         </div>
@@ -1342,14 +1323,14 @@ export default function CaseManagement() {
           ) : (
             <div className="flex-1 flex items-center justify-center">
               <div className="text-center max-w-md px-4">
-                <User className="h-16 w-16 mx-auto text-[#3b82f6] dark:text-white/60 mb-6" />
-                <h2 className="text-2xl font-bold text-[#3b82f6] dark:text-white/90 mb-4">
+                <User className="h-16 w-16 mx-auto text-amber-700 dark:text-white/60 mb-6" />
+                <h2 className="text-2xl font-bold text-amber-700 dark:text-white/90 mb-4">
                   Case Management
                 </h2>
-                <p className="dark:text-white/70 text-[#3b82f6] mb-6">
+                <p className="dark:text-white/70 text-amber-700 mb-6">
                   Select a case from the sidebar to manage
                 </p>
-                <Button className="bg-transparent dark:text-white text-[#3b82f6] hover:text-white hover:bg-[#3b82f6] backdrop-blur-sm border-2 border-[#3b82f6] gap-2">
+                <Button className="bg-transparent dark:text-white text-amber-700 hover:text-white hover:bg-amber-700 backdrop-blur-sm border-2 border-amber-700 gap-2">
                   <Plus className="h-4 w-4" /> Create New Case
                 </Button>
               </div>

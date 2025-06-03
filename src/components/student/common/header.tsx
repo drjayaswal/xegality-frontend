@@ -2,7 +2,7 @@
 
 import ThemeToggle from "@/components/shared/theme-toggle";
 import { Button } from "@/components/ui/button";
-import { LAWYER_NAVLINKS } from "@/lib/consts";
+import { STUDENT_NAVLINKS } from "@/lib/consts";
 import { cn } from "@/lib/utils";
 import { Menu, Shield, X } from "lucide-react";
 import { motion } from "motion/react";
@@ -55,15 +55,15 @@ const Header = () => {
 
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center space-x-2">
-            {LAWYER_NAVLINKS.map(({ title, href }, index) => {
+            {STUDENT_NAVLINKS.map(({ title, href }, index) => {
               const isActive = href === usePathname();
               return (
                 <Link
                   key={index}
                   href={href}
                   className={cn(
-                    "text-gray-700 py-2 px-5 rounded-full dark:text-slate-700 hover:text-amber-700 dark:hover:text-amber-400 transition-all duration-300 text-sm font-medium relative group",
-                    isActive && "bg-indigo-500/8 text-indigo-500"
+                    "text-slate-700 py-2 px-5 font-extrabold rounded-full dark:text-gray-300 hover:text-emerald-600 dark:hover:text-blue-400 transition-all duration-300 text-sm relative group",
+                    isActive && "bg-emerald-800 text-emerald-500"
                   )}
                 >
                   {title}
@@ -77,7 +77,7 @@ const Header = () => {
             <ThemeToggle />
             <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
               <Link href={"/login"}>
-                <Button className="bg-gradient-to-r from-slate-700 to-amber-700 rounded-4xl">
+                <Button className="bg-gradient-to-r from-slate-700 to-emerald-700 rounded-4xl">
                   Get Started
                 </Button>
               </Link>
@@ -108,11 +108,11 @@ const Header = () => {
             transition={{ duration: 0.3 }}
           >
             <nav className="flex flex-col space-y-4">
-              {LAWYER_NAVLINKS.map((item, index) => (
+              {STUDENT_NAVLINKS.map((item, index) => (
                 <motion.a
                   key={item.title}
                   href={`${item.href}`}
-                  className="text-gray-700 dark:text-gray-300 hover:text-amber-600 dark:hover:text-amber-400 transition-colors duration-200"
+                  className="text-slate-700 font-extrabold dark:text-gray-300 hover:text-emerald-600 dark:hover:text-blue-400 transition-colors duration-200"
                   initial={{ opacity: 0, x: -20 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ duration: 0.3, delay: index * 0.1 }}
@@ -121,7 +121,7 @@ const Header = () => {
                 </motion.a>
               ))}
               <div className="flex flex-col space-y-2 pt-4">
-                <Button className="bg-gradient-to-r from-slate-700 to-amber-700">
+                <Button className="bg-gradient-to-r from-slate-700 to-emerald-700">
                   Get Started
                 </Button>
               </div>

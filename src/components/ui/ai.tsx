@@ -3,19 +3,22 @@
 import { useEffect, useRef, useState } from "react";
 
 interface SiriWaveProps {
-  opacity: number;
   isWaveMode: boolean;
+  colors: string[]; // Should have exactly 4 colors
 }
 
-const SiriWave: React.FC<SiriWaveProps> = ({ isWaveMode, opacity }) => {
-  const [animatedOpacity, setAnimatedOpacity] = useState(opacity);
+const SiriWave: React.FC<SiriWaveProps> = ({ isWaveMode, colors }) => {
   const svgRef = useRef<SVGSVGElement | null>(null);
   const [amplitude, setAmplitude] = useState(isWaveMode ? 30 : 0);
+  const ACCENT_COLOR = "#3b82f6";
 
   useEffect(() => {
-    const wave1 = svgRef.current?.querySelector("#wave1") as SVGPathElement;
-    const wave2 = svgRef.current?.querySelector("#wave2") as SVGPathElement;
-    const wave3 = svgRef.current?.querySelector("#wave3") as SVGPathElement;
+    const waves: SVGPathElement[] = [
+      svgRef.current?.querySelector("#wave1"),
+      svgRef.current?.querySelector("#wave2"),
+      svgRef.current?.querySelector("#wave3"),
+      svgRef.current?.querySelector("#wave4"),
+    ].filter(Boolean) as SVGPathElement[];
 
     let t = 0;
 
@@ -33,7 +36,7 @@ const SiriWave: React.FC<SiriWaveProps> = ({ isWaveMode, opacity }) => {
       const centerY = height / 2;
       const points: [number, number][] = [];
 
-      for (let x = 0; x <= width; x += 2) {
+      for (let x = 0; x <= width; x += 3) {
         const y =
           centerY +
           Math.sin((x + t * speed + phaseOffset) * frequency) * amplitude;
@@ -48,9 +51,10 @@ const SiriWave: React.FC<SiriWaveProps> = ({ isWaveMode, opacity }) => {
     };
 
     const animate = () => {
-      drawWave(wave1, amplitude, 0.02, 0.8, 0);
-      drawWave(wave2, amplitude, 0.03, 0.9, 0);
-      drawWave(wave3, amplitude, 0.04, 1, 200);
+      drawWave(waves[0], amplitude, 0.02, 0.8, 0);
+      drawWave(waves[1], amplitude, 0.03, 0.9, 100);
+      drawWave(waves[2], amplitude, 0.04, 1.0, 200);
+      drawWave(waves[3], amplitude, 0.05, 1.1, 300);
       t += 1;
       requestAnimationFrame(animate);
     };
@@ -59,41 +63,25 @@ const SiriWave: React.FC<SiriWaveProps> = ({ isWaveMode, opacity }) => {
   }, [amplitude]);
 
   useEffect(() => {
-    // Smooth transition of amplitude using an interval
-    const targetAmplitude = isWaveMode ? 7 : 2;
+    const targetAmplitude = isWaveMode ? 5 : 0.5;
     const step = isWaveMode ? 1 : -1;
 
     const interval = setInterval(() => {
       setAmplitude((current) => {
-        const nextAmplitude = current + step;
+        const next = current + step;
         if (
-          (step > 0 && nextAmplitude >= targetAmplitude) ||
-          (step < 0 && nextAmplitude <= targetAmplitude)
+          (step > 0 && next >= targetAmplitude) ||
+          (step < 0 && next <= targetAmplitude)
         ) {
           clearInterval(interval);
           return targetAmplitude;
         }
-        return nextAmplitude;
+        return next;
       });
     }, 25);
 
     return () => clearInterval(interval);
   }, [isWaveMode]);
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setAnimatedOpacity((current) => {
-        const delta = 0.05;
-        if (Math.abs(current - opacity) < delta) {
-          clearInterval(interval);
-          return opacity;
-        }
-        return current + (opacity > current ? delta : -delta);
-      });
-    }, 25);
-
-    return () => clearInterval(interval);
-  }, [opacity]);
 
   return (
     <div
@@ -120,20 +108,16 @@ const SiriWave: React.FC<SiriWaveProps> = ({ isWaveMode, opacity }) => {
           overflow: "hidden",
         }}
       >
-        <g fill="none" strokeWidth={isWaveMode ? "2" : "1"}>
-          <path
-            id="wave1"
-            stroke={`rgba(79, 70, 229, ${opacity})`} // #4f46e5 with dynamic alpha
-          />
-          <path
-            id="wave2"
-            stroke={`rgba(59, 130, 246, ${opacity})`} // #3b82f6
-          />
-          <path
-            id="wave3"
-            stroke={`rgba(156, 45, 236, ${opacity})`} // #9c2dec
-          />
-        </g>{" "}
+        <g fill="none" strokeWidth={isWaveMode ? 2 : 1}>
+          {colors.slice(0, 3).map((color, i) => (
+            <path
+              key={`wave${i + 1}`}
+              id={`wave${i + 1}`}
+              stroke={color || ACCENT_COLOR}
+              strokeOpacity={1} // 100% opacity
+            />
+          ))}
+        </g>
       </svg>
     </div>
   );

@@ -206,8 +206,16 @@ export default function Appointments() {
         {/* Header */}
         <div className="relative h-24 overflow-hidden">
           <div className="absolute inset-0 flex items-center justify-center">
-            <div className="w-full h-fit flex items-center justify-center">
-              <SiriWave opacity={0.5} isWaveMode={false} />
+            <div className="w-full h-fit flex items-center justify-center opacity-60">
+              <SiriWave
+                isWaveMode={false}
+                colors={[
+                  "#334155", // slate-700
+                  "#1e293b", // slate-800
+                  "#ca8a04", // amber-600
+                  "#b45309", // amber-700
+                ]}
+              />
             </div>
           </div>
         </div>
@@ -245,15 +253,15 @@ export default function Appointments() {
             </div>
 
             <div className="flex items-center gap-2">
-              <div className="flex rounded-full overflow-hidden border-2 border-[#3b82f6]">
+              <div className="flex rounded-full overflow-hidden border-0">
                 <Button
                   variant={viewMode === "day" ? "default" : "ghost"}
                   size="sm"
                   onClick={() => setViewMode("day")}
                   className={cn(
-                    "rounded-none text-[#3b82f6] hover:bg-[#3b82f6]/40 hover:text-white",
+                    "rounded-none text-amber-700 hover:bg-amber-700/40 hover:text-white",
                     viewMode === "day"
-                      ? "text-white bg-[#3b82f6] hover:bg-[#3b82f6]"
+                      ? "text-white bg-amber-700 hover:bg-amber-700"
                       : ""
                   )}
                 >
@@ -264,9 +272,9 @@ export default function Appointments() {
                   size="sm"
                   onClick={() => setViewMode("week")}
                   className={cn(
-                    "rounded-none text-[#3b82f6] hover:bg-[#3b82f6]/40 hover:text-white",
+                    "rounded-none text-amber-700 hover:bg-amber-700/40 hover:text-white",
                     viewMode === "week"
-                      ? "text-white bg-[#3b82f6] hover:bg-[#3b82f6]"
+                      ? "text-white bg-amber-700 hover:bg-amber-700"
                       : ""
                   )}
                 >
@@ -277,9 +285,9 @@ export default function Appointments() {
                   size="sm"
                   onClick={() => setViewMode("month")}
                   className={cn(
-                    "rounded-none text-[#3b82f6] hover:bg-[#3b82f6]/40 hover:text-white",
+                    "rounded-none text-amber-700 hover:bg-amber-700/40 hover:text-white",
                     viewMode === "month"
-                      ? "text-white bg-[#3b82f6] hover:bg-[#3b82f6]"
+                      ? "text-white bg-amber-700 hover:bg-amber-700"
                       : ""
                   )}
                 >
@@ -287,7 +295,7 @@ export default function Appointments() {
                 </Button>
               </div>
 
-              <Button className="text-[#3b82f6] bg-[#3b82f6]/40 hover:bg-[#3b82f6] shadow-none hover:text-white ml-2">
+              <Button className="text-amber-700 bg-amber-700/20 hover:bg-amber-700 shadow-none hover:text-white ml-2">
                 <Plus className="h-4 w-4 mr-2" /> New Appointment
               </Button>
             </div>
@@ -299,7 +307,7 @@ export default function Appointments() {
               placeholder="Search appointments..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-10 bg-white/20 text-left focus-visible:ring-0 border-1 border-[#3b82f6]/40 focus-visible:border-[#3b82f6]/40 transition-all duration-150 dark:placeholder:text-white/40 placeholder:text-black/40"
+              className="pl-10 bg-white/20 text-left focus-visible:ring-0 border-1 border-amber-700/40 focus-visible:border-amber-700/40 transition-all duration-150 dark:placeholder:text-white/40 placeholder:text-black/40"
             />
           </div>
         </div>
@@ -315,7 +323,7 @@ export default function Appointments() {
                     className={cn(
                       "bg-white/30 dark:bg-white/10 backdrop-blur-sm rounded-xl border border-white/20 overflow-hidden opacity-0 transform translate-y-4 transition-all duration-300 ease-out",
                       selectedAppointment === appointment.id
-                        ? "ring-2 ring-[#3b82f6]"
+                        ? "ring-2 ring-amber-700"
                         : "",
                       "animate-fade-in"
                     )}
@@ -336,8 +344,8 @@ export default function Appointments() {
                     <div className="p-4 cursor-pointer">
                       <div className="flex flex-wrap md:flex-nowrap items-start justify-between gap-4">
                         <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 bg-[#3b82f6] dark:bg-[#3b82f6]/50 rounded-lg flex items-center justify-center">
-                            <CalendarIcon className="h-5 w-5 text-[#3b82f6]" />
+                          <div className="w-10 h-10 bg-amber-700 dark:bg-amber-700/50 rounded-lg flex items-center justify-center">
+                            <CalendarIcon className="h-5 w-5 text-amber-700" />
                           </div>
                           <div>
                             <h3 className="font-medium text-gray-800 dark:text-white">
@@ -414,7 +422,7 @@ export default function Appointments() {
                               <Button variant="outline" className="gap-2">
                                 <Clock className="h-4 w-4" /> Reschedule
                               </Button>
-                              <Button className="bg-[#3b82f6] hover:bg-[#3b82f6] gap-2">
+                              <Button className="bg-amber-700 hover:bg-amber-700 gap-2">
                                 <Check className="h-4 w-4" /> Confirm
                               </Button>
                             </div>
@@ -437,7 +445,7 @@ export default function Appointments() {
                         viewMode === "day" ? "today" : "scheduled"
                       }`}
                 </p>
-                <Button className="text-[#3b82f6] bg-[#3b82f6]/40 hover:bg-[#3b82f6] hover:text-white mt-4 shadow-none">
+                <Button className="text-amber-700 bg-amber-700/20 hover:bg-amber-700 hover:text-white mt-4 shadow-none">
                   <Plus className="h-4 w-4 mr-2" /> Schedule Appointment
                 </Button>
               </div>

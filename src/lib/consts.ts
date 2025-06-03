@@ -5,21 +5,29 @@ export const CONSUMER_NAVLINKS = [
   { title: "Knowledge Archive", href: "/learn" },
   { title: "About", href: "/about" },
   { title: "Contact", href: "/contact" },
-]
+];
 
 export const UNPROTECTED_ROUTES = [
   "/",
   "/login",
   "/terms-and-conditions",
   "/privacy-policy",
-  "/about-us",
-  "/contact-us",
+  "/about",
+  "/contact",
 ];
 
 export const LAWYER_NAVLINKS = [
   { title: "Dashboard", href: "/lawyer/dashboard/xegality-ai" },
   { title: "Manage Interns", href: "/lawyer/dashboard/manage-interns" },
-  { title: "Knowledge Archives", href: "/knowledge-archives" },
-  { title: "About Us", href: "/about-us" },
-  { title: "Contact Us", href: "/contact-us" },
+  { title: "Archives", href: "/archives" },
+  { title: "About", href: "/about" },
+  { title: "Contact", href: "/contact" },
+];
+export const STUDENT_NAVLINKS = [
+  { title: "Dashboard", href: "/student/dashboard/xegality-ai" },
+  { title: "AI Research", href: "/student/dashboard/ai-research" },
+  { title: "Internships", href: "/student/dashboard/internships" },
+  { title: "Archives", href: "/archives" },
+  { title: "About", href: "/about" },
+  { title: "Contact", href: "/contact" },
 ];

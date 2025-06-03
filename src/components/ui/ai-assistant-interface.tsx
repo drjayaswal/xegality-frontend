@@ -17,21 +17,24 @@ import {
   Search,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Button } from "./button";
 import { cn } from "@/lib/utils";
-
-type AIAssistantInterfaceProps = {
-  onFocus?: React.FocusEventHandler<HTMLInputElement>;
-  onBlur?: React.FocusEventHandler<HTMLInputElement>;
-  onDashboard?: boolean;
-  onChange?: (value: string) => void;
-};
+import { Button } from "./button";
 
 export function AIAssistantInterface({
   onFocus,
   onBlur,
   onChange,
-}: AIAssistantInterfaceProps) {
+  placeholder = "Ask me anything...",
+  from = "slate-800",
+  to = "amber-800",
+}: {
+  onFocus?: React.FocusEventHandler<HTMLInputElement>;
+  onBlur?: React.FocusEventHandler<HTMLInputElement>;
+  onChange?: (value: string) => void;
+  placeholder?: string;
+  from?: string;
+  to?: string;
+}) {
   const [isListening, setIsListening] = useState(false);
   const [inputValue, setInputValue] = useState("");
   const [searchEnabled, setSearchEnabled] = useState(false);
@@ -65,6 +68,22 @@ export function AIAssistantInterface({
     ],
   };
 
+  const getGradientClass = (fromColor: string, toColor: string) => {
+    return `from-${fromColor} to-${toColor}`;
+  };
+
+  const getTextColorClass = (color: string) => {
+    return `text-${color}`;
+  };
+
+  const getBorderColorClass = (color: string, opacity?: string) => {
+    return opacity ? `border-${color}/${opacity}` : `border-${color}`;
+  };
+
+  const getBgColorClass = (color: string, opacity?: string) => {
+    return opacity ? `bg-${color}/${opacity}` : `bg-${color}`;
+  };
+
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     setInputValue(value);
@@ -72,8 +91,11 @@ export function AIAssistantInterface({
   };
 
   const handleVoiceSearch = () => {
-    if (typeof window !== "undefined" && window.webkitSpeechRecognition) {
-      const SpeechRecognition = window.webkitSpeechRecognition;
+    if (
+      typeof window !== "undefined" &&
+      (window as any).webkitSpeechRecognition
+    ) {
+      const SpeechRecognition = (window as any).webkitSpeechRecognition;
       const recognition = new SpeechRecognition();
       recognition.continuous = false;
       recognition.interimResults = false;
@@ -120,7 +142,12 @@ export function AIAssistantInterface({
       <div className="bg-white/80 backdrop-blur-lg mt-1 rounded-2xl sm:rounded-3xl dark:border-white-900/10 shadow-none focus-within:shadow-xl dark:focus-within:bg-white-900/10 transition-all duration-300 mb-4">
         {/* Input Field */}
         <div className="flex items-center gap-3 p-4 sm:p-6">
-          <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-gradient-to-r from-[#3b82f6] to-[#6366f1] flex items-center justify-center shadow-md">
+          <div
+            className={`w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-gradient-to-r ${getGradientClass(
+              from,
+              to
+            )} flex items-center justify-center shadow-md`}
+          >
             {inputValue !== "" ? (
               <Search className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
             ) : (
@@ -132,7 +159,7 @@ export function AIAssistantInterface({
             onBlur={onBlur}
             ref={inputRef}
             type="text"
-            placeholder="Ask me anything..."
+            placeholder={placeholder}
             value={inputValue}
             onChange={handleInputChange}
             className="flex-1 text-sm sm:text-base text-gray-900 dark:text-gray-100 bg-transparent outline-none font-medium placeholder:text-gray-500 dark:placeholder:text-gray-400"
@@ -140,8 +167,22 @@ export function AIAssistantInterface({
           <div className="flex items-center gap-2">
             <button
               onClick={handleVoiceSearch}
-              className={`w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-transparent border-2 border-[#3b82f6] flex text-[#3b82f6] dark:text-[#60a5fa] hover:text-white items-center justify-center hover:bg-gradient-to-r hover:from-[#3b82f6] hover:to-[#6366f1] transition-all duration-200 active:scale-95 ${
-                isListening ? "cursor-progress" : "cursor-pointer"
+              className={`w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-transparent border-2 ${getBorderColorClass(
+                from
+              )} hover:${getBorderColorClass(to)} flex ${getTextColorClass(
+                to
+              )} dark:${getTextColorClass(
+                to
+              )} hover:text-white items-center justify-center hover:bg-gradient-to-r hover:${getGradientClass(
+                from,
+                to
+              )} transition-all duration-200 active:scale-95 ${
+                isListening
+                  ? `cursor-progress bg-gradient-to-r ${getGradientClass(
+                      from,
+                      to
+                    )} text-white animate-aurora`
+                  : "cursor-pointer"
               }`}
             >
               {isListening ? (
@@ -156,8 +197,22 @@ export function AIAssistantInterface({
               className={cn(
                 "w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center transition-all duration-200 active:scale-95 border-0 p-0",
                 inputValue.trim()
-                  ? "bg-gradient-to-r from-[#3b82f6] to-[#6366f1] text-white shadow-md hover:shadow-lg"
-                  : "bg-white/40 dark:bg-gray-700/40 border-2 border-[#3b82f6]/40 dark:border-[#60a5fa]/40 text-[#3b82f6]/60 dark:text-[#60a5fa]/60 hover:text-white hover:bg-gradient-to-r hover:from-[#3b82f6] hover:to-[#6366f1]"
+                  ? `bg-gradient-to-r ${getGradientClass(
+                      from,
+                      to
+                    )} text-white shadow-md hover:shadow-lg`
+                  : `bg-white/40 dark:bg-gray-700/40 border-2 ${getBorderColorClass(
+                      from,
+                      "40"
+                    )} dark:${getBorderColorClass(
+                      from,
+                      "40"
+                    )} ${getTextColorClass(from)}/60 dark:${getTextColorClass(
+                      from
+                    )}/60 hover:text-white hover:bg-gradient-to-r hover:${getGradientClass(
+                      from,
+                      to
+                    )}`
               )}
             >
               <ArrowUp className="w-4 h-4 sm:w-5 sm:h-5" />
@@ -180,9 +235,19 @@ export function AIAssistantInterface({
                     key={index}
                     initial={{ scale: 0.8, opacity: 0 }}
                     animate={{ scale: 1, opacity: 1 }}
-                    className="flex items-center gap-2 bg-white/60 dark:bg-gray-800/60 py-1.5 px-3 rounded-lg border border-[#3b82f6]/30 dark:border-[#60a5fa]/30 text-xs sm:text-sm"
+                    className={`flex items-center gap-2 bg-white/60 dark:bg-gray-800/60 py-1.5 px-3 rounded-lg border ${getBorderColorClass(
+                      from,
+                      "30"
+                    )} dark:${getBorderColorClass(
+                      from,
+                      "30"
+                    )} text-xs sm:text-sm`}
                   >
-                    <FileText className="w-3 h-3 text-[#3b82f6] dark:text-[#60a5fa]" />
+                    <FileText
+                      className={`w-3 h-3 ${getTextColorClass(
+                        from
+                      )} dark:${getTextColorClass(from)}`}
+                    />
                     <span className="text-gray-700 dark:text-gray-300">
                       {file}
                     </span>
@@ -236,10 +301,21 @@ export function AIAssistantInterface({
                   key={key}
                   onClick={() => setter(!state)}
                   className={cn(
-                    "flex cursor-pointer active:cursor- items-center gap-1.5 px-3 py-1.5 rounded-full text-xs sm:text-sm font-medium transition-all duration-200 border-2",
+                    "flex cursor-pointer items-center gap-1.5 px-3 py-1.5 rounded-full text-xs sm:text-sm font-medium transition-all duration-200 border-2",
                     state
-                      ? "bg-gradient-to-r from-[#3b82f6] to-[#6366f1] border-transparent text-white shadow-md"
-                      : "bg-[#3b82f6]/10 dark:bg-[#60a5fa]/10 text-[#3b82f6] dark:text-[#60a5fa] border-transparent hover:bg-[#3b82f6]/20 dark:hover:bg-[#60a5fa]/20"
+                      ? `bg-gradient-to-r ${getGradientClass(
+                          from,
+                          to
+                        )} border-transparent text-white shadow-md`
+                      : `${getBgColorClass(from, "10")} dark:${getBgColorClass(
+                          from,
+                          "10"
+                        )} ${getTextColorClass(from)} dark:${getTextColorClass(
+                          from
+                        )} border-transparent hover:${getBgColorClass(
+                          from,
+                          "20"
+                        )} dark:hover:${getBgColorClass(from, "20")}`
                   )}
                 >
                   <Icon className="w-3 h-3" />
@@ -249,7 +325,16 @@ export function AIAssistantInterface({
             </div>
             <Button
               onClick={handleUploadFile}
-              className="rounded-full bg-transparent border-2 border-[#3b82f6] dark:border-[#60a5fa] flex text-[#3b82f6] dark:text-[#60a5fa] hover:text-white items-center justify-center hover:bg-gradient-to-r hover:from-[#3b82f6] hover:to-[#6366f1] transition-all duration-200 active:scale-95 gap-1.5 px-3 py-1.5 h-auto shadow-none"
+              className={`rounded-full bg-transparent border-2 ${getBorderColorClass(
+                from
+              )} dark:${getBorderColorClass(from)} flex ${getTextColorClass(
+                from
+              )} dark:${getTextColorClass(
+                from
+              )} hover:text-white items-center justify-center hover:bg-gradient-to-r hover:${getGradientClass(
+                from,
+                to
+              )} transition-all duration-200 active:scale-95 gap-1.5 px-3 py-1.5 h-auto shadow-none`}
               disabled={showUploadAnimation}
             >
               {showUploadAnimation ? (
@@ -257,7 +342,7 @@ export function AIAssistantInterface({
                   {[...Array(3)].map((_, i) => (
                     <motion.div
                       key={i}
-                      className="w-1 h-1 bg-current rounded-full "
+                      className="w-1 h-1 bg-current rounded-full"
                       animate={{ y: [-2, 2, -2] }}
                       transition={{
                         duration: 0.6,
@@ -295,8 +380,11 @@ export function AIAssistantInterface({
             className={cn(
               "flex flex-col cursor-pointer items-center gap-2 p-3 sm:p-4 rounded-xl sm:rounded-2xl border transition-all duration-200",
               activeCommandCategory === key
-                ? "bg-gradient-to-r from-[#3b82f6] to-[#6366f1] text-white border-white/40 dark:border-gray-600/40 shadow-lg"
-                : "bg-white/80 dark:bg-gray-800/40 dark:border-gray-700/60 text-gray-600 dark:text-gray-300  dark:hover:bg-gray-800/60 hover:text-gray-800 dark:hover:text-gray-100"
+                ? `bg-gradient-to-r ${getGradientClass(
+                    from,
+                    to
+                  )} text-white border-white/40 dark:border-gray-600/40 shadow-lg`
+                : "bg-white/80 dark:bg-gray-800/40 dark:border-gray-700/60 text-gray-600 dark:text-gray-300 dark:hover:bg-gray-800/60 hover:text-gray-800 dark:hover:text-gray-100"
             )}
           >
             <Icon className="w-4 h-4 sm:w-5 sm:h-5" />
@@ -326,7 +414,12 @@ export function AIAssistantInterface({
                 onClick={() => handleCommandSelect(suggestion)}
                 className="w-full active:cursor-grabbing cursor-grab flex items-center gap-3 p-3 sm:p-4 text-left hover:bg-white/30 dark:hover:bg-gray-800/30 transition-colors border-b border-white/20 dark:border-gray-700/20 last:border-b-0"
               >
-                <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-full bg-gradient-to-r from-[#3b82f6] to-[#6366f1] flex items-center justify-center shadow-sm">
+                <div
+                  className={`w-6 h-6 sm:w-8 sm:h-8 rounded-full bg-gradient-to-r ${getGradientClass(
+                    from,
+                    to
+                  )} flex items-center justify-center shadow-sm`}
+                >
                   {activeCommandCategory === "learn" ? (
                     <BookOpen className="w-3 h-3 sm:w-4 sm:h-4 text-white" />
                   ) : activeCommandCategory === "write" ? (

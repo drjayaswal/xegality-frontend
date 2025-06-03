@@ -546,7 +546,7 @@ export default function Clients() {
                 <div className="relative">
                   {searchQuery && (
                     <>
-                      <ArrowRight className="absolute left-3 top-2 h-5 w-5 text-[#3b82f6]" />
+                      <ArrowRight className="absolute left-3 top-2 h-5 w-5 text-amber-700" />
                     </>
                   )}
                   <Input
@@ -554,7 +554,7 @@ export default function Clients() {
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     className={cn(
-                      "bg-transparent rounded-2xl text-left focus-visible:ring-0 border-2 border-[#3b82f6]/40 focus-visible:scale-105 focus-visible:border-[#3b82f6]/40 transition-all duration-150 dark:placeholder:text-white/40 placeholder:text-black/40",
+                      "bg-transparent rounded-2xl text-left focus-visible:ring-0 border-2 border-amber-700/40 focus-visible:scale-105 focus-visible:border-amber-700/40 transition-all duration-150 dark:placeholder:text-white/40 placeholder:text-black/40",
                       searchQuery != "" ? "text-center" : "text-left"
                     )}
                   />
@@ -562,7 +562,7 @@ export default function Clients() {
               </div>
 
               {/* Conversations List */}
-              <ScrollArea className="flex border-t-2 border-[#3b82f6]/50 ">
+              <ScrollArea className="flex border-t-2 border-amber-700/50 ">
                 <div className="p-5 h-[calc(100vh-20rem)]">
                   {conversations
                     .filter(
@@ -602,7 +602,7 @@ export default function Clients() {
                       >
                         <div className="flex items-start gap-3">
                           <div className="relative">
-                            <div className="w-12 h-12 bg-[#3b82f6] rounded-full flex items-center justify-center">
+                            <div className="w-12 h-12 bg-amber-700 rounded-full flex items-center justify-center">
                               <User className="h-6 w-6 text-white" />
                             </div>
                           </div>
@@ -651,12 +651,12 @@ export default function Clients() {
               <div className="flex-1 flex flex-col h-full">
                 {/* Chat Header - Fixed at top */}
                 <div
-                  className={`flex-shrink-0 px-4 py-[8px] bg-[#3b82f6]/10 border-b-2 ${
+                  className={`flex-shrink-0 px-4 py-[8px] bg-amber-700/10 border-b-2 ${
                     activeButton == "phone"
                       ? "border-b-sky-500"
                       : activeButton == "video"
                       ? "border-b-green-500"
-                      : "border-b-[#3b82f6]/50"
+                      : "border-b-amber-700/50"
                   } `}
                 >
                   <div className="flex items-center justify-between">
@@ -672,7 +672,7 @@ export default function Clients() {
                         </Button>
                       )}
                       <div className="relative">
-                        <div className="w-10 h-10 p-2 bg-[#3b82f6] rounded-full flex items-center justify-center">
+                        <div className="w-10 h-10 p-2 bg-amber-700 rounded-full flex items-center justify-center">
                           <User className="h-5 w-5 text-white" />
                         </div>
                       </div>
@@ -775,7 +775,7 @@ export default function Clients() {
                 </div>
 
                 {/* Messages Container - Scrollable area only */}
-                <div className="flex-1 min-h-0 bg-[#3b82f6]/10 relative overflow-hidden">
+                <div className="flex-1 min-h-0 bg-amber-700/10 relative overflow-hidden">
                   <ScrollArea className="h-full" ref={scrollAreaRef}>
                     <div className="p-4 space-y-4">
                       <AnimatePresence>
@@ -796,7 +796,7 @@ export default function Clients() {
                               <div
                                 className={cn(
                                   "w-8 h-8 rounded-full flex items-center justify-center",
-                                  "bg-[#3b82f6] rounded-full rounded-r-none"
+                                  "bg-amber-700 rounded-full rounded-r-none"
                                 )}
                               >
                                 <User className="h-4 w-4 text-white" />
@@ -896,7 +896,7 @@ export default function Clients() {
                               )}
                             </div>
                             {message.sender === "lawyer" && (
-                              <div className="w-8 h-8 rounded-l-none bg-[#3b82f6] rounded-full flex items-center justify-center">
+                              <div className="w-8 h-8 rounded-l-none bg-amber-700 rounded-full flex items-center justify-center">
                                 <User className="h-4 w-4 text-white" />
                               </div>
                             )}
@@ -911,18 +911,18 @@ export default function Clients() {
                           animate={{ opacity: 1, y: 0 }}
                           className="flex gap-3"
                         >
-                          <div className="w-8 h-8 bg-[#3b82f6] rounded-full flex items-center justify-center shadow-md">
+                          <div className="w-8 h-8 bg-amber-700 rounded-full flex items-center justify-center shadow-md">
                             <User className="h-5 w-5 text-white" />
                           </div>
                           <div className="bg-transparent dark:text-white/90 text-black/90 -ml-3 mt-1 p-2 rounded-2xl rounded-l-none shadow-none">
                             <div className="flex gap-1">
-                              <div className="w-2 h-2 bg-[#3b82f6] rounded-full animate-bounce"></div>
+                              <div className="w-2 h-2 bg-amber-700 rounded-full animate-bounce"></div>
                               <div
-                                className="w-2 h-2 bg-[#3b82f6] rounded-full animate-bounce"
+                                className="w-2 h-2 bg-amber-700 rounded-full animate-bounce"
                                 style={{ animationDelay: "0.1s" }}
                               ></div>
                               <div
-                                className="w-2 h-2 bg-[#3b82f6] rounded-full animate-bounce"
+                                className="w-2 h-2 bg-amber-700 rounded-full animate-bounce"
                                 style={{ animationDelay: "0.2s" }}
                               ></div>
                             </div>
@@ -935,12 +935,12 @@ export default function Clients() {
                 </div>
 
                 {/* Input Area - Fixed at bottom */}
-                <div className="flex-shrink-0 p-4 bg-[#3b82f6]/10">
+                <div className="flex-shrink-0 p-4 bg-amber-700/10">
                   <div className="flex flex-wrap md:flex-nowrap items-center gap-3">
                     <Button
                       onClick={handleUploadClick}
                       disabled={showUploadAnimation}
-                      className="flex items-center gap-2 rounded-full text-gray-600 text-sm bg-transparent shadow-none hover:bg-transparent border-1 border-transparent hover:border-[#3b82f6]/80 px-4 md:px-8 py-2 hover:text-indigo-900 hover:scale-105 transition-all duration-150 w-full md:w-auto mb-2 md:mb-0"
+                      className="flex items-center gap-2 rounded-full text-gray-600 text-sm bg-transparent shadow-none hover:bg-transparent border-1 border-transparent hover:border-amber-700/80 px-4 md:px-8 py-2 hover:text-indigo-900 hover:scale-105 transition-all duration-150 w-full md:w-auto mb-2 md:mb-0"
                     >
                       {showUploadAnimation ? (
                         <motion.div
@@ -977,14 +977,14 @@ export default function Clients() {
                           ))}
                         </motion.div>
                       ) : (
-                        <Paperclip className="w-4 h-4 text-[#3b82f6] dark:text-white/70" />
+                        <Paperclip className="w-4 h-4 text-amber-700 dark:text-white/70" />
                       )}
                       {showUploadAnimation ? (
                         <>
                           <span>Uploading...</span>
                         </>
                       ) : (
-                        <span className="text-[#3b82f6] dark:text-white/70">
+                        <span className="text-amber-700 dark:text-white/70">
                           Attach
                         </span>
                       )}
@@ -996,12 +996,12 @@ export default function Clients() {
                         onChange={(e) => setInputValue(e.target.value)}
                         onKeyPress={handleKeyPress}
                         placeholder="Type your message..."
-                        className="bg-white/20 text-left focus-visible:ring-0 border-1 border-[#3b82f6]/40 focus-visible:border-[#3b82f6]/40 transition-all duration-150 dark:placeholder:text-white/40 placeholder:text-black/40"
+                        className="bg-white/20 text-left focus-visible:ring-0 border-1 border-amber-700/40 focus-visible:border-amber-700/40 transition-all duration-150 dark:placeholder:text-white/40 placeholder:text-black/40"
                       />
                     </div>
                     <div className="flex gap-2 w-full md:w-auto justify-end mt-2 md:mt-0">
                       <Button
-                        className="h-10 w-10 bg-[#3b82f6] hover:bg-[#3b82f6] hover:scale-110 text-white rounded-full"
+                        className="h-10 w-10 bg-amber-700 hover:bg-amber-700 hover:scale-110 text-white rounded-full"
                         onClick={handleVoiceSearch}
                       >
                         {isListening ? (
@@ -1017,7 +1017,7 @@ export default function Clients() {
                       <Button
                         onClick={handleSendMessage}
                         disabled={!inputValue.trim()}
-                        className="h-10 w-10 p-0 bg-[#3b82f6] hover:bg-[#3b82f6] hover:scale-110 text-white rounded-full"
+                        className="h-10 w-10 p-0 bg-amber-700 hover:bg-amber-700 hover:scale-110 text-white rounded-full"
                       >
                         <AnimatePresence mode="wait">
                           {!isReadyToSend ? (
@@ -1052,14 +1052,14 @@ export default function Clients() {
           ) : (
             <div className="flex-1 flex items-center justify-center">
               <div className="text-center max-w-md px-4">
-                <User className="h-16 w-16 mx-auto text-[#3b82f6] dark:text-white/60 mb-6" />
-                <h2 className="text-2xl font-bold text-[#3b82f6] dark:text-white/90 mb-4">
+                <User className="h-16 w-16 mx-auto text-amber-700 dark:text-white/60 mb-6" />
+                <h2 className="text-2xl font-bold text-amber-700 dark:text-white/90 mb-4">
                   Client Conversation
                 </h2>
-                <p className="dark:text-white/70 text-[#3b82f6] mb-6">
+                <p className="dark:text-white/70 text-amber-700 mb-6">
                   Choose a client from the sidebar to start conversation
                 </p>
-                <Button className="bg-transparent dark:text-white text-[#3b82f6] hover:text-white hover:bg-[#3b82f6] backdrop-blur-sm border-2 border-[#3b82f6] gap-2">
+                <Button className="bg-transparent dark:text-white text-amber-700 hover:text-white hover:bg-amber-700 backdrop-blur-sm border-2 border-amber-700 gap-2">
                   <Plus className="h-4 w-4" /> Start New Conversation
                 </Button>
               </div>

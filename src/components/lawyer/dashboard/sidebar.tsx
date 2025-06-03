@@ -80,7 +80,7 @@ export function AppSidebar() {
       <SidebarContent className="bg-white rounded-4xl">
         <SidebarGroup>
           <div className="px-4 py-3">
-            <SidebarGroupLabel className="text-2xl font-semibold text-[#3b82f6] tracking-wide">
+            <SidebarGroupLabel className="text-2xl bg-clip-text text-transparent font-extrabold bg-gradient-to-r from-slate-600 to-amber-600 tracking-wide">
               Xegality
             </SidebarGroupLabel>
           </div>
@@ -94,7 +94,7 @@ export function AppSidebar() {
                     <SidebarMenuButton
                       asChild
                       className={clsx(
-                        "rounded-full hover:bg-[#3b82f6] hover:text-white",
+                        "rounded-full hover:bg-amber-700 hover:text-white",
                         isActive ? "shadow-xl" : ""
                       )}
                     >
@@ -103,8 +103,8 @@ export function AppSidebar() {
                         className={clsx(
                           "flex items-center gap-3 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 group",
                           isActive
-                            ? "bg-[#3b82f6] text-white shadow"
-                            : "text-gray-700 hover:bg-[#3b82f6] hover:text-white dark:text-gray-300 dark:hover:text-white"
+                            ? "bg-amber-700 text-white shadow"
+                            : "text-gray-700 hover:bg-slate-700/60 hover:text-white dark:text-gray-300 dark:hover:text-white"
                         )}
                       >
                         <item.icon className="h-5 w-5" />

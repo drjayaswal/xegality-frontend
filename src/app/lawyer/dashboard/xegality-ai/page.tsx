@@ -112,7 +112,7 @@ export default function XegalityAI() {
       fileType.includes("document") ||
       fileName.includes(".doc")
     )
-      return <ImageIcon className="h-5 w-5 text-blue-500" />;
+      return <ImageIcon className="h-5 w-5 text-slate-500" />;
     if (fileType.includes("image"))
       return <ImageIcon className="h-5 w-5 text-green-500" />;
     return <ImageIcon className="h-5 w-5 text-purple-500" />;
@@ -126,7 +126,7 @@ export default function XegalityAI() {
       fileType.includes("document") ||
       fileName.includes(".doc")
     )
-      return "from-blue-500/20 to-blue-600/20 border-blue-500/30";
+      return "from-slate-500/20 to-slate-600/20 border-slate-500/30";
     if (fileType.includes("image"))
       return "from-green-500/20 to-green-600/20 border-green-500/30";
     return "from-purple-500/20 to-purple-600/20 border-purple-500/30";
@@ -247,11 +247,16 @@ export default function XegalityAI() {
         className="hidden"
       />
       {/* Header */}
-      <div className="relative h-24 bg-gradient-to-r from-gray-50 to-[#3b82f6]/40 overflow-hidden rounded-t-md">
+      <div className="relative h-24 bg-gradient-to-r from-gray-50 to-amber-800/40 overflow-hidden rounded-t-md">
         <div className="absolute inset-0 flex items-center justify-center">
-          <div className="w-full h-fit flex items-center justify-center">
+          <div className="w-full h-fit flex items-center justify-center opacity-50">
             <SiriWave
-              opacity={0.6}
+              colors={[
+                "#334155", // slate-700
+                "#1e293b", // slate-800
+                "#ca8a04", // amber-600
+                "#b45309", // amber-700
+              ]}
               isWaveMode={isListening || isTyping || inputValue != ""}
             />
           </div>
@@ -276,7 +281,7 @@ export default function XegalityAI() {
         </div>
       </div>
       {/* Chat Messages */}
-      <div className="flex-1 px-5 py-10 bg-gradient-to-r from-gray-50 to-[#3b82f6]/40 rounded-b-2xl">
+      <div className="flex-1 px-5 py-10 bg-gradient-to-r from-gray-50 to-amber-800/40 rounded-b-2xl">
         <ScrollArea className="h-full" ref={scrollAreaRef}>
           <div className="space-y-4 pb-20">
             <AnimatePresence>
@@ -292,7 +297,7 @@ export default function XegalityAI() {
                   )}
                 >
                   {message.sender === "ai" && (
-                    <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-indigo-600 rounded-full rounded-r-none flex items-center justify-center shadow-md">
+                    <div className="w-10 h-10 bg-slate-500 rounded-full rounded-r-none flex items-center justify-center shadow-md">
                       <Brain className="h-6 w-6 text-white" />
                     </div>
                   )}
@@ -313,7 +318,7 @@ export default function XegalityAI() {
                     </p>
                   </div>
                   {message.sender === "user" && (
-                    <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-full rounded-l-none flex items-center justify-center shadow-md">
+                    <div className="w-10 h-10 bg-amber-600 rounded-full rounded-l-none flex items-center justify-center shadow-md">
                       <User className="h-6 w-6 text-white" />
                     </div>
                   )}
@@ -327,21 +332,8 @@ export default function XegalityAI() {
                 animate={{ opacity: 1, y: 0 }}
                 className="flex gap-3"
               >
-                <div className="w-10 h-10 animate-gradient rounded-full flex rounded-r-none items-center justify-center shadow-md">
+                <div className="w-10 h-10 animate-gradient rounded-full flex items-center justify-center shadow-none">
                   <Brain className="h-5 w-5 text-white" />
-                </div>
-                <div className="bg-white/20 backdrop-blur-lg dark:text-white/90 text-black/90 rounded-tl-none -ml-3 p-4 rounded-2xl rounded-l-none shadow-md">
-                  <div className="flex gap-1">
-                    <div className="w-2 h-2 dark:bg-white/40 bg-black/40 rounded-full animate-bounce"></div>
-                    <div
-                      className="w-2 h-2 dark:bg-white/40 bg-black/40 rounded-full animate-bounce"
-                      style={{ animationDelay: "0.1s" }}
-                    ></div>
-                    <div
-                      className="w-2 h-2 dark:bg-white/40 bg-black/40 rounded-full animate-bounce"
-                      style={{ animationDelay: "0.2s" }}
-                    ></div>
-                  </div>
                 </div>
               </motion.div>
             )}
@@ -417,7 +409,7 @@ export default function XegalityAI() {
                   repeat: Number.POSITIVE_INFINITY,
                   ease: "linear",
                 }}
-                className="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full"
+                className="w-12 h-12 border-4 border-slate-500 border-t-transparent rounded-full"
               />
               <div className="text-center">
                 <h3 className="text-lg font-semibold text-gray-800 dark:text-white">
@@ -477,7 +469,7 @@ transition-all duration-150"
                   {[...Array(3)].map((_, i) => (
                     <motion.div
                       key={i}
-                      className="w-1.5 h-1.5 bg-indigo-600 rounded-full"
+                      className="w-1.5 h-1.5 bg-amber-600 rounded-full"
                       variants={{
                         hidden: { opacity: 0, y: 5 },
                         visible: {
@@ -522,9 +514,10 @@ transition-all duration-150"
               onClick={handleSendMessage}
               className={`relative h-10 w-10 min-w-[2.5rem] flex items-center justify-center
                 rounded-2xl overflow-hidden transition-all duration-200
-                ${isReadyToSend && !isTyping
-                  ? "bg-white/30 dark:bg-white/10 hover:bg-white/40 dark:hover:bg-white/20 shadow-sm active:shadow-inner"
-                  : "bg-transparent shadow-none"
+                ${
+                  isReadyToSend && !isTyping
+                    ? "bg-white/30 dark:bg-white/10 hover:bg-white/40 dark:hover:bg-white/20 shadow-sm active:shadow-inner"
+                    : "bg-transparent shadow-none"
                 }`}
             >
               {" "}
