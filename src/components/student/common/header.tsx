@@ -62,7 +62,7 @@ const Header = () => {
                   key={index}
                   href={href}
                   className={cn(
-                    "text-slate-700 py-2 px-5 font-extrabold rounded-full dark:text-gray-300 hover:text-emerald-600 dark:hover:text-blue-400 transition-all duration-300 text-sm relative group",
+                    "text-slate-700 py-2 px-5 font-bold rounded-full dark:text-gray-300 hover:text-emerald-600 dark:hover:text-blue-400 transition-all duration-300 text-sm relative group",
                     isActive && "bg-emerald-800 text-emerald-500"
                   )}
                 >
@@ -112,7 +112,7 @@ const Header = () => {
                 <motion.a
                   key={item.title}
                   href={`${item.href}`}
-                  className="text-slate-700 font-extrabold dark:text-gray-300 hover:text-emerald-600 dark:hover:text-blue-400 transition-colors duration-200"
+                  className="text-slate-700 font-bold dark:text-gray-300 hover:text-emerald-600 dark:hover:text-blue-400 transition-colors duration-200"
                   initial={{ opacity: 0, x: -20 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ duration: 0.3, delay: index * 0.1 }}

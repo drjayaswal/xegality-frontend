@@ -33,43 +33,43 @@ import Link from "next/link";
 const items = [
   {
     title: "Xegality AI",
-    url: "/lawyer/dashboard/xegality-ai",
+    url: "/student/dashboard/xegality-ai",
     icon: Sparkles,
   },
-  { title: "Clients", url: "/lawyer/dashboard/clients", icon: Users },
-  { title: "Cases", url: "/lawyer/dashboard/cases", icon: Briefcase },
+  { title: "Clients", url: "/student/dashboard/clients", icon: Users },
+  { title: "Cases", url: "/student/dashboard/cases", icon: Briefcase },
   {
     title: "Appointments",
-    url: "/lawyer/dashboard/appointments",
+    url: "/student/dashboard/appointments",
     icon: Clock,
   },
   {
     title: "Manage Interns",
-    url: "/lawyer/dashboard/manage-interns",
+    url: "/student/dashboard/manage-interns",
     icon: GraduationCap,
   },
   {
     title: "Internships",
-    url: "/lawyer/dashboard/internships",
+    url: "/student/dashboard/internships",
     icon: SquareChartGantt,
   },
   {
     title: "Subscription",
-    url: "/lawyer/dashboard/subscriptions",
+    url: "/student/dashboard/subscriptions",
     icon: Receipt,
   },
   {
     title: "Help & Support",
-    url: "/lawyer/dashboard/help-support",
+    url: "/student/dashboard/help-support",
     icon: HandHelping,
   },
   {
     title: "Billing & Payment",
-    url: "/lawyer/dashboard/billing-and-payment",
+    url: "/student/dashboard/billing-and-payment",
     icon: DollarSign,
   },
-  { title: "Settings", url: "/lawyer/dashboard/settings", icon: Settings },
-  { title: "Back To Home", url: "/lawyer", icon: ChevronLeft },
+  { title: "Settings", url: "/student/dashboard/settings", icon: Settings },
+  { title: "Back To Home", url: "/student", icon: ChevronLeft },
 ];
 
 export function AppSidebar() {
@@ -80,8 +80,8 @@ export function AppSidebar() {
       <SidebarContent className="bg-white rounded-4xl">
         <SidebarGroup>
           <div className="px-4 py-3">
-            <SidebarGroupLabel className="text-2xl bg-clip-text text-transparent font-extrabold bg-gradient-to-r from-slate-600 to-amber-600 tracking-wide">
-              Lawyer
+            <SidebarGroupLabel className="text-2xl bg-clip-text text-transparent font-extrabold bg-gradient-to-r from-slate-600 to-emerald-600 tracking-wide">
+              Student
             </SidebarGroupLabel>
           </div>
           <SidebarGroupContent>
@@ -94,7 +94,7 @@ export function AppSidebar() {
                     <SidebarMenuButton
                       asChild
                       className={clsx(
-                        "rounded-full hover:bg-amber-700 hover:text-white",
+                        "rounded-full hover:bg-emerald-700 hover:text-white",
                         isActive ? "shadow-xl" : ""
                       )}
                     >
@@ -103,8 +103,8 @@ export function AppSidebar() {
                         className={clsx(
                           "flex items-center gap-3 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 group",
                           isActive
-                            ? "bg-amber-700 text-white shadow"
-                            : "text-gray-700 hover:bg-slate-700/60 hover:text-white dark:text-gray-300 dark:hover:text-white"
+                            ? "bg-emerald-700 text-white shadow"
+                            : "text-gray-700 hover:bg-emerald-200/30 hover:text-white dark:text-gray-300 dark:hover:text-white"
                         )}
                       >
                         <item.icon className="h-5 w-5" />
