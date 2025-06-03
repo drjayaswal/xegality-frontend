@@ -134,19 +134,19 @@ export default function HomePage() {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.5 }}
                   >
-                    <Card className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm border-0 shadow-2xl hover:shadow-3xl transition-all duration-500">
-                      <CardContent className="p-8">
+                    <Card className=" bg-white/70 shadow-none border-none">
+                      <CardContent className="p-10">
                         <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
                           Describe Your Legal Issue
                         </h3>
                         <div className="space-y-4">
                           <motion.textarea
                             placeholder="e.g., I need help with a property dispute, divorce proceedings, or business contract..."
-                            className="w-full h-32 p-4 border border-gray-200 dark:border-gray-600 rounded-xl resize-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white transition-all duration-300"
+                            className="w-full h-32 p-4 border border-gray-200 dark:border-gray-600 shadow-xl rounded-xl resize-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white transition-all duration-300"
                             whileFocus={{ scale: 1.02 }}
                           />
                           <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
-                            <Button className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white py-4 text-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-300">
+                            <Button className="w-fit rounded-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white py-4 text-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-300">
                               <Zap className="w-5 h-5 mr-2" />
                               Find Lawyer Now
                             </Button>

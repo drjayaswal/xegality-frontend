@@ -522,10 +522,9 @@ transition-all duration-150"
               onClick={handleSendMessage}
               className={`relative h-10 w-10 min-w-[2.5rem] flex items-center justify-center
                 rounded-2xl overflow-hidden transition-all duration-200
-                ${
-                  isReadyToSend && !isTyping
-                    ? "bg-white/30 dark:bg-white/10 hover:bg-white/40 dark:hover:bg-white/20 shadow-sm active:shadow-inner"
-                    : "bg-transparent shadow-none"
+                ${isReadyToSend && !isTyping
+                  ? "bg-white/30 dark:bg-white/10 hover:bg-white/40 dark:hover:bg-white/20 shadow-sm active:shadow-inner"
+                  : "bg-transparent shadow-none"
                 }`}
             >
               {" "}

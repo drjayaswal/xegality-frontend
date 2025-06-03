@@ -27,6 +27,7 @@ import {
 
 import { usePathname } from "next/navigation";
 import clsx from "clsx";
+import Link from "next/link";
 
 // Menu items
 const items = [
@@ -97,7 +98,7 @@ export function AppSidebar() {
                         isActive ? "shadow-xl" : ""
                       )}
                     >
-                      <a
+                      <Link
                         href={item.url}
                         className={clsx(
                           "flex items-center gap-3 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 group",
@@ -108,7 +109,7 @@ export function AppSidebar() {
                       >
                         <item.icon className="h-5 w-5" />
                         <span>{item.title}</span>
-                      </a>
+                      </Link>
                     </SidebarMenuButton>
                   </SidebarMenuItem>
                 );

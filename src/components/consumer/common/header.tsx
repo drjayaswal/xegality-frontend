@@ -2,7 +2,7 @@
 
 import ThemeToggle from "@/components/shared/theme-toggle"
 import { Button } from "@/components/ui/button"
-import { NAVLINKS } from "@/lib/consts"
+import { CONSUMER_NAVLINKS } from "@/lib/consts"
 import { cn } from "@/lib/utils"
 import { Menu, Shield, X } from "lucide-react"
 import { motion } from "motion/react"
@@ -50,7 +50,7 @@ const Header = () => {
 
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center space-x-2">
-            {NAVLINKS.map(({ title, href }, index) => {
+            {CONSUMER_NAVLINKS.map(({ title, href }, index) => {
 
               const isActive = href === usePathname()
               return (
