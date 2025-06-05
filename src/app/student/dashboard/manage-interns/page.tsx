@@ -103,7 +103,7 @@ export default function HireAnInternPage() {
 
   return (
     <div className="min-h-screen bg-gray-50 w-full rounded-lg shadow-lg border-[1.5px]">
-      <div className="bg-amber-700/10 p-6">
+      <div className="bg-amber-700/5 p-6">
         <div className="max-w-7xl mx-auto">
           {/* Header Section */}
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8">
@@ -229,7 +229,7 @@ export default function HireAnInternPage() {
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.3, delay: index * 0.1 }}
-                    className={`p-6 rounded-3xl bg-amber-700/10 backdrop-blur-sm shadow-none transition-all duration-300 border-2 cursor-pointer hover:shadow-none border-transparent hover:border-amber-700/40`}
+                    className={`p-6 rounded-3xl bg-amber-700/5 backdrop-blur-sm shadow-none transition-all duration-300 border-2 cursor-pointer hover:shadow-none border-transparent hover:border-amber-700/40`}
                   >
                     <div className="flex items-start justify-between mb-4 flex-wrap gap-3">
                       <div className="flex items-center gap-4">
@@ -280,7 +280,7 @@ export default function HireAnInternPage() {
                     </div>
 
                     <div className="grid grid-cols-2 gap-4 mb-4">
-                      <div className="text-center p-3 bg-amber-700/10 rounded-xl">
+                      <div className="text-center p-3 bg-amber-700/5 rounded-xl">
                         <p className="text-lg font-semibold text-foreground">
                           {intern.tasksCompleted}
                         </p>
@@ -288,7 +288,7 @@ export default function HireAnInternPage() {
                           Tasks Completed
                         </p>
                       </div>
-                      <div className="text-center p-3 bg-amber-700/10 rounded-xl">
+                      <div className="text-center p-3 bg-amber-700/5 rounded-xl">
                         <p className="text-lg font-semibold text-foreground">
                           {intern.hoursWorked}
                         </p>

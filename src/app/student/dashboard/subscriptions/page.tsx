@@ -143,12 +143,12 @@ export default function Subscription() {
   };
 
   return (
-    <div className="m-0 w-full h-full bg-white dark:bg-black rounded-2xl overflow-auto flex flex-col relative">
+    <div className=" h-full dark:bg-black bg-gray-50 shadow-lg border-[1.5px] rounded-lg">
       {/* Content */}
-      <div className="flex-1 bg-amber-700/10 p-8">
+      <div className="flex-1 bg-amber-700/5 p-8 rounded-md">
         <ScrollArea className="h-full">
           {/* Current Plan */}
-          <div className="bg-white/30 dark:bg-white/10 backdrop-blur-sm rounded-xl p-6 mb-8">
+          <div className="bg-gray-50/30 dark:bg-gray-50/10 backdrop-blur-sm rounded-lg p-6 mb-8">
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
               <div>
                 <div className="flex items-center gap-2">
@@ -185,13 +185,13 @@ export default function Subscription() {
                 Available Plans
               </h2>
 
-              <div className="flex p-1 bg-white/20 backdrop-blur-sm rounded-full">
+              <div className="flex p-1 bg-gray-50/20 backdrop-blur-sm rounded-full">
                 <button
                   onClick={() => setBillingCycle("monthly")}
                   className={cn(
                     "px-4 py-2 text-sm font-medium rounded-full transition-colors",
                     billingCycle === "monthly"
-                      ? "bg-white text-black shadow-sm"
+                      ? "bg-gray-50 text-black shadow-sm"
                       : "text-gray-600 dark:text-gray-300 hover:text-black outline-0 ring-0"
                   )}
                 >
@@ -202,7 +202,7 @@ export default function Subscription() {
                   className={cn(
                     "px-4 py-2 text-sm font-medium rounded-full transition-colors",
                     billingCycle === "yearly"
-                      ? "bg-white text-black shadow-sm"
+                      ? "bg-gray-50 text-black shadow-sm"
                       : "text-gray-600 dark:text-gray-300 hover:text-black"
                   )}
                 >
@@ -221,7 +221,7 @@ export default function Subscription() {
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   className={cn(
-                    "bg-white/30 dark:bg-white/10 backdrop-blur-sm rounded-[36px] relative",
+                    "bg-gray-50/30 dark:bg-gray-50/10 backdrop-blur-sm rounded-[36px] relative",
                     plan.isPopular
                       ? " border-4 border-amber-700/60 shadow-lg shadow-amber-700/10"
                       : ""

@@ -389,12 +389,12 @@ export default function ManageInternshipApplicationsPage() {
   );
 
   return (
-    <div className="min-h-screen bg-gray-50 w-full p-6 rounded-2xl shadow-lg border-[1.5px]">
+    <div className="min-h-screen bg-amber-700/05 w-full p-6 rounded-2xl shadow-lg border-[1.5px]">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-foreground flex items-center gap-3">
-            <UserCheck className="h-8 w-8 text-[#3b82f6]" />
+            <UserCheck className="h-8 w-8 text-black" />
             Hire Interns
           </h1>
           <p className="text-muted-foreground mt-2">
@@ -418,8 +418,8 @@ export default function ManageInternshipApplicationsPage() {
                   key={posting.id}
                   className={`cursor-pointer border-2 border-transparent transition-all duration-200 ${
                     selectedInternship === posting.id
-                      ? "border-[#3b82f6] bg-blue-50 dark:bg-blue-900/20"
-                      : "hover:border-[#3b82f6]/50"
+                      ? "scale-105 border-[#3b82f6] bg-blue-50 dark:bg-blue-900/20"
+                      : "border-amber-700/50 bg-amber-700/05"
                   }`}
                   onClick={() => setSelectedInternship(posting.id)}
                 >

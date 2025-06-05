@@ -391,8 +391,8 @@ export default function HireAnInternPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 border-[1.5px] shadow-lg rounded-xl">
-      <div className="p-6 bg-amber-700/10">
+    <div className="min-h-screen bg-gray-50 border-[1.5px] shadow-lg rounded-lg">
+      <div className="p-6 bg-amber-700/5 rounded-md">
         <div className="max-w-7xl mx-auto">
           {/* Header */}
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8">
@@ -554,7 +554,7 @@ export default function HireAnInternPage() {
           </Card>
 
           {/* Internship Listings */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 overflow-visible">
             {sortedInternships.map((internship, index) => (
               <motion.div
                 key={internship.id}
@@ -562,7 +562,7 @@ export default function HireAnInternPage() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.3, delay: index * 0.1 }}
               >
-                <Card className="h-full hover:scale-[1.01] border-0 shadow-sm bg-amber-700/10 hover:shadow-md transition-all dark:bg-gray-900">
+                <Card className="h-full hover:scale-[1.01] border-0 shadow-sm bg-amber-700/5 hover:shadow-md transition-all dark:bg-gray-900">
                   <CardHeader>
                     <div className="flex items-start justify-between mb-2">
                       <div className="flex-1">

@@ -201,8 +201,8 @@ export default function Appointments() {
   };
 
   return (
-    <div className=" h-full dark:bg-black bg-gray-50 shadow-lg border-[1.5px] rounded-lg">
-      <div className="w-full h-full rounded-lg bg-amber-700/10 overflow-hidden flex flex-col relative">
+    <div className=" h-full dark:bg-black bg-gray-50 shadow-xl border-[1.5px] rounded-lg">
+      <div className="w-full h-full rounded-md bg-amber-700/5 overflow-hidden flex flex-col relative">
         {/* Header */}
         <div className="relative h-24 overflow-hidden">
           <div className="absolute inset-0 flex items-center justify-center">
@@ -307,7 +307,7 @@ export default function Appointments() {
               placeholder="Search appointments..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-10 bg-white/20 text-left focus-visible:ring-0 border-1 border-amber-700/40 focus-visible:border-amber-700/40 transition-all duration-150 dark:placeholder:text-white/40 placeholder:text-black/40"
+              className="pl-10 bg-gray-50/20 text-left focus-visible:ring-0 border-1 border-amber-700/40 focus-visible:border-amber-700/40 transition-all duration-150 dark:placeholder:text-white/40 placeholder:text-black/40"
             />
           </div>
         </div>
@@ -321,7 +321,7 @@ export default function Appointments() {
                   <div
                     key={appointment.id}
                     className={cn(
-                      "bg-white/30 dark:bg-white/10 backdrop-blur-sm rounded-xl border border-white/20 overflow-hidden opacity-0 transform translate-y-4 transition-all duration-300 ease-out",
+                      "bg-gray-50/30 dark:bg-gray-50/10 backdrop-blur-sm rounded-xl border border-white/20 overflow-hidden opacity-0 transform translate-y-4 transition-all duration-300 ease-out",
                       selectedAppointment === appointment.id
                         ? "ring-2 ring-amber-700"
                         : "",
@@ -433,7 +433,7 @@ export default function Appointments() {
                 ))}
               </div>
             ) : (
-              <div className="text-center py-12 bg-white/20 backdrop-blur-sm rounded-xl border border-white/20">
+              <div className="text-center py-12 bg-gray-50/20 backdrop-blur-sm rounded-xl border border-white/20">
                 <CalendarIcon className="h-12 w-12 mx-auto text-amber-700 mb-4" />
                 <h3 className="text-xl font-medium text-gray-800 dark:text-white mb-2">
                   No appointments found

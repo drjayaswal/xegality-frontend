@@ -10,7 +10,7 @@ export default function SidebarToggleButton({ className }: { className?: string 
   return (
     <div
       className={clsx(
-        "fixed top-5 z-50 transition-all duration-300",
+        "fixed top-3 z-50 transition-all duration-300",
         isOpen ? "left-[216px]" : "left-5 top-5"
       )}
     >

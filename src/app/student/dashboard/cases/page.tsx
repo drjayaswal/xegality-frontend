@@ -480,7 +480,7 @@ export default function CaseManagement() {
   }, []);
 
   return (
-    <div className="w-full h-full border-[1.5px] dark:bg-black bg-white  rounded-lg">
+    <div className="w-full h-full border-[1.5px] dark:bg-black bg-gray-50  rounded-lg">
       <div className="w-full h-full rounded-lg overflow-hidden flex relative">
         {/* <div className="w-full h-full rounded-2xl overflow-hidden flex flex-col relative"> */}
         {/* Hidden file input */}
@@ -576,8 +576,8 @@ export default function CaseManagement() {
                         className={cn(
                           "px-4 py-3 rounded-[36px] cursor-pointer transition-all duration-200 mb-2 relative",
                           selectedCase === caseItem.id
-                            ? "bg-white/30 backdrop-blur-lg shadow-lg"
-                            : "hover:bg-white/20 backdrop-blur-sm m-2"
+                            ? "bg-gray-50/30 backdrop-blur-lg shadow-lg"
+                            : "hover:bg-gray-50/20 backdrop-blur-sm m-2"
                         )}
                         whileHover={{ scale: 1.01 }}
                         whileTap={{ scale: 0.98 }}
@@ -633,7 +633,7 @@ export default function CaseManagement() {
               </div>
               {/* New Case Button */}
               <div className="flex justify-center items-center mb-4 mx-auto">
-                <Button className="text-white rounded-2xl hover:text-black bg-amber-700 hover:bg-white backdrop-blur-sm border-2 border-white gap-2">
+                <Button className="text-white rounded-2xl hover:text-black bg-amber-700 hover:bg-gray-50 backdrop-blur-sm border-2 border-white gap-2">
                   <Plus className="h-4 w-4 mr-2" /> New Case
                 </Button>
               </div>
@@ -644,7 +644,7 @@ export default function CaseManagement() {
           {currentCase ? (
             <div className="flex-1 p-0">
               {/* Case Header */}
-              <div className="p-4 border-b border-white/20  bg-amber-700/10">
+              <div className="p-4 border-b border-white/20  bg-amber-700/5">
                 <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                   <div>
                     <div className="flex items-center gap-2">
@@ -753,7 +753,7 @@ export default function CaseManagement() {
                       )}
                     >
                       {/* Case Details */}
-                      <div className="bg-white/30 dark:bg-white/10 backdrop-blur-sm rounded-xl border border-white/20 p-6">
+                      <div className="bg-gray-50/30 dark:bg-gray-50/10 backdrop-blur-sm rounded-xl border border-white/20 p-6">
                         <h3 className="text-lg font-medium text-gray-800 dark:text-white mb-4">
                           Case Details
                         </h3>
@@ -849,7 +849,7 @@ export default function CaseManagement() {
                       </div>
 
                       {/* Recent Activity */}
-                      <div className="bg-white/30 dark:bg-white/10 backdrop-blur-sm rounded-xl border border-white/20 p-6">
+                      <div className="bg-gray-50/30 dark:bg-gray-50/10 backdrop-blur-sm rounded-xl border border-white/20 p-6">
                         <h3 className="text-lg font-medium text-gray-800 dark:text-white mb-4">
                           Recent Activity
                         </h3>
@@ -870,7 +870,7 @@ export default function CaseManagement() {
                               return (
                                 <div
                                   key={item.id}
-                                  className="flex gap-3 p-3 bg-white/20 dark:bg-white/5 rounded-lg border border-white/10"
+                                  className="flex gap-3 p-3 bg-gray-50/20 dark:bg-gray-50/5 rounded-lg border border-white/10"
                                 >
                                   <div className="w-8 h-8 bg-amber-700 dark:bg-amber-7000/50 rounded-full flex items-center justify-center">
                                     {isNote ? (
@@ -925,21 +925,21 @@ export default function CaseManagement() {
                       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                         <Button
                           variant="outline"
-                          className="p-6 h-auto flex flex-col items-center justify-center gap-2 bg-white/20 hover:bg-white/30"
+                          className="p-6 h-auto flex flex-col items-center justify-center gap-2 bg-gray-50/20 hover:bg-gray-50/30"
                         >
                           <Upload className="h-6 w-6 text-[#3b82f6-600" />
                           <span className="font-medium">Upload Document</span>
                         </Button>
                         <Button
                           variant="outline"
-                          className="p-6 h-auto flex flex-col items-center justify-center gap-2 bg-white/20 hover:bg-white/30"
+                          className="p-6 h-auto flex flex-col items-center justify-center gap-2 bg-gray-50/20 hover:bg-gray-50/30"
                         >
                           <Plus className="h-6 w-6 text-[#3b82f6-600" />
                           <span className="font-medium">Add Task</span>
                         </Button>
                         <Button
                           variant="outline"
-                          className="p-6 h-auto flex flex-col items-center justify-center gap-2 bg-white/20 hover:bg-white/30"
+                          className="p-6 h-auto flex flex-col items-center justify-center gap-2 bg-gray-50/20 hover:bg-gray-50/30"
                         >
                           <Calendar className="h-6 w-6 text-[#3b82f6-600" />
                           <span className="font-medium">Schedule Hearing</span>
@@ -968,8 +968,8 @@ export default function CaseManagement() {
                         </Button>
                       </div>
 
-                      <div className="bg-white/30 dark:bg-white/10 backdrop-blur-sm rounded-xl border border-white/20 overflow-hidden">
-                        <div className="grid grid-cols-5 gap-4 p-4 border-b border-white/20 bg-white/10 font-medium text-gray-700 dark:text-gray-300">
+                      <div className="bg-gray-50/30 dark:bg-gray-50/10 backdrop-blur-sm rounded-xl border border-white/20 overflow-hidden">
+                        <div className="grid grid-cols-5 gap-4 p-4 border-b border-white/20 bg-gray-50/10 font-medium text-gray-700 dark:text-gray-300">
                           <div className="col-span-2">Name</div>
                           <div>Uploaded By</div>
                           <div>Date</div>
@@ -1019,7 +1019,7 @@ export default function CaseManagement() {
                       </div>
 
                       {currentCase.documents.length === 0 && (
-                        <div className="text-center py-12 bg-white/20 backdrop-blur-sm rounded-xl border border-white/20">
+                        <div className="text-center py-12 bg-gray-50/20 backdrop-blur-sm rounded-xl border border-white/20">
                           <Folder className="h-12 w-12 mx-auto text-gray-400 mb-4" />
                           <h3 className="text-xl font-medium text-gray-800 dark:text-white mb-2">
                             No documents yet
@@ -1047,7 +1047,7 @@ export default function CaseManagement() {
                           : "opacity-0 hidden"
                       )}
                     >
-                      <div className="bg-white/30 dark:bg-white/10 backdrop-blur-sm rounded-xl border border-white/20 p-6">
+                      <div className="bg-gray-50/30 dark:bg-gray-50/10 backdrop-blur-sm rounded-xl border border-white/20 p-6">
                         <h3 className="text-lg font-medium text-gray-800 dark:text-white mb-4">
                           Add Note
                         </h3>
@@ -1057,7 +1057,7 @@ export default function CaseManagement() {
                               placeholder="Add a note about this case..."
                               value={newNote}
                               onChange={(e) => setNewNote(e.target.value)}
-                              className="min-h-[100px] bg-white/20 focus-visible:ring-0 focus-visible:border-[#3b82f6-600"
+                              className="min-h-[100px] bg-gray-50/20 focus-visible:ring-0 focus-visible:border-[#3b82f6-600"
                             />
                           </div>
                           <Button
@@ -1085,7 +1085,7 @@ export default function CaseManagement() {
                               .map((note, index) => (
                                 <div
                                   key={note.id}
-                                  className="bg-white/30 dark:bg-white/10 backdrop-blur-sm rounded-xl border border-white/20 p-4 opacity-0 transform translate-y-4 animate-fade-in"
+                                  className="bg-gray-50/30 dark:bg-gray-50/10 backdrop-blur-sm rounded-xl border border-white/20 p-4 opacity-0 transform translate-y-4 animate-fade-in"
                                   style={{
                                     animationDelay: `${index * 100}ms`,
                                     animationFillMode: "forwards",
@@ -1121,7 +1121,7 @@ export default function CaseManagement() {
                                 </div>
                               ))
                           ) : (
-                            <div className="text-center py-12 bg-white/20 backdrop-blur-sm rounded-xl border border-white/20">
+                            <div className="text-center py-12 bg-gray-50/20 backdrop-blur-sm rounded-xl border border-white/20">
                               <MessageSquare className="h-12 w-12 mx-auto text-gray-400 mb-4" />
                               <h3 className="text-xl font-medium text-gray-800 dark:text-white mb-2">
                                 No notes yet
@@ -1156,7 +1156,7 @@ export default function CaseManagement() {
 
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         {/* Tasks by Status */}
-                        <div className="bg-white/30 dark:bg-white/10 backdrop-blur-sm rounded-xl border border-white/20 p-4">
+                        <div className="bg-gray-50/30 dark:bg-gray-50/10 backdrop-blur-sm rounded-xl border border-white/20 p-4">
                           <h4 className="font-medium text-gray-800 dark:text-white mb-4">
                             Tasks by Status
                           </h4>
@@ -1174,7 +1174,7 @@ export default function CaseManagement() {
                               return (
                                 <div
                                   key={status}
-                                  className="flex items-center justify-between p-2 bg-white/20 dark:bg-white/5 rounded-lg"
+                                  className="flex items-center justify-between p-2 bg-gray-50/20 dark:bg-gray-50/5 rounded-lg"
                                 >
                                   <div className="flex items-center gap-2">
                                     {getTaskStatusIcon(status)}
@@ -1197,7 +1197,7 @@ export default function CaseManagement() {
                         </div>
 
                         {/* Upcoming Deadlines */}
-                        <div className="bg-white/30 dark:bg-white/10 backdrop-blur-sm rounded-xl border border-white/20 p-4">
+                        <div className="bg-gray-50/30 dark:bg-gray-50/10 backdrop-blur-sm rounded-xl border border-white/20 p-4">
                           <h4 className="font-medium text-gray-800 dark:text-white mb-4">
                             Upcoming Deadlines
                           </h4>
@@ -1213,7 +1213,7 @@ export default function CaseManagement() {
                               .map((task) => (
                                 <div
                                   key={task.id}
-                                  className="flex items-center justify-between p-2 bg-white/20 dark:bg-white/5 rounded-lg"
+                                  className="flex items-center justify-between p-2 bg-gray-50/20 dark:bg-gray-50/5 rounded-lg"
                                 >
                                   <div className="flex items-center gap-2">
                                     <Calendar className="h-4 w-4 text-[#3b82f6-600" />
@@ -1239,8 +1239,8 @@ export default function CaseManagement() {
                       </div>
 
                       {/* Task List */}
-                      <div className="bg-white/30 dark:bg-white/10 backdrop-blur-sm rounded-xl border border-white/20 overflow-hidden">
-                        <div className="grid grid-cols-6 gap-4 p-4 border-b border-white/20 bg-white/10 font-medium text-gray-700 dark:text-gray-300">
+                      <div className="bg-gray-50/30 dark:bg-gray-50/10 backdrop-blur-sm rounded-xl border border-white/20 overflow-hidden">
+                        <div className="grid grid-cols-6 gap-4 p-4 border-b border-white/20 bg-gray-50/10 font-medium text-gray-700 dark:text-gray-300">
                           <div className="col-span-2">Task</div>
                           <div>Assigned To</div>
                           <div>Due Date</div>
@@ -1301,7 +1301,7 @@ export default function CaseManagement() {
                       </div>
 
                       {currentCase.tasks.length === 0 && (
-                        <div className="text-center py-12 bg-white/20 backdrop-blur-sm rounded-xl border border-white/20">
+                        <div className="text-center py-12 bg-gray-50/20 backdrop-blur-sm rounded-xl border border-white/20">
                           <Clock className="h-12 w-12 mx-auto text-gray-400 mb-4" />
                           <h3 className="text-xl font-medium text-gray-800 dark:text-white mb-2">
                             No tasks yet
@@ -1321,7 +1321,7 @@ export default function CaseManagement() {
               </ScrollArea>
             </div>
           ) : (
-            <div className="flex-1 flex items-center justify-center">
+            <div className="flex-1 flex items-center justify-center bg-amber-700/5">
               <div className="text-center max-w-md px-4">
                 <User className="h-16 w-16 mx-auto text-amber-700 dark:text-white/60 mb-6" />
                 <h2 className="text-2xl font-bold text-amber-700 dark:text-white/90 mb-4">

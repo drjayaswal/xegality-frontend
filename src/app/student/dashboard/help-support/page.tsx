@@ -168,8 +168,8 @@ export default function HelpSupport() {
   };
 
   return (
-    <div className="w-full h-full bg-white dark:bg-black rounded-lg overflow-auto flex flex-col relative">
-      <div className="w-full h-full bg-amber-700/10">
+    <div className=" flex flex-col relative  border-[1.5px] rounded-lg  shadow-none border-b-0">
+      <div className="rounded-md">
         {/* <div className="absolute inset-0 -z-1 flex items-center justify-center">
         <div className="w-full h-fit flex items-center justify-center">
           <SiriWave isWaveMode={false} />
@@ -260,7 +260,7 @@ export default function HelpSupport() {
 
                           {/* Animated Content Section */}
                           <div
-                            className={`transition-all border-2 rounded-2xl border-amber-700 duration-500 ease-in-out overflow-hidden ${
+                            className={`transition-all duration-500 ease-in-out overflow-hidden ${
                               expandedFAQ === faq.question
                                 ? "max-h-[1000px] opacity-100"
                                 : "max-h-0 opacity-0"

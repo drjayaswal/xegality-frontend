@@ -247,7 +247,7 @@ export default function XegalityAI() {
         className="hidden"
       />
       {/* Header */}
-      <div className="relative h-24 bg-amber-700/10 overflow-hidden rounded-t-md">
+      <div className="relative h-24 bg-amber-700/5 overflow-hidden rounded-t-md">
         <div className="absolute inset-0 flex items-center justify-center">
           <div className="w-full h-fit flex items-center justify-center opacity-50">
             <SiriWave
@@ -263,7 +263,7 @@ export default function XegalityAI() {
         </div>
       </div>
       {/* Chat Messages */}
-      <div className="flex-1 px-5 py-10 bg-amber-700/10 rounded-b-2xl">
+      <div className="flex-1 px-5 py-10 bg-amber-700/5 rounded-b-2xl">
         <ScrollArea className="h-full" ref={scrollAreaRef}>
           <div className="space-y-4 pb-20">
             <AnimatePresence>
@@ -287,8 +287,8 @@ export default function XegalityAI() {
                     className={cn(
                       "max-w-[80%] p-4 relative rounded-2xl shadow-none duration-200 hover:shadow-lg",
                       message.sender === "user"
-                        ? "-mr-2 bg-white/20 backdrop-blur-lg dark:text-white/90 text-black/90 rounded-tr-none"
-                        : "-ml-2 bg-white/20 backdrop-blur-lg dark:text-white/90 text-black/90 rounded-tl-none"
+                        ? "-mr-2 bg-gray-50/20 backdrop-blur-lg dark:text-white/90 text-black/90 rounded-tr-none"
+                        : "-ml-2 bg-gray-50/20 backdrop-blur-lg dark:text-white/90 text-black/90 rounded-tl-none"
                     )}
                   >
                     <p className="text-sm leading-relaxed">{message.content}</p>
@@ -337,10 +337,10 @@ export default function XegalityAI() {
               {uploadedFiles.map((file, index) => (
                 <div
                   key={file.id}
-                  className="relative group bg-white/30 backdrop-blur-md rounded-2xl p-2 border border-white/10 dark:border-black/20 shadow-sm hover:shadow-md transition-all duration-300"
+                  className="relative group bg-gray-50/30 backdrop-blur-md rounded-2xl p-2 border border-white/10 dark:border-black/20 shadow-sm hover:shadow-md transition-all duration-300"
                 >
                   <div className="flex items-center gap-2">
-                    <div className="flex-shrink-0 p-1 bg-white/70 rounded-md">
+                    <div className="flex-shrink-0 p-1 bg-gray-50/70 rounded-md">
                       {getFileIcon(file.type, file.name)}
                     </div>
                     <div className="flex-1 min-w-0">
@@ -358,7 +358,7 @@ export default function XegalityAI() {
                       variant="ghost"
                       size="sm"
                       onClick={() => removeFile(file.id)}
-                      className="opacity-0 group-hover:opacity-100 transition-opacity h-5 w-5 p-0 hover:bg-black text-red-500"
+                      className="opacity-0 group-hover:opacity-100 transition-opacity h-5 w-5 p-0 hover:bg-red-500 hover:text-white text-red-500"
                     >
                       <X className="h-3 w-3  stroke-3" />
                     </Button>
@@ -382,7 +382,7 @@ export default function XegalityAI() {
               initial={{ scale: 0.8, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.8, opacity: 0 }}
-              className="bg-white/30 dark:bg-black/30 rounded-2xl p-8 flex flex-col items-center gap-4"
+              className="bg-gray-50/30 dark:bg-black/30 rounded-2xl p-8 flex flex-col items-center gap-4"
             >
               <motion.div
                 animate={{ rotate: 360 }}
@@ -406,7 +406,7 @@ export default function XegalityAI() {
         )}
       </AnimatePresence>
       {/* Input Area */}
-      <div className="absolute bottom-0 left-0 w-full z-30 py-1 bg-amber-700/10 backdrop-blur-sm rounded-b-md">
+      <div className="absolute bottom-0 left-0 w-full z-30 py-1 bg-amber-700/5 backdrop-blur-sm rounded-b-md">
         <div className="pt-4 px-4 pb-0 rounded-none ">
           <div className="flex items-center gap-1 py-2 rounded-none">
             <div className="flex-1 relative">
@@ -418,8 +418,8 @@ export default function XegalityAI() {
                 placeholder="Ask Xegality AI anything about law, cases, or legal research..."
                 className="w-full py-2.5 pr-24 pl-4 font-medium
                  rounded-l-2xl border-none shadow-sm focus-visible:ring-0 text-gray-500
-                bg-white/30
-              dark:hover:bg-white/20 rounded-2xl focus-visible:shadow-inner
+                bg-gray-50/30
+              dark:hover:bg-gray-50/20 rounded-2xl focus-visible:shadow-inner
               transition-all duration-150"
               />
             </div>
@@ -429,8 +429,8 @@ export default function XegalityAI() {
               onClick={handleUploadClick}
               disabled={showUploadAnimation}
               className="relative h-10 w-10 min-w-[2.5rem] flex items-center justify-center 
-bg-white/30 dark:bg-white/10 
-hover:bg-white/40 dark:hover:bg-white/20 
+bg-gray-50/30 dark:bg-gray-50/10 
+hover:bg-gray-50/40 dark:hover:bg-gray-50/20 
 rounded-2xl shadow-sm active:shadow-inner 
 transition-all duration-150"
             >
@@ -476,8 +476,8 @@ transition-all duration-150"
             {/* Voice Button */}
             <Button
               className="relative h-10 w-10 min-w-[2.5rem] flex items-center justify-center 
-              bg-white/30 dark:bg-white/10 
-              hover:bg-white/40 dark:hover:bg-white/20 
+              bg-gray-50/30 dark:bg-gray-50/10 
+              hover:bg-gray-50/40 dark:hover:bg-gray-50/20 
               rounded-2xl shadow-sm active:shadow-inner 
               transition-all duration-150"
               onClick={handleVoiceSearch}
@@ -498,7 +498,7 @@ transition-all duration-150"
                 rounded-2xl overflow-hidden transition-all duration-200
                 ${
                   isReadyToSend && !isTyping
-                    ? "bg-white/30 dark:bg-white/10 hover:bg-white/40 dark:hover:bg-white/20 shadow-sm active:shadow-inner"
+                    ? "bg-gray-50/30 dark:bg-gray-50/10 hover:bg-gray-50/40 dark:hover:bg-gray-50/20 shadow-sm active:shadow-inner"
                     : "bg-transparent shadow-none"
                 }`}
             >

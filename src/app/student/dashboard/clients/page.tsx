@@ -516,7 +516,7 @@ export default function Clients() {
   }, [inputValue]);
 
   return (
-    <div className="w-full border-[1.5px] h-[815px] dark:bg-black bg-white rounded-lg">
+    <div className="w-full border-[1.5px] h-[815px] dark:bg-black bg-gray-50 rounded-lg">
       <div className="w-full h-full rounded-lg overflow-hidden flex relative">
         <input
           ref={fileInputRef}
@@ -594,8 +594,8 @@ export default function Clients() {
                         className={cn(
                           "px-4 py-3 rounded-[36px] cursor-pointer transition-all duration-200 mb-2 relative",
                           selectedConversation === conversation.id
-                            ? "bg-white/30 backdrop-blur-lg shadow-lg"
-                            : "hover:bg-white/20 backdrop-blur-sm m-2"
+                            ? "bg-gray-50/30 backdrop-blur-lg shadow-lg"
+                            : "hover:bg-gray-50/20 backdrop-blur-sm m-2"
                         )}
                         whileHover={{ scale: 1.01 }}
                         whileTap={{ scale: 0.98 }}
@@ -651,7 +651,7 @@ export default function Clients() {
               <div className="flex-1 flex flex-col h-full">
                 {/* Chat Header - Fixed at top */}
                 <div
-                  className={`flex-shrink-0 px-4 py-[8px] bg-amber-700/10 border-b-2 ${
+                  className={`flex-shrink-0 px-4 py-[8px] bg-amber-700/5 border-b-2 ${
                     activeButton == "phone"
                       ? "border-b-sky-500"
                       : activeButton == "video"
@@ -729,7 +729,7 @@ export default function Clients() {
                           <Button
                             variant="ghost"
                             size="sm"
-                            className="h-8 w-8 p-0 rounded-full text-black dark:text-white hover:bg-gray-100 dark:hover:bg-white/10 transition"
+                            className="h-8 w-8 p-0 rounded-full text-black dark:text-white hover:bg-gray-100 dark:hover:bg-gray-50/10 transition"
                             aria-label="More Options"
                           >
                             <MoreVertical className="h-4 w-4" />
@@ -739,7 +739,7 @@ export default function Clients() {
                         <DropdownMenuContent
                           side="bottom"
                           align="end"
-                          className="w-52 rounded-xl border border-white/10 bg-white/70 dark:bg-black/50 backdrop-blur-md shadow-lg text-sm text-black dark:text-white"
+                          className="w-52 rounded-xl border border-white/10 bg-gray-50/70 dark:bg-black/50 backdrop-blur-md shadow-lg text-sm text-black dark:text-white"
                         >
                           <DropdownMenuItem
                             onClick={() => alert("View Profile")}
@@ -760,7 +760,7 @@ export default function Clients() {
                             Report
                           </DropdownMenuItem>
 
-                          <DropdownMenuSeparator className="my-1 bg-white/20" />
+                          <DropdownMenuSeparator className="my-1 bg-gray-50/20" />
 
                           <DropdownMenuItem
                             onClick={() => alert("Blocked")}
@@ -775,7 +775,7 @@ export default function Clients() {
                 </div>
 
                 {/* Messages Container - Scrollable area only */}
-                <div className="flex-1 min-h-0 bg-amber-700/10 relative overflow-hidden">
+                <div className="flex-1 min-h-0 bg-amber-700/5 relative overflow-hidden">
                   <ScrollArea className="h-full" ref={scrollAreaRef}>
                     <div className="p-4 space-y-4">
                       <AnimatePresence>
@@ -814,7 +814,7 @@ export default function Clients() {
                                 // File Message
                                 <div
                                   className={cn(
-                                    "p-3 bg-white/30 backdrop-blur-lg border border-white/20",
+                                    "p-3 bg-gray-50/30 backdrop-blur-lg border border-white/20",
                                     message.sender === "lawyer"
                                       ? "rounded-tr-none"
                                       : "rounded-tl-none",
@@ -866,7 +866,7 @@ export default function Clients() {
                                 // Text Message
                                 <div
                                   className={cn(
-                                    "p-3 bg-white/20 backdrop-blur-lg dark:text-white/90 text-black/90",
+                                    "p-3 bg-gray-50/20 backdrop-blur-lg dark:text-white/90 text-black/90",
                                     message.sender === "lawyer"
                                       ? "rounded-tr-none"
                                       : "rounded-tl-none",
@@ -935,7 +935,7 @@ export default function Clients() {
                 </div>
 
                 {/* Input Area - Fixed at bottom */}
-                <div className="flex-shrink-0 p-4 bg-amber-700/10">
+                <div className="flex-shrink-0 p-4 bg-amber-700/5">
                   <div className="flex flex-wrap md:flex-nowrap items-center gap-3">
                     <Button
                       onClick={handleUploadClick}
@@ -996,7 +996,7 @@ export default function Clients() {
                         onChange={(e) => setInputValue(e.target.value)}
                         onKeyPress={handleKeyPress}
                         placeholder="Type your message..."
-                        className="bg-white/20 text-left focus-visible:ring-0 border-1 border-amber-700/40 focus-visible:border-amber-700/40 transition-all duration-150 dark:placeholder:text-white/40 placeholder:text-black/40"
+                        className="bg-gray-50/20 text-left focus-visible:ring-0 border-1 border-amber-700/40 focus-visible:border-amber-700/40 transition-all duration-150 dark:placeholder:text-white/40 placeholder:text-black/40"
                       />
                     </div>
                     <div className="flex gap-2 w-full md:w-auto justify-end mt-2 md:mt-0">
@@ -1050,7 +1050,7 @@ export default function Clients() {
               </div>
             </>
           ) : (
-            <div className="flex-1 flex items-center justify-center">
+            <div className="flex-1 flex items-center justify-center bg-amber-700/5">
               <div className="text-center max-w-md px-4">
                 <User className="h-16 w-16 mx-auto text-amber-700 dark:text-white/60 mb-6" />
                 <h2 className="text-2xl font-bold text-amber-700 dark:text-white/90 mb-4">

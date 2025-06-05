@@ -165,8 +165,8 @@ export default function BillingPayments() {
   };
 
   return (
-    <div className="w-full h-full dark:bg-black bg-white rounded-2xl">
-      <div className="w-full h-full rounded-lg overflow-hidden flex flex-col relative bg-amber-700/10">
+    <div className="w-full h-full rounded-lg border-[1.5px]">
+      <div className="w-full h-full rounded-md overflow-hidden flex flex-col relative bg-amber-700/05">
         {/* Header */}
         <div className="relative h-24 overflow-hidden ">
           <div className="absolute inset-0 flex items-center justify-center">
@@ -467,7 +467,10 @@ export default function BillingPayments() {
 
                         <div className="flex gap-2">
                           {!method.isDefault && (
-                            <Button size="sm" className="bg-amber-600/20 text-amber-700 hover:bg-amber-600 hover:text-white">
+                            <Button
+                              size="sm"
+                              className="bg-amber-600/20 text-amber-700 hover:bg-amber-600 hover:text-white"
+                            >
                               Set as Default
                             </Button>
                           )}

@@ -33,6 +33,7 @@ import {
   CheckCircle,
   ChevronRight,
   ChevronLeft,
+  File,
 } from "lucide-react";
 
 interface InternshipFormData {
@@ -119,6 +120,7 @@ export default function PostInternshipPage() {
 
   const [currentStep, setCurrentStep] = useState(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isDrafting, setIsDrafting] = useState(false);
   const [isPreview, setIsPreview] = useState(false);
   const [newSkill, setNewSkill] = useState("");
   const [newResponsibility, setNewResponsibility] = useState("");
@@ -309,7 +311,7 @@ export default function PostInternshipPage() {
                   onCheckedChange={(checked) =>
                     handleInputChange("isRemote", checked)
                   }
-                  className="data-[state=checked]:bg-[#3b82f6] "
+                  className="data-[state=checked]:bg-amber-700 "
                 />
                 <Label htmlFor="isRemote">Remote Work Available</Label>
               </div>
@@ -320,7 +322,7 @@ export default function PostInternshipPage() {
                   onCheckedChange={(checked) =>
                     handleInputChange("acceptsInternational", checked)
                   }
-                  className="data-[state=checked]:bg-[#3b82f6] "
+                  className="data-[state=checked]:bg-amber-700 "
                 />
                 <Label htmlFor="acceptsInternational">
                   Accepts International Students
@@ -333,7 +335,7 @@ export default function PostInternshipPage() {
                   onCheckedChange={(checked) =>
                     handleInputChange("providesHousing", checked)
                   }
-                  className="data-[state=checked]:bg-[#3b82f6] "
+                  className="data-[state=checked]:bg-amber-700 "
                 />
                 <Label htmlFor="providesHousing">
                   Provides Housing Assistance
@@ -558,7 +560,7 @@ export default function PostInternshipPage() {
                       }
                     }}
                     size="sm"
-                    className="rounded-r-md border border-l-0 border-gray-300 bg-[#3b82f6]/80 hover:bg-[#3b82f6] text-white px-3 h-[36px] rounded-l-none"
+                    className="rounded-r-md border border-l-0 border-gray-300 bg-amber-700/80 hover:bg-amber-700 text-white px-3 h-[36px] rounded-l-none"
                   >
                     <Plus className="h-4 w-4" />
                   </Button>
@@ -613,7 +615,7 @@ export default function PostInternshipPage() {
                       }
                     }}
                     size="sm"
-                    className="rounded-r-md border border-l-0 border-gray-300 bg-[#3b82f6]/80 hover:bg-[#3b82f6] text-white px-3 h-[36px] rounded-l-none"
+                    className="rounded-r-md border border-l-0 border-gray-300 bg-amber-700/80 hover:bg-amber-700 text-white px-3 h-[36px] rounded-l-none"
                   >
                     <Plus className="h-4 w-4" />
                   </Button>
@@ -735,7 +737,7 @@ export default function PostInternshipPage() {
                       }
                     }}
                     size="sm"
-                    className="rounded-r-md border border-l-0 border-gray-300 bg-[#3b82f6]/80 hover:bg-[#3b82f6] text-white px-3 h-[36px] rounded-l-none"
+                    className="rounded-r-md border border-l-0 border-gray-300 bg-amber-700/80 hover:bg-amber-700 text-white px-3 h-[36px] rounded-l-none"
                   >
                     <Plus className="h-4 w-4" />
                   </Button>
@@ -788,7 +790,7 @@ export default function PostInternshipPage() {
                       }
                     }}
                     size="sm"
-                    className="rounded-r-md border border-l-0 border-gray-300 bg-[#3b82f6]/80 hover:bg-[#3b82f6] text-white px-3 h-[36px] rounded-l-none"
+                    className="rounded-r-md border border-l-0 border-gray-300 bg-amber-700/80 hover:bg-amber-700 text-white px-3 h-[36px] rounded-l-none"
                   >
                     <Plus className="h-4 w-4" />
                   </Button>
@@ -1059,13 +1061,13 @@ export default function PostInternshipPage() {
                   </CardContent>
                 </Card>
 
-                <div className="flex items-center space-x-2 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
-                  <AlertCircle className="h-5 w-5 text-blue-600" />
+                <div className="flex items-center space-x-2 p-4 bg-amber-700/10 dark:bg-amber-900/20 rounded-lg">
+                  <AlertCircle className="h-5 w-5 text-amber-600" />
                   <div className="text-sm">
-                    <p className="font-medium text-blue-900 dark:text-blue-100">
+                    <p className="font-medium text-amber-900 dark:text-amber-100">
                       Ready to publish?
                     </p>
-                    <p className="text-blue-700 dark:text-blue-200">
+                    <p className="text-amber-700 dark:text-amber-200">
                       Once published, your internship will be visible to all law
                       practioners. You can edit or unpublish it later.
                     </p>
@@ -1082,12 +1084,12 @@ export default function PostInternshipPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 border-[1.5px] shadow-md rounded-2xl p-6">
+    <div className="min-h-screen bg-amber-700/05 border-[1.5px] shadow-md rounded-2xl p-6">
       <div className="max-w-6xl mx-auto">
         {/* Header */}
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-foreground flex items-center gap-3">
-            <GraduationCap className="h-8 w-8 text-[#3b82f6]" />
+            <GraduationCap className="h-8 w-8 text-black" />
             Add Internship Opportunity
           </h1>
           <p className="text-muted-foreground mt-2">
@@ -1104,7 +1106,7 @@ export default function PostInternshipPage() {
                 <div
                   className={`flex items-center justify-center w-10 h-10 rounded-full border-2 ${
                     currentStep >= step.id
-                      ? "bg-[#3b82f6] border-[#3b82f6] text-white"
+                      ? "bg-amber-700 border-amber-700 text-white"
                       : "border-gray-300 text-gray-400"
                   }`}
                 >
@@ -1118,7 +1120,7 @@ export default function PostInternshipPage() {
                   <p
                     className={`text-sm font-medium ${
                       currentStep >= step.id
-                        ? "text-[#3b82f6]"
+                        ? "text-amber-700"
                         : "text-gray-400"
                     }`}
                   >
@@ -1128,7 +1130,7 @@ export default function PostInternshipPage() {
                 {index < steps.length - 1 && (
                   <div
                     className={`w-16 h-0.5 mx-4 ${
-                      currentStep > step.id ? "bg-[#3b82f6]" : "bg-gray-300"
+                      currentStep > step.id ? "bg-amber-700" : "bg-gray-300"
                     }`}
                   />
                 )}
@@ -1166,20 +1168,35 @@ export default function PostInternshipPage() {
               <>
                 {/* Save as Draft */}
                 <Button
-                  variant="outline"
-                  onClick={() => handleSubmit(true)}
-                  disabled={isSubmitting}
-                  className="px-5 py-2 text-sm font-medium text-gray-700 border-gray-300 hover:bg-gray-100 transition-colors rounded-md disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                  onClick={() => {
+                    setIsDrafting(true);
+                    setTimeout(() => {
+                      setIsDrafting(false);
+                    }, 2000);
+                    // handleSubmit(false)
+                  }}
+                  className="px-5 py-2 text-sm font-medium text-black bg-white border-gray-300  hover:text-white transition-colors rounded-md disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                  disabled={isDrafting}
                 >
-                  <Save className="h-4 w-4" />
-                  Save as Draft
+                  {isDrafting ? (
+                    <div className="w-4 h-4 border-2 border-black border-t-transparent rounded-full animate-spin" />
+                  ) : (
+                    <FileText className="h-4 w-4" />
+                  )}
+                  Save Draft
                 </Button>
 
                 {/* Publish */}
                 <Button
-                  onClick={() => handleSubmit(false)}
+                  onClick={() => {
+                    setIsSubmitting(true);
+                    setTimeout(() => {
+                      setIsSubmitting(false);
+                    }, 2000);
+                    // handleSubmit(false)
+                  }}
                   disabled={isSubmitting}
-                  className="px-5 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 active:bg-blue-800 transition-colors rounded-md flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="px-5 py-2 text-sm font-medium text-white bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 transition-colors rounded-md flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {isSubmitting ? (
                     <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
@@ -1213,7 +1230,7 @@ function InternshipPreview({ formData }: { formData: InternshipFormData }) {
         <CardHeader>
           <div className="flex items-start justify-between">
             <div>
-              <CardTitle className="text-2xl text-[#3b82f6]">
+              <CardTitle className="text-2xl text-amber-700">
                 {formData.title}
               </CardTitle>
               <p className="text-lg text-gray-600 dark:text-gray-300 mt-1">
@@ -1278,7 +1295,7 @@ function InternshipPreview({ formData }: { formData: InternshipFormData }) {
             <div className="text-sm text-gray-500">
               Application Deadline: {formData.applicationDeadline}
             </div>
-            <Button className="bg-[#3b82f6] hover:bg-[#2563eb]">
+            <Button className="bg-amber-700 hover:bg-[#2563eb]">
               Apply Now
             </Button>
           </div>

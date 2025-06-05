@@ -1,7 +1,6 @@
 "use client";
 
 import type React from "react";
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
@@ -33,16 +32,53 @@ import {
   CheckCircle,
   ArrowRight,
   Sparkles,
-  ArrowLeft,
 } from "lucide-react";
 import { motion } from "framer-motion";
 import Link from "next/link";
-import SiriWave from "@/components/ui/ai";
 
 type UserType = "lawyer" | "consumer" | "student";
 
+// 🎨 CHANGE ALL COLORS FROM HERE - Single source of truth
+const THEME_COLORS = {
+  lawyer: {
+    name: "Legal Professional",
+    description: "Attorneys and advocates offering services",
+    primary: "bg-amber-600",
+    primaryHover: "hover:bg-amber-700",
+    background: "bg-amber-700/10",
+    border: "border-amber-600",
+    text: "text-amber-700",
+    icon: "text-amber-600",
+    gradient: "from-amber-600 to-amber-800",
+    checkboxChecked: "data-[state=checked]:bg-amber-600",
+  },
+  consumer: {
+    name: "Individual Litigant",
+    description: "People in need of legal help or legal advice",
+    primary: "bg-emerald-600",
+    primaryHover: "hover:bg-emerald-700",
+    background: "bg-emerald-700/10",
+    border: "border-emerald-600",
+    text: "text-emerald-700",
+    icon: "text-emerald-600",
+    gradient: "from-emerald-600 to-emerald-800",
+    checkboxChecked: "data-[state=checked]:bg-emerald-600",
+  },
+  student: {
+    name: "Law Student",
+    description: "Undergraduates pursuing legal education and careers",
+    primary: "bg-violet-600",
+    primaryHover: "hover:bg-violet-700",
+    background: "bg-violet-700/10",
+    border: "border-violet-600",
+    text: "text-violet-700",
+    icon: "text-violet-600",
+    gradient: "from-violet-600 to-violet-800",
+    checkboxChecked: "data-[state=checked]:bg-violet-600",
+  },
+};
+
 interface FormData {
-  // Common fields
   email: string;
   password: string;
   confirmPassword: string;
@@ -51,27 +87,21 @@ interface FormData {
   phone: string;
   location: string;
   userType: UserType | "";
-
-  // Lawyer specific
   firmName: string;
   barNumber: string;
   practiceAreas: string[];
   yearsExperience: string;
   jurisdiction: string;
-
-  // Student specific
   university: string;
   year: string;
   expectedGraduation: string;
   gpa: string;
   lawSchoolType: string;
-
-  // Consumer specific
   occupation: string;
   legalNeeds: string[];
 }
 
-export default function AuthPage() {
+export default function AuthPageSingle() {
   const [isLogin, setIsLogin] = useState(true);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -104,45 +134,39 @@ export default function AuthPage() {
   const userTypes = [
     {
       type: "lawyer" as UserType,
-      title: "Legal Professional",
-      description: "Licensed attorneys and legal practitioners",
+      title: THEME_COLORS.lawyer.name,
+      description: THEME_COLORS.lawyer.description,
       icon: Scale,
       features: [
-        "Manage cases",
-        "Find clients",
-        "Post internships",
-        "AI legal research",
+        "Streamline case management",
+        "Connect with clients",
+        "Post internships & jobs",
+        "Access AI-powered legal research",
       ],
-      color: "bg-blue-50 border-blue-200 text-blue-700",
-      iconColor: "text-blue-600",
     },
     {
       type: "consumer" as UserType,
-      title: "Legal Consumer",
-      description: "Individuals seeking legal assistance",
+      title: THEME_COLORS.consumer.name,
+      description: THEME_COLORS.consumer.description,
       icon: Users,
       features: [
-        "Find lawyers",
-        "Get legal advice",
-        "Document review",
-        "Legal consultation",
+        "Find trusted lawyers",
+        "Get personalized legal advice",
+        "Upload & review documents",
+        "Book legal consultations",
       ],
-      color: "bg-green-50 border-green-200 text-green-700",
-      iconColor: "text-green-600",
     },
     {
       type: "student" as UserType,
-      title: "Law Student",
-      description: "Current law school students and recent graduates",
+      title: THEME_COLORS.student.name,
+      description: THEME_COLORS.student.description,
       icon: GraduationCap,
       features: [
-        "Find internships",
-        "Legal resources",
-        "Career guidance",
-        "Study materials",
+        "Discover internships & clerkships",
+        "Access legal databases & tools",
+        "Receive mentorship",
+        "Download case briefs & resources",
       ],
-      color: "bg-purple-50 border-purple-200 text-purple-700",
-      iconColor: "text-purple-600",
     },
   ];
 
@@ -176,6 +200,8 @@ export default function AuthPage() {
     "Other",
   ];
 
+  const currentTheme = selectedUserType ? THEME_COLORS[selectedUserType] : null;
+
   const handleInputChange = (field: keyof FormData, value: any) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
@@ -195,16 +221,17 @@ export default function AuthPage() {
     }
   };
 
+  const handleUserTypeSelect = (userType: UserType) => {
+    setSelectedUserType(userType);
+    handleInputChange("userType", userType);
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-
-    // Simulate API call
     await new Promise((resolve) => setTimeout(resolve, 2000));
-
     setIsLoading(false);
 
-    // Redirect based on user type
     if (formData.userType === "lawyer") {
       window.location.href = "/lawyer/dashboard";
     } else if (formData.userType === "student") {
@@ -214,80 +241,103 @@ export default function AuthPage() {
     }
   };
 
+  const ThemedButton = ({
+    variant = "primary",
+    children,
+    className = "",
+    ...props
+  }: any) => {
+    if (!currentTheme) {
+      return (
+        <Button className={className} {...props}>
+          {children}
+        </Button>
+      );
+    }
+
+    const variantClasses: any = {
+      primary: `${currentTheme.primary} ${currentTheme.primaryHover} text-white`,
+      secondary: `border-2 ${currentTheme.border} ${currentTheme.text} bg-transparent hover:${currentTheme.primary} hover:text-white`,
+      ghost: `${currentTheme.text} hover:${currentTheme.background}`,
+    };
+
+    return (
+      <Button className={`${variantClasses[variant]} ${className}`} {...props}>
+        {children}
+      </Button>
+    );
+  };
+
+  const ThemedCheckbox = ({ ...props }) => {
+    const checkboxClass = currentTheme
+      ? `border-gray-300 focus-visible:ring-0 ${currentTheme.checkboxChecked} data-[state=checked]:border-0`
+      : "border-gray-300 focus-visible:ring-0 data-[state=checked]:bg-blue-600 data-[state=checked]:border-0";
+
+    return <Checkbox className={checkboxClass} {...props} />;
+  };
+
   const renderUserTypeSelection = () => (
     <div className="space-y-6">
       <div className="text-center">
-        <h3 className="text-3xl font-semibold text-gray-900 dark:text-white mb-2">
+        <h3 className="text-3xl font-semibold text-gray-900 mb-2">
           Choose Your Account Type
         </h3>
-        <p className="text-gray-600 dark:text-gray-300 text-lg">
+        <p className="text-gray-600 text-lg">
           Select the option that best describes you
         </p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        {userTypes.map((userType, index) => (
-          <motion.div
-            key={userType.type}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.3, delay: index * 0.1 }}
-            className={`p-6 rounded-4xl border-2 cursor-pointer transition-all transform-gpu duration-300 ease-out ${
-              selectedUserType === userType.type
-                ? "border-[#3b82f6] bg-blue-50 dark:bg-blue-900/20 shadow-lg scale-105 -translate-y-2"
-                : `${
-                    userType.type === "lawyer"
-                      ? "border-blue-600"
-                      : userType.type === "student"
-                      ? "border-purple-600"
-                      : userType.type === "consumer"
-                      ? "border-green-600"
-                      : "border-transparent"
-                  } hover:shadow-md hover:scale-105 hover:-translate-y-2`
-            }`}
-            onClick={() => {
-              setSelectedUserType(userType.type);
-              handleInputChange("userType", userType.type);
-            }}
-          >
-            <div className="text-center">
-              <div
-                className={`w-16 h-16 mx-auto mb-4 rounded-full border-2 backdrop-blur-2xl ${
-                  userType.type === "lawyer"
-                    ? "border-blue-600 bg-blue-600"
-                    : userType.type === "student"
-                    ? "border-purple-600 bg-purple-600"
-                    : userType.type === "consumer"
-                    ? "border-green-600 bg-green-600"
-                    : "border-transparent"
-                } flex items-center justify-center ${
-                  selectedUserType === userType.type
-                    ? "bg-[#3b82f6]"
-                    : " dark:bg-gray-800"
-                }`}
-              >
-                <userType.icon className={`text-white`} />
+        {userTypes.map((userType, index) => {
+          const theme = THEME_COLORS[userType.type];
+          const isSelected = selectedUserType === userType.type;
+
+          return (
+            <motion.div
+              key={userType.type}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.3, delay: index * 0.1 }}
+              className={`p-6 rounded-3xl border-2 cursor-pointer transition-all transform-gpu duration-300 ease-out ${
+                isSelected
+                  ? `${theme.border} ${theme.background} shadow-lg scale-105 -translate-y-2`
+                  : `${theme.border} hover:shadow-md hover:scale-105 hover:-translate-y-2 hover:${theme.background}`
+              }`}
+              onClick={() => handleUserTypeSelect(userType.type)}
+            >
+              <div className="text-center">
+                <div
+                  className={`w-16 h-16 mx-auto mb-4 rounded-full border-2 ${
+                    theme.border
+                  } ${
+                    isSelected ? theme.primary : theme.background
+                  } flex items-center justify-center`}
+                >
+                  <userType.icon
+                    className={`${isSelected ? "text-white" : theme.icon}`}
+                  />
+                </div>
+                <h4 className="font-semibold text-gray-900 mb-2">
+                  {userType.title}
+                </h4>
+                <p className="text-sm text-gray-600 mb-4">
+                  {userType.description}
+                </p>
+                <ul className="space-y-1">
+                  {userType.features.map((feature) => (
+                    <li
+                      key={feature}
+                      className="text-xs text-gray-500 flex items-center gap-1"
+                    >
+                      <CheckCircle className={`h-3 w-3 ${theme.icon}`} />
+                      {feature}
+                    </li>
+                  ))}
+                </ul>
               </div>
-              <h4 className="font-semibold text-gray-900 dark:text-white mb-2">
-                {userType.title}
-              </h4>
-              <p className="text-sm text-gray-600 dark:text-gray-300 mb-4">
-                {userType.description}
-              </p>
-              <ul className="space-y-1">
-                {userType.features.map((feature) => (
-                  <li
-                    key={feature}
-                    className="text-xs text-gray-500 dark:text-gray-400 flex items-center gap-1"
-                  >
-                    <CheckCircle className="h-3 w-3 text-green-500" />
-                    {feature}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </motion.div>
-        ))}
+            </motion.div>
+          );
+        })}
       </div>
     </div>
   );
@@ -302,7 +352,7 @@ export default function AuthPage() {
             value={formData.firstName}
             onChange={(e) => handleInputChange("firstName", e.target.value)}
             placeholder="John"
-            className="mt-1 focus-visible:ring-0 border-black/20"
+            className="mt-1 focus-visible:ring-0 border-gray-300"
             required
           />
         </div>
@@ -313,7 +363,7 @@ export default function AuthPage() {
             value={formData.lastName}
             onChange={(e) => handleInputChange("lastName", e.target.value)}
             placeholder="Doe"
-            className="mt-1 focus-visible:ring-0 border-black/20"
+            className="mt-1 focus-visible:ring-0 border-gray-300"
             required
           />
         </div>
@@ -329,7 +379,7 @@ export default function AuthPage() {
             value={formData.email}
             onChange={(e) => handleInputChange("email", e.target.value)}
             placeholder="john@example.com"
-            className="pl-10 focus-visible:ring-0 border-black/20"
+            className="pl-10 focus-visible:ring-0 border-gray-300"
             required
           />
         </div>
@@ -345,7 +395,7 @@ export default function AuthPage() {
             value={formData.password}
             onChange={(e) => handleInputChange("password", e.target.value)}
             placeholder="••••••••"
-            className="pl-10 pr-10 focus-visible:ring-0 border-black/20"
+            className="pl-10 pr-10 focus-visible:ring-0 border-gray-300"
             required
           />
           <button
@@ -375,7 +425,7 @@ export default function AuthPage() {
                 handleInputChange("confirmPassword", e.target.value)
               }
               placeholder="••••••••"
-              className="pl-10 pr-10 focus-visible:ring-0 border-black/20"
+              className="pl-10 pr-10 focus-visible:ring-0 border-gray-300"
               required
             />
             <button
@@ -403,7 +453,7 @@ export default function AuthPage() {
               value={formData.phone}
               onChange={(e) => handleInputChange("phone", e.target.value)}
               placeholder="+1 (555) 123-4567"
-              className="pl-10 focus-visible:ring-0 border-black/20"
+              className="pl-10 focus-visible:ring-0 border-gray-300"
             />
           </div>
         </div>
@@ -416,7 +466,7 @@ export default function AuthPage() {
               value={formData.location}
               onChange={(e) => handleInputChange("location", e.target.value)}
               placeholder="New York, NY"
-              className="pl-10 focus-visible:ring-0 border-black/20"
+              className="pl-10 focus-visible:ring-0 border-gray-300"
             />
           </div>
         </div>
@@ -436,7 +486,7 @@ export default function AuthPage() {
               value={formData.firmName}
               onChange={(e) => handleInputChange("firmName", e.target.value)}
               placeholder="Smith & Associates"
-              className="pl-10 focus-visible:ring-0 border-black/20"
+              className="pl-10 focus-visible:ring-0 border-gray-300"
               required
             />
           </div>
@@ -448,7 +498,7 @@ export default function AuthPage() {
             value={formData.barNumber}
             onChange={(e) => handleInputChange("barNumber", e.target.value)}
             placeholder="123456"
-            className="focus-visible:ring-0 border-black/20 mt-1"
+            className="focus-visible:ring-0 border-gray-300 mt-1"
             required
           />
         </div>
@@ -503,11 +553,10 @@ export default function AuthPage() {
         <div className="grid grid-cols-2 md:grid-cols-3 gap-2 mt-2">
           {practiceAreaOptions.map((area) => (
             <div key={area} className="flex items-center space-x-2">
-              <Checkbox
+              <ThemedCheckbox
                 id={area}
                 checked={formData.practiceAreas.includes(area)}
                 onCheckedChange={() => toggleArrayItem("practiceAreas", area)}
-                className="border-black focus-visible:ring-0 data-[state=checked]:bg-blue-600 data-[state=checked]:border-0"
               />
               <Label htmlFor={area} className="text-sm">
                 {area}
@@ -531,7 +580,7 @@ export default function AuthPage() {
               value={formData.university}
               onChange={(e) => handleInputChange("university", e.target.value)}
               placeholder="Harvard Law School"
-              className="pl-10 focus-visible:ring-0 border-black/20"
+              className="pl-10 focus-visible:ring-0 border-gray-300"
               required
             />
           </div>
@@ -569,7 +618,7 @@ export default function AuthPage() {
                 handleInputChange("expectedGraduation", e.target.value)
               }
               placeholder="May 2025"
-              className="pl-10 focus-visible:ring-0 border-black/20"
+              className="pl-10 focus-visible:ring-0 border-gray-300"
               required
             />
           </div>
@@ -581,7 +630,7 @@ export default function AuthPage() {
             value={formData.gpa}
             onChange={(e) => handleInputChange("gpa", e.target.value)}
             placeholder="3.5"
-            className="mt-1 focus-visible:ring-0 border-black/20"
+            className="mt-1 focus-visible:ring-0 border-gray-300"
           />
         </div>
       </div>
@@ -617,7 +666,7 @@ export default function AuthPage() {
             value={formData.occupation}
             onChange={(e) => handleInputChange("occupation", e.target.value)}
             placeholder="Software Engineer"
-            className="pl-10 focus-visible:ring-0 border-black/20"
+            className="pl-10 focus-visible:ring-0 border-gray-300"
           />
         </div>
       </div>
@@ -627,11 +676,10 @@ export default function AuthPage() {
         <div className="grid grid-cols-2 md:grid-cols-3 gap-2 mt-2">
           {legalNeedsOptions.map((need) => (
             <div key={need} className="flex items-center space-x-2">
-              <Checkbox
+              <ThemedCheckbox
                 id={need}
                 checked={formData.legalNeeds.includes(need)}
                 onCheckedChange={() => toggleArrayItem("legalNeeds", need)}
-                className="border-black focus-visible:ring-0 data-[state=checked]:bg-blue-600 data-[state=checked]:border-0"
               />
               <Label htmlFor={need} className="text-sm">
                 {need}
@@ -644,13 +692,15 @@ export default function AuthPage() {
   );
 
   return (
-    <div className="relative overflow-hidden min-h-screen flex items-center justify-center p-4">
-      <div className="absolute inset-0 flex items-center justify-center">
-        <div className="w-full h-fit flex items-center justify-center">
-          <SiriWave opacity={0.6} isWaveMode={true} />
-        </div>
-      </div>
-      <div className="w-full max-w-4xl">
+    <div className="min-h-screen flex items-center justify-center p-4">
+      {/* Dynamic background overlay based on theme */}
+      {currentTheme && (
+        <div
+          className={`fixed inset-0 ${currentTheme.background} opacity-30 pointer-events-none`}
+        />
+      )}
+
+      <div className="w-full max-w-4xl relative z-10">
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: -20 }}
@@ -658,23 +708,36 @@ export default function AuthPage() {
           transition={{ duration: 0.6 }}
           className="text-center mb-8"
         >
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">
             {isLogin ? (
-              <>Welcome Back</>
-            ) : (
               <>
-                Join{" "}
-                <span className="text-4xl font-bold bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 bg-clip-text text-transparent">
+                Welcome to{" "}
+                <span
+                  className={`text-4xl font-bold bg-gradient-to-r ${
+                    currentTheme ? currentTheme.gradient : "from-black to-black"
+                  } bg-clip-text text-transparent`}
+                >
                   Xegality
                 </span>
+                <p className="text-sm text-gray-600 mt-1">
+                  Your trusted legal assistant, ready to help.
+                </p>
+              </>
+            ) : (
+              <>
+                <span
+                  className={`text-4xl font-bold bg-gradient-to-r ${
+                    currentTheme ? currentTheme.gradient : "from-black to-black"
+                  } bg-clip-text text-transparent`}
+                >
+                  Xegality
+                </span>
+                <p className="text-sm text-gray-600 mt-1">
+                  Empowering your legal journey with AI precision.
+                </p>
               </>
             )}
           </h1>
-          <p className="text-gray-600 dark:text-gray-300">
-            {isLogin
-              ? "Sign in to access your legal AI assistant"
-              : "Create your account and start your legal journey"}
-          </p>
         </motion.div>
 
         {/* Auth Card */}
@@ -683,15 +746,14 @@ export default function AuthPage() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.2 }}
         >
-          <Card className="shadow-2xl border-0 bg-white/20 dark:bg-gray-900/80 backdrop-blur-lg rounded-4xl">
-            {" "}
+          <Card className="shadow-2xl bg-gray-50/90 rounded-4xl border-0">
             <CardHeader>
               <Tabs value={isLogin ? "login" : "signup"} className="w-full">
-                <TabsList className="grid w-full grid-cols-2 mb-6 h-11 bg-transparent">
+                <TabsList className="grid w-full grid-cols-2 mb-6 h-11 bg-gray-100 shadow-inner rounded-3xl">
                   <TabsTrigger
                     value="login"
                     onClick={() => setIsLogin(true)}
-                    className="rounded-full  cursor-pointer"
+                    className="rounded-full cursor-pointer"
                   >
                     Sign In
                   </TabsTrigger>
@@ -708,7 +770,6 @@ export default function AuthPage() {
             <CardContent>
               <form onSubmit={handleSubmit} className="space-y-6">
                 {/* User Type Selection (Signup Only) */}
-
                 {!isLogin && !selectedUserType && renderUserTypeSelection()}
 
                 {/* Login Form */}
@@ -726,7 +787,7 @@ export default function AuthPage() {
                             handleInputChange("email", e.target.value)
                           }
                           placeholder="john@example.com"
-                          className="pl-10 focus-visible:ring-0 border-black/20"
+                          className="pl-10 focus-visible:ring-0 border-gray-300"
                           required
                         />
                       </div>
@@ -744,7 +805,7 @@ export default function AuthPage() {
                             handleInputChange("password", e.target.value)
                           }
                           placeholder="••••••••"
-                          className="pl-10 pr-10 focus-visible:ring-0 border-black/20"
+                          className="pl-10 pr-10 focus-visible:ring-0 border-gray-300"
                           required
                         />
                         <button
@@ -763,23 +824,17 @@ export default function AuthPage() {
 
                     <div className="flex items-center justify-between">
                       <div className="flex items-center space-x-2">
-                        <Checkbox
-                          id="remember"
-                          className="border-black focus-visible:ring-0 data-[state=checked]:bg-blue-600 data-[state=checked]:border-0"
-                        />
+                        <ThemedCheckbox id="remember" />
                         <Label htmlFor="remember" className="text-sm">
                           Remember me
                         </Label>
                       </div>
                       <Button
-                        className="bg-transparent text-black shadow-none hover:bg-transparent hover:text-blue-600 cursor-pointer"
+                        className="bg-transparent text-blue-600 shadow-none hover:bg-transparent hover:text-blue-700 cursor-pointer"
                         asChild
                       >
-                        <Link
-                          href="/auth/forgot-password"
-                          className="text-sm text-[#3b82f6]"
-                        >
-                          Forgot password..?
+                        <Link href="/auth/forgot-password" className="text-sm">
+                          Forgot password?
                         </Link>
                       </Button>
                     </div>
@@ -791,53 +846,35 @@ export default function AuthPage() {
                   <div className="space-y-6">
                     {/* User Type Display */}
                     <div
-                      className={`flex items-center justify-between p-4 ${
-                        selectedUserType === "lawyer"
-                          ? "bg-blue-600/20"
-                          : selectedUserType === "student"
-                          ? "bg-purple-600/20"
-                          : selectedUserType === "consumer"
-                          ? "bg-green-600/20"
-                          : "bg-transparent"
-                      } dark:bg-blue-900/20 rounded-lg`}
+                      className={`flex items-center justify-between p-4 ${currentTheme?.background} rounded-lg`}
                     >
                       <div className="flex items-center gap-3">
                         {selectedUserType === "lawyer" && (
-                          <Scale className="h-5 w-5 text-blue-600" />
+                          <Scale className={`h-5 w-5 ${currentTheme?.icon}`} />
                         )}
                         {selectedUserType === "consumer" && (
-                          <Users className="h-5 w-5 text-green-600" />
+                          <Users className={`h-5 w-5 ${currentTheme?.icon}`} />
                         )}
                         {selectedUserType === "student" && (
-                          <GraduationCap className="h-5 w-5 text-purple-600" />
+                          <GraduationCap
+                            className={`h-5 w-5 ${currentTheme?.icon}`}
+                          />
                         )}
                         <span className="font-medium">
-                          {
-                            userTypes.find((t) => t.type === selectedUserType)
-                              ?.title
-                          }
+                          {currentTheme?.name}
                         </span>
                       </div>
-                      <Button
+                      <ThemedButton
                         type="button"
                         variant="ghost"
-                        size="sm"
                         onClick={() => {
                           setSelectedUserType("");
                           handleInputChange("userType", "");
                         }}
-                        className={`cursor-pointer ${
-                          selectedUserType === "lawyer"
-                            ? "hover:bg-blue-600 hover:text-white"
-                            : selectedUserType === "student"
-                            ? "hover:bg-purple-600 hover:text-white"
-                            : selectedUserType === "consumer"
-                            ? "hover:bg-green-600 hover:text-white"
-                            : "bg-transparent"
-                        }`}
+                        className={`${currentTheme?.background} cursor-pointer shadow-none ${currentTheme?.primaryHover} hover:text-white rounded-xl`}
                       >
                         Change
-                      </Button>
+                      </ThemedButton>
                     </div>
 
                     {/* Basic Fields */}
@@ -850,11 +887,7 @@ export default function AuthPage() {
 
                     {/* Terms and Conditions */}
                     <div className="flex items-start space-x-2">
-                      <Checkbox
-                        id="terms"
-                        required
-                        className="border-black focus-visible:ring-0 data-[state=checked]:bg-blue-600 data-[state=checked]:border-0"
-                      />
+                      <ThemedCheckbox id="terms" required />
                       <Label
                         htmlFor="terms"
                         className="text-sm leading-relaxed"
@@ -862,14 +895,18 @@ export default function AuthPage() {
                         I agree to the{" "}
                         <Link
                           href="/terms"
-                          className="text-[#3b82f6] hover:underline"
+                          className={`${
+                            currentTheme?.text || "text-blue-600"
+                          } hover:underline`}
                         >
                           Terms of Service
                         </Link>{" "}
                         and{" "}
                         <Link
                           href="/privacy"
-                          className="text-[#3b82f6] hover:underline"
+                          className={`${
+                            currentTheme?.text || "text-blue-600"
+                          } hover:underline`}
                         >
                           Privacy Policy
                         </Link>
@@ -880,10 +917,10 @@ export default function AuthPage() {
 
                 {/* Submit Button */}
                 {(isLogin || (!isLogin && selectedUserType)) && (
-                  <Button
+                  <ThemedButton
                     type="submit"
                     disabled={isLoading}
-                    className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-medium py-3 text-lg cursor-pointer"
+                    className="w-full font-medium py-3 text-lg cursor-pointer"
                   >
                     {isLoading ? (
                       <div className="flex items-center gap-2">
@@ -896,7 +933,7 @@ export default function AuthPage() {
                         <ArrowRight className="h-4 w-4" />
                       </div>
                     )}
-                  </Button>
+                  </ThemedButton>
                 )}
 
                 {/* Social Login */}
@@ -907,41 +944,69 @@ export default function AuthPage() {
                         <div className="w-full border-t border-gray-300" />
                       </div>
                       <div className="relative flex justify-center text-sm">
-                        <span className="px-2 bg-white dark:bg-gray-900 text-gray-500"></span>
+                        <span className="px-2 bg-gray-50 text-gray-500">
+                          or
+                        </span>
                       </div>
                     </div>
-
-                    <div className="w-full p-[2px] rounded-md bg-gradient-to-tr from-[#4285F4]  via-transparent to-[#EA4335]">
-                      <div className="rounded-md bg-white/50 dark:bg-gray-900">
-                        <button
-                          type="button"
-                          className="w-full flex items-center justify-center gap-2 py-2 px-4 rounded-md text-gray-800 dark:text-white transition duration-200 hover:shadow-md"
-                        >
-                          <svg
-                            className="w-5 h-5 transition-transform duration-200 hover:scale-110"
-                            viewBox="0 0 24 24"
+                    <div className="flex gap-4">
+                      <div className="flex-1 rounded-md p-[1.5px] bg-gradient-to-r from-[#4285F4] via-[#FBBC05] to-[#EA4335]">
+                        <div className="rounded-md bg-white">
+                          <button
+                            type="button"
+                            className="w-full flex items-center justify-center gap-3 rounded-md border border-gray-200 bg-white py-2.5 px-4 shadow-sm transition duration-200 hover:shadow-md hover:bg-gray-50"
                           >
-                            <path
-                              fill="#EA4335"
-                              d="M12 11.6v2.8h5.64c-.24 1.44-1.08 2.66-2.28 3.48v2.88h3.68c2.16-2 3.36-4.96 3.36-8.48 0-.56-.04-1.12-.12-1.68H12z"
-                            />
-                            <path
-                              fill="#34A853"
-                              d="M5.84 14.16a6.9 6.9 0 0 1 0-4.32v-2.8H2.12a11.96 11.96 0 0 0 0 9.92z"
-                            />
-                            <path
-                              fill="#4285F4"
-                              d="M12 5.2a6.84 6.84 0 0 1 4.8 1.84l3.44-3.44C17.8 1.44 15.04.4 12 .4c-4.3 0-8 2.48-9.88 6.08l3.72 2.88C7.72 6.88 9.68 5.2 12 5.2z"
-                            />
-                            <path
-                              fill="#FBBC05"
-                              d="M2.12 7.28a11.96 11.96 0 0 0 0 9.92l3.72-2.88a6.91 6.91 0 0 1 0-4.32z"
-                            />
-                          </svg>
-                          <span className="text-sm font-medium">
-                            Continue with Google
-                          </span>
-                        </button>
+                            <svg
+                              className="w-5 h-5"
+                              viewBox="0 0 24 24"
+                              aria-hidden="true"
+                              focusable="false"
+                            >
+                              <path
+                                fill="#EA4335"
+                                d="M12 11.6v2.8h5.64c-.24 1.44-1.08 2.66-2.28 3.48v2.88h3.68c2.16-2 3.36-4.96 3.36-8.48 0-.56-.04-1.12-.12-1.68H12z"
+                              />
+                              <path
+                                fill="#34A853"
+                                d="M5.84 14.16a6.9 6.9 0 0 1 0-4.32v-2.8H2.12a11.96 11.96 0 0 0 0 9.92z"
+                              />
+                              <path
+                                fill="#4285F4"
+                                d="M12 5.2a6.84 6.84 0 0 1 4.8 1.84l3.44-3.44C17.8 1.44 15.04.4 12 .4c-4.3 0-8 2.48-9.88 6.08l3.72 2.88C7.72 6.88 9.68 5.2 12 5.2z"
+                              />
+                              <path
+                                fill="#FBBC05"
+                                d="M2.12 7.28a11.96 11.96 0 0 0 0 9.92l3.72-2.88a6.91 6.91 0 0 1 0-4.32z"
+                              />
+                            </svg>
+                            <span className="text-sm font-medium text-gray-700 select-none">
+                              Continue with Google
+                            </span>
+                          </button>
+                        </div>
+                      </div>
+
+                      <div className="flex-1 rounded-md p-[1.5px] bg-gradient-to-r from-[#1877F2] via-[#3b5998] to-[#4267B2]">
+                        <div className="rounded-md bg-white">
+                          <button
+                            type="button"
+                            className="w-full flex items-center justify-center gap-3 rounded-md border border-gray-200 bg-white py-2.5 px-4 shadow-sm transition duration-200 hover:shadow-md hover:bg-gray-50"
+                          >
+                            <svg
+                              className="w-5 h-5"
+                              viewBox="0 0 24 24"
+                              fill="#1877F2"
+                              xmlns="http://www.w3.org/2000/svg"
+                              aria-hidden="true"
+                              focusable="false"
+                            >
+                              <path d="M22.675 0H1.325C.593 0 0 .593 0 1.325v21.351C0 23.407.593 24 1.325 24H12.82v-9.294H9.692v-3.622h3.128V8.413c0-3.1 1.893-4.788 4.659-4.788 1.325 0 2.463.099 2.795.143v3.24l-1.918.001c-1.504 0-1.796.715-1.796 1.763v2.313h3.59l-.467 3.622h-3.123V24h6.116c.73 0 1.324-.593 1.324-1.324V1.325C24 .593 23.407 0 22.675 0z" />
+                            </svg>
+                            <span className="text-sm font-medium text-gray-700 select-none">
+                              Continue with Facebook
+                            </span>
+                          </button>
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -949,7 +1014,7 @@ export default function AuthPage() {
 
                 {/* Switch Auth Mode */}
                 <div className="text-center">
-                  <p className="text-gray-600 dark:text-gray-300">
+                  <p className="text-gray-600">
                     <Button
                       type="button"
                       onClick={() => {
@@ -978,11 +1043,15 @@ export default function AuthPage() {
                           legalNeeds: [],
                         });
                       }}
-                      className="bg-transparent text-black shadow-none hover:bg-transparent hover:text-blue-600 cursor-pointer"
+                      className={`bg-transparent text-gray-700 shadow-none hover:bg-transparent ${
+                        currentTheme
+                          ? `hover:${currentTheme.text}`
+                          : "hover:text-blue-600"
+                      } cursor-pointer`}
                     >
                       {isLogin
-                        ? "Don't have an account?"
-                        : "Already have an account?"}{" "}
+                        ? "Don't have an account ?"
+                        : "Already have an account ?"}
                     </Button>
                   </p>
                 </div>
@@ -998,7 +1067,7 @@ export default function AuthPage() {
           transition={{ duration: 0.6, delay: 0.4 }}
           className="mt-12 text-center"
         >
-          <div className="flex items-center justify-center gap-8 text-sm text-gray-600 dark:text-gray-300">
+          <div className="flex items-center justify-center gap-8 text-sm text-gray-600">
             <div className="flex items-center gap-2">
               <Shield className="h-4 w-4 text-green-500" />
               <span>Secure & Encrypted</span>

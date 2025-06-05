@@ -13,12 +13,9 @@ const SiriWave: React.FC<SiriWaveProps> = ({ isWaveMode, colors }) => {
   const ACCENT_COLOR = "#3b82f6";
 
   useEffect(() => {
-    const waves: SVGPathElement[] = [
-      svgRef.current?.querySelector("#wave1"),
-      svgRef.current?.querySelector("#wave2"),
-      svgRef.current?.querySelector("#wave3"),
-      svgRef.current?.querySelector("#wave4"),
-    ].filter(Boolean) as SVGPathElement[];
+    const waves: SVGPathElement[] = Array.from({ length: 4 }, (_, i) =>
+      svgRef.current?.querySelector(`#wave${i + 1}`)
+    ).filter(Boolean) as SVGPathElement[];
 
     let t = 0;
 
@@ -51,10 +48,9 @@ const SiriWave: React.FC<SiriWaveProps> = ({ isWaveMode, colors }) => {
     };
 
     const animate = () => {
-      drawWave(waves[0], amplitude, 0.02, 0.8, 0);
-      drawWave(waves[1], amplitude, 0.03, 0.9, 100);
-      drawWave(waves[2], amplitude, 0.04, 1.0, 200);
-      drawWave(waves[3], amplitude, 0.05, 1.1, 300);
+      waves.forEach((wave, i) => {
+        drawWave(wave, amplitude, 0.02 + i * 0.006, 0.8 + i * 0.05, i * 100);
+      });
       t += 1;
       requestAnimationFrame(animate);
     };
@@ -109,12 +105,12 @@ const SiriWave: React.FC<SiriWaveProps> = ({ isWaveMode, colors }) => {
         }}
       >
         <g fill="none" strokeWidth={isWaveMode ? 2 : 1}>
-          {colors.slice(0, 3).map((color, i) => (
+          {Array.from({ length: 4 }).map((_, i) => (
             <path
               key={`wave${i + 1}`}
               id={`wave${i + 1}`}
-              stroke={color || ACCENT_COLOR}
-              strokeOpacity={1} // 100% opacity
+              stroke={colors[i]}
+              strokeOpacity={0.5}
             />
           ))}
         </g>

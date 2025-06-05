@@ -1,6 +1,5 @@
 import { SidebarProvider } from "@/components/ui/sidebar";
-import { AppSidebar } from "@/components/student/dashboard/sidebar";
-import clsx from "clsx";
+import { AppSidebar } from "@/components/lawyer/dashboard/sidebar";
 import SidebarToggleButton from "@/components/shared/sidebartogglebutton";
 
 export default function DashboardLayout({
@@ -9,10 +8,10 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   return (
-    <SidebarProvider>
+    <SidebarProvider className="bg-amber-700/6">
       <AppSidebar />
-      <main className="p-2 min-h-screen w-full">
-        <SidebarToggleButton />
+      <main className="md:m-2 md:ml-0.5 w-full min-h-full md:max-h-[calc(100svh-16px)]  bg-[#f6f1ee] rounded-lg overflow-scroll shadow-md ">
+        <SidebarToggleButton className="text-amber-700 hover:bg-amber-700 bg-amber-700/20" />
         {children}
       </main>
     </SidebarProvider>

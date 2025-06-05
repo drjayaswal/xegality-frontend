@@ -139,7 +139,7 @@ export function AIAssistantInterface({
   return (
     <div className="w-full max-w-4xl mx-auto p-3 sm:p-5">
       {/* Main Input Container */}
-      <div className="bg-white/80 backdrop-blur-lg mt-1 rounded-2xl sm:rounded-3xl dark:border-white-900/10 shadow-none focus-within:shadow-xl dark:focus-within:bg-white-900/10 transition-all duration-300 mb-4">
+      <div className="bg-white/60 backdrop-blur-lg mt-1 rounded-2xl sm:rounded-3xl dark:border-white-900/10 shadow-none focus-within:shadow-xl dark:focus-within:bg-white-900/10 transition-all duration-300 mb-4">
         {/* Input Field */}
         <div className="flex items-center gap-3 p-4 sm:p-6">
           <div
@@ -384,7 +384,7 @@ export function AIAssistantInterface({
                     from,
                     to
                   )} text-white border-white/40 dark:border-gray-600/40 shadow-lg`
-                : "bg-white/80 dark:bg-gray-800/40 dark:border-gray-700/60 text-gray-600 dark:text-gray-300 dark:hover:bg-gray-800/60 hover:text-gray-800 dark:hover:text-gray-100"
+                : "bg-white/60 dark:bg-gray-800/40 dark:border-gray-700/60 text-gray-600 dark:text-gray-300 dark:hover:bg-gray-800/60 hover:text-gray-800 dark:hover:text-gray-100"
             )}
           >
             <Icon className="w-4 h-4 sm:w-5 sm:h-5" />
@@ -401,7 +401,7 @@ export function AIAssistantInterface({
             animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0 }}
             transition={{ duration: 0.2 }}
-            className="bg-white dark:bg-gray-900/40 backdrop-blur-lg rounded-xl sm:rounded-2xl border border-white/60 dark:border-gray-700/60 shadow-lg overflow-hidden"
+            className="bg-white/60 dark:bg-gray-900/40 backdrop-blur-lg rounded-xl sm:rounded-2xl border border-white/60 dark:border-gray-700/60 shadow-lg overflow-hidden"
           >
             {commandSuggestions[
               activeCommandCategory as keyof typeof commandSuggestions
