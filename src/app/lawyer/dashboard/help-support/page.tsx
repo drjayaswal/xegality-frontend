@@ -168,8 +168,8 @@ export default function HelpSupport() {
   };
 
   return (
-    <div className="w-full h-full bg-white dark:bg-black rounded-lg overflow-auto flex flex-col relative">
-      <div className="w-full h-full bg-gradient-to-r from-[#3b82f6]/15 to-[#3b82f6]/40">
+    <div className=" flex flex-col relative">
+      <div className="">
         {/* <div className="absolute inset-0 -z-1 flex items-center justify-center">
         <div className="w-full h-fit flex items-center justify-center">
           <SiriWave isWaveMode={false} />
@@ -260,11 +260,10 @@ export default function HelpSupport() {
 
                           {/* Animated Content Section */}
                           <div
-                            className={`transition-all duration-500 ease-in-out overflow-hidden ${
-                              expandedFAQ === faq.question
-                                ? "max-h-[1000px] opacity-100"
-                                : "max-h-0 opacity-0"
-                            }`}
+                            className={`transition-all duration-500 ease-in-out overflow-hidden ${expandedFAQ === faq.question
+                              ? "max-h-[1000px] opacity-100"
+                              : "max-h-0 opacity-0"
+                              }`}
                             style={{
                               transitionProperty: "max-height, opacity",
                               willChange: "max-height, opacity",

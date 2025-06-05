@@ -1,6 +1,5 @@
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/lawyer/dashboard/sidebar";
-import clsx from "clsx";
 import SidebarToggleButton from "@/components/shared/sidebartogglebutton";
 
 export default function DashboardLayout({
@@ -12,7 +11,7 @@ export default function DashboardLayout({
     <SidebarProvider>
       <AppSidebar />
       <main className="p-2 min-h-screen w-full">
-        <SidebarToggleButton />
+        <SidebarToggleButton className="text-amber-700 hover:bg-amber-700 bg-amber-700/20" />
         {children}
       </main>
     </SidebarProvider>
