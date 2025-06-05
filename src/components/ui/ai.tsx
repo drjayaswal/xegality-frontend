@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 
 interface SiriWaveProps {
   isWaveMode: boolean;
-  colors: string[]; // Should have exactly 4 colors
+  colors: string[];
 }
 
 const SiriWave: React.FC<SiriWaveProps> = ({ isWaveMode, colors }) => {

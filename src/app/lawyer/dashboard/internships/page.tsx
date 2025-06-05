@@ -554,7 +554,7 @@ export default function HireAnInternPage() {
           </Card>
 
           {/* Internship Listings */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 overflow-visible">
             {sortedInternships.map((internship, index) => (
               <motion.div
                 key={internship.id}
