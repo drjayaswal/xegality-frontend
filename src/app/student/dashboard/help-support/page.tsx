@@ -193,8 +193,8 @@ export default function HelpSupport() {
                 className={cn(
                   "flex-1 py-4 text-center font-medium cursor-pointer transition-colors",
                   activeTab === tab.id
-                    ? "border-b-2 border-amber-700 text-gray-600 dark:text-gray-300 dark:hover:text-white"
-                    : "text-gray-600 dark:text-gray-300 border-b-2hover:text-amber-700"
+                    ? "border-b-2 border-emerald-700 text-gray-600 dark:text-gray-300 dark:hover:text-white"
+                    : "text-gray-600 dark:text-gray-300 border-b-2hover:text-emerald-700"
                 )}
               >
                 <div className="flex items-center justify-center gap-2 hover:scale-105 duration-100">
@@ -212,12 +212,12 @@ export default function HelpSupport() {
             {/* Search Bar */}
             <div className="backdrop-blur-sm pb-8">
               <div className="mx-10 relative">
-                <Search className="absolute left-3 top-3.5 h-5 w-5 text-amber-700" />
+                <Search className="absolute left-3 top-3.5 h-5 w-5 text-emerald-700" />
                 <Input
                   placeholder="Search for help, articles, FAQs..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-10 py-6 bg-white/20 focus-visible:ring-0 focus-visible:border-amber-700 placeholder:text-black/40 dark:placeholder:text-white/40 text-lg border-amber-700/50 rounded-full"
+                  className="pl-10 py-6 bg-white/20 focus-visible:ring-0 focus-visible:border-emerald-700 placeholder:text-black/40 dark:placeholder:text-white/40 text-lg border-emerald-700/50 rounded-full"
                 />
               </div>
             </div>
@@ -271,7 +271,7 @@ export default function HelpSupport() {
                             }}
                           >
                             <div className="px-6 pb-4 pt-0">
-                              <p className="pt-4 text-amber-700 dark:text-gray-300">
+                              <p className="pt-4 text-emerald-700 dark:text-gray-300">
                                 {faq.answer}
                               </p>
                             </div>
@@ -305,7 +305,7 @@ export default function HelpSupport() {
                       {filteredArticles.map((article) => (
                         <div
                           key={article.id}
-                          className="bg-transparent hover:bg-amber-700/20 hover:dark:bg-white/10 backdrop-blur-sm rounded-xl border border-transparent p-6 hover:shadow-lg hover:shadow-amber-700 transition-all"
+                          className="bg-transparent hover:bg-emerald-700/20 hover:dark:bg-white/10 backdrop-blur-sm rounded-xl border border-transparent p-6 hover:shadow-lg hover:shadow-emerald-700 transition-all"
                         >
                           <h3 className="text-lg font-medium text-gray-800 dark:text-white mb-2">
                             {article.title}
@@ -314,7 +314,7 @@ export default function HelpSupport() {
                             {article.excerpt}
                           </p>
 
-                          <Button className="dark:text-white text-black hover:text-white border-black hover:border-white dark:border-white bg-transparent hover:bg-amber-700 gap-2 shadow-none">
+                          <Button className="dark:text-white text-black hover:text-white border-black hover:border-white dark:border-white bg-transparent hover:bg-emerald-700 gap-2 shadow-none">
                             Read Article <ExternalLink className="h-4 w-4" />
                           </Button>
                         </div>
@@ -364,7 +364,7 @@ export default function HelpSupport() {
                               })
                             }
                             required
-                            className="bg-white/30 focus:ring-0 focus-visible:border-amber-700 border-amber-700/20 focus-visible:ring-0"
+                            className="bg-white/30 focus:ring-0 focus-visible:border-emerald-700 border-emerald-700/20 focus-visible:ring-0"
                           />
                         </div>
 
@@ -386,7 +386,7 @@ export default function HelpSupport() {
                               })
                             }
                             required
-                            className="bg-white/30 focus:ring-0 focus-visible:border-amber-700 border-amber-700/20 focus-visible:ring-0"
+                            className="bg-white/30 focus:ring-0 focus-visible:border-emerald-700 border-emerald-700/20 focus-visible:ring-0"
                           />
                         </div>
                       </div>
@@ -408,7 +408,7 @@ export default function HelpSupport() {
                             })
                           }
                           required
-                          className="bg-white/30 focus:ring-0 focus-visible:border-amber-700 border-amber-700/20 focus-visible:ring-0"
+                          className="bg-white/30 focus:ring-0 focus-visible:border-emerald-700 border-emerald-700/20 focus-visible:ring-0"
                         />
                       </div>
 
@@ -429,14 +429,14 @@ export default function HelpSupport() {
                             })
                           }
                           required
-                          className="bg-white/30 focus:ring-0 focus-visible:border-amber-700 border-amber-700/20 focus-visible:ring-0"
+                          className="bg-white/30 focus:ring-0 focus-visible:border-emerald-700 border-emerald-700/20 focus-visible:ring-0"
                         />
                       </div>
 
                       <div className="flex justify-end">
                         <Button
                           type="submit"
-                          className="bg-amber-700 hover:bg-amber-700 text-white font-medium px-4 py-2 rounded-lg"
+                          className="bg-emerald-700 hover:bg-emerald-700 text-white font-medium px-4 py-2 rounded-lg"
                         >
                           <Send className="h-4 w-4 mr-2" /> Send Message
                         </Button>

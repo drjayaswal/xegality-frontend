@@ -391,8 +391,8 @@ export default function HireAnInternPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 border-[1.5px] shadow-lg rounded-lg">
-      <div className="p-6 bg-amber-700/5 rounded-md">
+    <div className="min-h-screen border-[1.5px] shadow-lg rounded-lg">
+      <div className="p-6 bg-emerald-700/5 rounded-md">
         <div className="max-w-7xl mx-auto">
           {/* Header */}
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8">
@@ -562,7 +562,7 @@ export default function HireAnInternPage() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.3, delay: index * 0.1 }}
               >
-                <Card className="h-full hover:scale-[1.01] border-0 shadow-sm bg-amber-700/5 hover:shadow-md transition-all dark:bg-gray-900">
+                <Card className="h-full hover:scale-[1.01] border-0 shadow-sm bg-emerald-700/5 hover:shadow-md transition-all dark:bg-gray-900">
                   <CardHeader>
                     <div className="flex items-start justify-between mb-2">
                       <div className="flex-1">
@@ -592,7 +592,7 @@ export default function HireAnInternPage() {
                     </div>
 
                     <div className="flex flex-wrap gap-2 mb-2">
-                      <Badge className="bg-amber-600 text-white">
+                      <Badge className="bg-emerald-600 text-white">
                         {internship.department}
                       </Badge>
                       <Badge
@@ -701,7 +701,7 @@ export default function HireAnInternPage() {
                           </Badge>
                           <Button
                             size="sm"
-                            className="bg-amber-500/80 hover:bg-emerald-600 text-white px-3 py-1 rounded-3xl group"
+                            className="bg-emerald-500/80 hover:bg-emerald-600 text-white px-3 py-1 rounded-3xl group"
                           >
                             <span className="block group-hover:hidden">
                               <Info className="h-5 w-5" />

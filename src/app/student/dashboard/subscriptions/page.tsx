@@ -143,9 +143,9 @@ export default function Subscription() {
   };
 
   return (
-    <div className=" h-full dark:bg-black bg-gray-50 shadow-lg border-[1.5px] rounded-lg">
+    <div className=" h-full shadow-lg border-[1.5px] rounded-lg">
       {/* Content */}
-      <div className="flex-1 bg-amber-700/5 p-8 rounded-md">
+      <div className="flex-1 bg-emerald-700/5 p-8 rounded-md">
         <ScrollArea className="h-full">
           {/* Current Plan */}
           <div className="bg-gray-50/30 dark:bg-gray-50/10 backdrop-blur-sm rounded-lg p-6 mb-8">
@@ -155,7 +155,7 @@ export default function Subscription() {
                   <h2 className="text-xl font-semibold text-gray-800 dark:text-white">
                     Professional Plan
                   </h2>
-                  <span className="px-3 py-1 text-xs dark:bg-amber-700/30 font-bold bg-amber-700/60 text-white dark:text-white/80 rounded-full">
+                  <span className="px-3 py-1 text-xs dark:bg-emerald-700/30 font-bold bg-emerald-700/60 text-white dark:text-white/80 rounded-full">
                     Current Plan
                   </span>
                 </div>
@@ -167,11 +167,11 @@ export default function Subscription() {
               <div className="flex flex-col md:flex-row gap-2">
                 <Button
                   //   variant="outline"
-                  className="bg-transparent rounded-3xl rounded-r-none border-r-1 border-2 border-amber-700/60 dark:border-white/40 hover:border-transparent dark: hover:bg-amber-700/60 dark: hover:text-white dark:text-white text-amber-700/60 dark:hover:text-white"
+                  className="bg-transparent rounded-3xl rounded-r-none border-r-1 border-2 border-emerald-700/60 dark:border-white/40 hover:border-transparent dark: hover:bg-emerald-700/60 dark: hover:text-white dark:text-white text-emerald-700/60 dark:hover:text-white"
                 >
                   Manage Payment Methods
                 </Button>
-                <Button className="bg-transparent rounded-3xl -ml-2 rounded-l-none border-l-1 border-2 border-amber-700/60 dark:border-white/40 hover:border-transparent dark: hover:bg-amber-700/60 dark: hover:text-white dark:text-white text-amber-700/60 dark:hover:text-white">
+                <Button className="bg-transparent rounded-3xl -ml-2 rounded-l-none border-l-1 border-2 border-emerald-700/60 dark:border-white/40 hover:border-transparent dark: hover:bg-emerald-700/60 dark: hover:text-white dark:text-white text-emerald-700/60 dark:hover:text-white">
                   Upgrade Plan
                 </Button>
               </div>
@@ -223,12 +223,12 @@ export default function Subscription() {
                   className={cn(
                     "bg-gray-50/30 dark:bg-gray-50/10 backdrop-blur-sm rounded-[36px] relative",
                     plan.isPopular
-                      ? " border-4 border-amber-700/60 shadow-lg shadow-amber-700/10"
+                      ? " border-4 border-emerald-700/60 shadow-lg shadow-emerald-700/10"
                       : ""
                   )}
                 >
                   {plan.isPopular && (
-                    <div className="absolute top-0 right-0 bg-amber-700/60 text-white text-xs font-medium py-2 px-3 rounded-full m-3">
+                    <div className="absolute top-0 right-0 bg-emerald-700/60 text-white text-xs font-medium py-2 px-3 rounded-full m-3">
                       Most Popular
                     </div>
                   )}
@@ -265,8 +265,8 @@ export default function Subscription() {
                       className={cn(
                         "w-full",
                         plan.isCurrent
-                          ? "bg-amber-700/60 rounded-3xl text-white hover:text-black"
-                          : "bg-transparent rounded-3xl border-2 border-amber-700/60 hover:bg-amber-700/60 hover:text-white hover:border-transparent text-amber-700/60 dark:border-white dark:hover:text-white dark:text-white"
+                          ? "bg-emerald-700/60 rounded-3xl text-white hover:text-black"
+                          : "bg-transparent rounded-3xl border-2 border-emerald-700/60 hover:bg-emerald-700/60 hover:text-white hover:border-transparent text-emerald-700/60 dark:border-white dark:hover:text-white dark:text-white"
                       )}
                       disabled={plan.isCurrent}
                     >

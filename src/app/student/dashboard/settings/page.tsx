@@ -206,14 +206,14 @@ export default function SettingsLite() {
           <div className="space-y-6 animate-fadeIn">
             <div className="flex items-center gap-6">
               <div className="relative">
-                <div className="w-24 h-24 bg-amber-700 rounded-full flex items-center justify-center">
+                <div className="w-24 h-24 bg-emerald-700 rounded-full flex items-center justify-center">
                   <User className="h-12 w-12 text-white" />
                 </div>
                 <Button
                   size="sm"
                   className="absolute -bottom-2 -right-2 rounded-full h-8 w-8 p-0 bg-white/90 hover:bg-white text-gray-700"
                 >
-                  <Camera className="stroke-[2.5px] h-4 w-4 text-amber-700" />
+                  <Camera className="stroke-[2.5px] h-4 w-4 text-emerald-700" />
                 </Button>
               </div>
               <div>
@@ -244,7 +244,7 @@ export default function SettingsLite() {
                         firstName: e.target.value,
                       })
                     }
-                    className="bg-white/20 border-white/20 focus-visible:ring-0 focus-visible:border-amber-500"
+                    className="bg-white/20 border-white/20 focus-visible:ring-0 focus-visible:border-emerald-500"
                   />
                 </div>
                 <div>
@@ -263,7 +263,7 @@ export default function SettingsLite() {
                         lastName: e.target.value,
                       })
                     }
-                    className="bg-white/20 border-white/20 focus-visible:ring-0 focus-visible:border-amber-500"
+                    className="bg-white/20 border-white/20 focus-visible:ring-0 focus-visible:border-emerald-500"
                   />
                 </div>
                 <div>
@@ -285,7 +285,7 @@ export default function SettingsLite() {
                           email: e.target.value,
                         })
                       }
-                      className="pl-10 bg-white/20 border-white/20 focus-visible:ring-0 focus-visible:border-amber-500"
+                      className="pl-10 bg-white/20 border-white/20 focus-visible:ring-0 focus-visible:border-emerald-500"
                     />
                   </div>
                 </div>
@@ -309,7 +309,7 @@ export default function SettingsLite() {
                           phone: e.target.value,
                         })
                       }
-                      className="pl-10 bg-white/20 border-white/20 focus-visible:ring-0 focus-visible:border-amber-500"
+                      className="pl-10 bg-white/20 border-white/20 focus-visible:ring-0 focus-visible:border-emerald-500"
                     />
                   </div>
                 </div>
@@ -328,7 +328,7 @@ export default function SettingsLite() {
                       onChange={(e) =>
                         setProfileData({ ...profileData, firm: e.target.value })
                       }
-                      className="pl-10 bg-white/20 border-white/20 focus-visible:ring-0 focus-visible:border-amber-500"
+                      className="pl-10 bg-white/20 border-white/20 focus-visible:ring-0 focus-visible:border-emerald-500"
                     />
                   </div>
                 </div>
@@ -350,7 +350,7 @@ export default function SettingsLite() {
                           address: e.target.value,
                         })
                       }
-                      className="pl-10 bg-white/20 border-white/20 focus-visible:ring-0 focus-visible:border-amber-500"
+                      className="pl-10 bg-white/20 border-white/20 focus-visible:ring-0 focus-visible:border-emerald-500"
                     />
                   </div>
                 </div>
@@ -369,7 +369,7 @@ export default function SettingsLite() {
                 onChange={(e) =>
                   setProfileData({ ...profileData, bio: e.target.value })
                 }
-                className="bg-white/20 border-white/20 focus-visible:border-amber-500 focus-visible:ring-0 min-h-[100px]"
+                className="bg-white/20 border-white/20 focus-visible:border-emerald-500 focus-visible:ring-0 min-h-[100px]"
                 placeholder="Tell us about yourself..."
               />
             </div>
@@ -396,7 +396,7 @@ export default function SettingsLite() {
                   <Switch
                     checked={notification.enabled}
                     onCheckedChange={() => toggleNotification(notification.id)}
-                    className="data-[state=checked]:bg-amber-700 data-[state=unchecked]:bg-transparent data-[state=unchecked]:border-transparent data-[state=unchecked]:shadow-none"
+                    className="data-[state=checked]:bg-emerald-700 data-[state=unchecked]:bg-transparent data-[state=unchecked]:border-transparent data-[state=unchecked]:shadow-none"
                   />
                 </div>
               ))}
@@ -411,7 +411,7 @@ export default function SettingsLite() {
               <div className="p-4 bg-white/30 dark:bg-white/10 backdrop-blur-lg rounded-xl border border-white/20">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
-                    <Key className="h-5 w-5 dark:text-amber-500 text-amber-600" />
+                    <Key className="h-5 w-5 dark:text-emerald-500 text-emerald-600" />
                     <div>
                       <h4 className="font-medium text-gray-800 dark:text-white">
                         Change Password
@@ -423,7 +423,7 @@ export default function SettingsLite() {
                   </div>
                   <Button
                     size="sm"
-                    className="bg-amber-700/50 text-white border-black/30 hover:bg-amber-700"
+                    className="bg-emerald-700/50 text-white border-black/30 hover:bg-emerald-700"
                   >
                     Change
                   </Button>
@@ -432,7 +432,7 @@ export default function SettingsLite() {
               <div className="p-4 bg-white/30 dark:bg-white/10 backdrop-blur-lg rounded-xl border border-white/20">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
-                    <Smartphone className="h-5 w-5 dark:text-amber-500 text-amber-600" />
+                    <Smartphone className="h-5 w-5 dark:text-emerald-500 text-emerald-600" />
                     <div>
                       <h4 className="font-medium text-gray-800 dark:text-white">
                         Two-Factor Authentication
@@ -447,7 +447,7 @@ export default function SettingsLite() {
                     onCheckedChange={(checked) =>
                       setPreferences({ ...preferences, twoFactorAuth: checked })
                     }
-                    className="data-[state=checked]:bg-amber-700 data-[state=unchecked]:bg-transparent data-[state=unchecked]:border-transparent data-[state=unchecked]:shadow-none"
+                    className="data-[state=checked]:bg-emerald-700 data-[state=unchecked]:bg-transparent data-[state=unchecked]:border-transparent data-[state=unchecked]:shadow-none"
                   />
                 </div>
               </div>
@@ -463,9 +463,9 @@ export default function SettingsLite() {
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
                     {isDarkMode ? (
-                      <Moon className="h-5 w-5 dark:text-amber-500 text-amber-600" />
+                      <Moon className="h-5 w-5 dark:text-emerald-500 text-emerald-600" />
                     ) : (
-                      <Sun className="h-5 w-5 dark:text-amber-500 text-amber-600" />
+                      <Sun className="h-5 w-5 dark:text-emerald-500 text-emerald-600" />
                     )}
                     <div>
                       <h4 className="font-medium text-gray-800 dark:text-white">
@@ -480,14 +480,14 @@ export default function SettingsLite() {
                   <Switch
                     checked={isDarkMode}
                     onCheckedChange={toggleTheme}
-                    className="data-[state=checked]:bg-amber-700 data-[state=unchecked]:bg-transparent data-[state=unchecked]:border-transparent data-[state=unchecked]:shadow-none"
+                    className="data-[state=checked]:bg-emerald-700 data-[state=unchecked]:bg-transparent data-[state=unchecked]:border-transparent data-[state=unchecked]:shadow-none"
                   />
                 </div>
               </div>
               <div className="p-4 bg-white/30 dark:bg-white/10 backdrop-blur-lg rounded-xl border border-white/20">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
-                    <Monitor className="h-5 w-5 dark:text-amber-500 text-amber-600" />
+                    <Monitor className="h-5 w-5 dark:text-emerald-500 text-emerald-600" />
                     <div>
                       <h4 className="font-medium text-gray-800 dark:text-white">
                         Display Density
@@ -515,7 +515,7 @@ export default function SettingsLite() {
               <div className="p-4 bg-white/30 dark:bg-white/10 backdrop-blur-lg rounded-xl border border-white/20">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
-                    <Globe className="h-5 w-5 dark:text-amber-500 text-amber-600" />
+                    <Globe className="h-5 w-5 dark:text-emerald-500 text-emerald-600" />
                     <div>
                       <h4 className="font-medium text-gray-800 dark:text-white">
                         Language
@@ -545,7 +545,7 @@ export default function SettingsLite() {
               <div className="p-4 bg-white/30 dark:bg-white/10 backdrop-blur-lg rounded-xl border border-white/20">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
-                    <Volume2 className="h-5 w-5 dark:text-amber-500 text-amber-600" />
+                    <Volume2 className="h-5 w-5 dark:text-emerald-500 text-emerald-600" />
                     <div>
                       <h4 className="font-medium text-gray-800 dark:text-white">
                         Sound Effects
@@ -560,14 +560,14 @@ export default function SettingsLite() {
                     onCheckedChange={(checked) =>
                       setPreferences({ ...preferences, soundEnabled: checked })
                     }
-                    className="data-[state=checked]:bg-amber-700 data-[state=unchecked]:bg-transparent data-[state=unchecked]:border-transparent data-[state=unchecked]:shadow-none"
+                    className="data-[state=checked]:bg-emerald-700 data-[state=unchecked]:bg-transparent data-[state=unchecked]:border-transparent data-[state=unchecked]:shadow-none"
                   />
                 </div>
               </div>
               <div className="p-4 bg-white/30 dark:bg-white/10 backdrop-blur-lg rounded-xl border border-white/20">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
-                    <Save className="h-5 w-5 dark:text-amber-500 text-amber-600" />
+                    <Save className="h-5 w-5 dark:text-emerald-500 text-emerald-600" />
                     <div>
                       <h4 className="font-medium text-gray-800 dark:text-white">
                         Auto Save
@@ -582,7 +582,7 @@ export default function SettingsLite() {
                     onCheckedChange={(checked) =>
                       setPreferences({ ...preferences, autoSave: checked })
                     }
-                    className="data-[state=checked]:bg-amber-700 data-[state=unchecked]:bg-transparent data-[state=unchecked]:border-transparent data-[state=unchecked]:shadow-none"
+                    className="data-[state=checked]:bg-emerald-700 data-[state=unchecked]:bg-transparent data-[state=unchecked]:border-transparent data-[state=unchecked]:shadow-none"
                   />
                 </div>
               </div>
@@ -608,15 +608,15 @@ export default function SettingsLite() {
   return (
     <div className="w-full h-full rounded-2xl overflow-hidden flex flex-col relative">
       {/* Header with simplified animation */}
-      <div className="relative h-24 overflow-hidden bg-amber-700/05">
+      <div className="relative h-24 overflow-hidden bg-emerald-700/05">
         <div className="absolute inset-0 flex items-center justify-center">
           <div className="w-full h-fit flex items-center justify-center opacity-50">
             <SiriWave
               colors={[
                 "#334155", // slate-700
                 "#1e293b", // slate-800
-                "#ca8a04", // amber-600
-                "#b45309", // amber-700
+                "#059669", // emerald-600
+                "#047857", // emerald-700
               ]}
               isWaveMode={isAnimating}
             />
@@ -624,7 +624,7 @@ export default function SettingsLite() {
         </div>
       </div>
 
-      <div className="flex-1 flex bg-amber-700/05">
+      <div className="flex-1 flex bg-emerald-700/05">
         {/* Sidebar - Simplified */}
         <div className="w-80 p-6">
           <div className="space-y-2">
@@ -644,8 +644,8 @@ export default function SettingsLite() {
                     className={cn(
                       "p-2 rounded-full transition-colors",
                       activeSection === section.id
-                        ? "bg-amber-700 text-white"
-                        : "bg-transparent text-gray-700 dark:text-gray-300 group-hover:bg-amber-700 group-hover:text-white"
+                        ? "bg-emerald-700 text-white"
+                        : "bg-transparent text-gray-700 dark:text-gray-300 group-hover:bg-emerald-700 group-hover:text-white"
                     )}
                   >
                     {section.icon}
@@ -681,7 +681,7 @@ export default function SettingsLite() {
                 <Button
                   onClick={handleSave}
                   disabled={isAnimating}
-                  className="px-4 mr-4 py-3 dark:bg-amber-700/50 dark:hover:bg-amber-700/70 bg-amber-700 hover:bg-amber-700 hover:scale-110 text-white font-medium rounded-full shadow-none transition-all duration-200"
+                  className="px-4 mr-4 py-3 dark:bg-emerald-700/50 dark:hover:bg-emerald-700/70 bg-emerald-700 hover:bg-emerald-700 hover:scale-110 text-white font-medium rounded-full shadow-none transition-all duration-200"
                 >
                   {isAnimating ? (
                     <div className="flex items-center gap-2">

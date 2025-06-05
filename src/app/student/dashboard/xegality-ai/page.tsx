@@ -247,15 +247,15 @@ export default function XegalityAI() {
         className="hidden"
       />
       {/* Header */}
-      <div className="relative h-24 bg-amber-700/5 overflow-hidden rounded-t-md">
+      <div className="relative h-24 bg-emerald-700/5 overflow-hidden rounded-t-md">
         <div className="absolute inset-0 flex items-center justify-center">
           <div className="w-full h-fit flex items-center justify-center opacity-50">
             <SiriWave
               colors={[
                 "#334155", // slate-700
                 "#1e293b", // slate-800
-                "#ca8a04", // amber-600
-                "#b45309", // amber-700
+                "#059669", // emerald-600
+                "#047857", // emerald-700
               ]}
               isWaveMode={isListening || isTyping || inputValue != ""}
             />
@@ -263,7 +263,7 @@ export default function XegalityAI() {
         </div>
       </div>
       {/* Chat Messages */}
-      <div className="flex-1 px-5 py-10 bg-amber-700/5 rounded-b-2xl">
+      <div className="flex-1 px-5 py-10 bg-emerald-700/5 rounded-b-2xl">
         <ScrollArea className="h-full" ref={scrollAreaRef}>
           <div className="space-y-4 pb-20">
             <AnimatePresence>
@@ -279,7 +279,7 @@ export default function XegalityAI() {
                   )}
                 >
                   {message.sender === "ai" && (
-                    <div className="w-10 h-10 bg-amber-600 rounded-full rounded-r-none flex items-center justify-center shadow-md">
+                    <div className="w-10 h-10 bg-emerald-600 rounded-full rounded-r-none flex items-center justify-center shadow-md">
                       <Brain className="h-6 w-6 text-white" />
                     </div>
                   )}
@@ -406,7 +406,7 @@ export default function XegalityAI() {
         )}
       </AnimatePresence>
       {/* Input Area */}
-      <div className="absolute bottom-0 left-0 w-full z-30 py-1 bg-amber-700/5 backdrop-blur-sm rounded-b-md">
+      <div className="absolute bottom-0 left-0 w-full z-30 py-1 bg-emerald-700/5 backdrop-blur-sm rounded-b-md">
         <div className="pt-4 px-4 pb-0 rounded-none ">
           <div className="flex items-center gap-1 py-2 rounded-none">
             <div className="flex-1 relative">
@@ -451,7 +451,7 @@ transition-all duration-150"
                   {[...Array(3)].map((_, i) => (
                     <motion.div
                       key={i}
-                      className="w-1.5 h-1.5 bg-amber-600 rounded-full"
+                      className="w-1.5 h-1.5 bg-emerald-600 rounded-full"
                       variants={{
                         hidden: { opacity: 0, y: 5 },
                         visible: {
