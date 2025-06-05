@@ -156,7 +156,7 @@ export function AppSidebar() {
         {/* </SidebarGroup> */}
 
         <SidebarGroup className="">
-          <SidebarGroupLabel>Services</SidebarGroupLabel>
+          {/* <SidebarGroupLabel>Services</SidebarGroupLabel> */}
           <SidebarGroupContent className="">
             <SidebarMenu className="">
               {services.map((item, index) => {
@@ -178,26 +178,7 @@ export function AppSidebar() {
         </SidebarGroup>
 
         <SidebarGroup className="border-t">
-          <SidebarGroupLabel>Quick links</SidebarGroupLabel>
-          <SidebarGroupContent className="">
-            <SidebarMenu className="">
-              {quick_links.map((item) => (
-                <SidebarMenuItem key={item.title} className="">
-                  <SidebarMenuButton asChild className="pl-4 hover:bg-accent-violet/5 hover:text-accent-violet">
-                    <Link href={item.url} className="">
-                      <item.icon />
-                      <span className="">{item.title}</span>
-                      <ArrowUpRight className=" p-[1px] " />
-                    </Link>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
-
-        <SidebarGroup className="border-t">
-          <SidebarGroupLabel>Others</SidebarGroupLabel>
+          {/* <SidebarGroupLabel>Others</SidebarGroupLabel> */}
           <SidebarGroupContent>
             <SidebarMenu className="">
               {other_menu_items.map((item, index) => {
@@ -218,6 +199,25 @@ export function AppSidebar() {
           </SidebarGroupContent>
         </SidebarGroup>
 
+        <SidebarGroup className="border-t">
+          {/* <SidebarGroupLabel>Quick links</SidebarGroupLabel> */}
+          <SidebarGroupContent className="">
+            <SidebarMenu className="">
+              {quick_links.map((item) => (
+                <SidebarMenuItem key={item.title} className="">
+                  <SidebarMenuButton asChild className="pl-4 hover:bg-accent-violet/5 hover:text-accent-violet">
+                    <Link href={item.url} className="">
+                      <item.icon />
+                      <span className="">{item.title}</span>
+                      <ArrowUpRight className=" p-[1px] " />
+                    </Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ))}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+
       </SidebarContent>
 
       <SidebarFooter className="w-full">
@@ -225,16 +225,16 @@ export function AppSidebar() {
           <SidebarMenuItem>
             <DropdownMenu>
               <SidebarMenuButton variant={'default'} size={'lg'} className="cursor-pointer bg-gradient-to-br from-accent-violet/5 to-accent-violet/20" asChild>
-                <DropdownMenuTrigger className="flex items-center gap-3">
+                <DropdownMenuTrigger className="flex items-center gap-3 pl-4">
                   <Avatar className="size-8 bg-cyan-800">
                     <AvatarImage src="/sampleDP.avif" alt="User Avatar" className="object-cover" />
                     <AvatarFallback className="bg-blue-700/10 text-white">U</AvatarFallback>
                   </Avatar>
                   <span> Lina Morales </span>
-                  <ChevronRight className="size-4" />
+                  {/* <ChevronRight className="size-4" /> */}
                 </DropdownMenuTrigger>
               </SidebarMenuButton>
-              <DropdownMenuContent side="right" sideOffset={15} className="mb-4">
+              <DropdownMenuContent side="top" sideOffset={15} className="">
                 <DropdownMenuLabel className="flex gap-2 items-center">
                   <Avatar className="size-10 bg-cyan-800">
                     <AvatarImage src="/sampleDP.avif" alt="User Avatar" className="object-cover" />

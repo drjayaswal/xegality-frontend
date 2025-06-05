@@ -108,16 +108,16 @@ const SiriWave: React.FC<SiriWaveProps> = ({ isWaveMode, colors }) => {
           overflow: "hidden",
         }}
       >
-        {/* <g fill="none" strokeWidth={isWaveMode ? 2 : 1}> */}
-        {/*   {colors.slice(0, 3).map((color, i) => ( */}
-        {/*     <path */}
-        {/*       key={`wave${i + 1}`} */}
-        {/*       id={`wave${i + 1}`} */}
-        {/*       stroke={color || ACCENT_COLOR} */}
-        {/*       strokeOpacity={1} // 100% opacity */}
-        {/*     /> */}
-        {/*   ))} */}
-        {/* </g> */}
+        <g fill="none" strokeWidth={isWaveMode ? 2 : 1}>
+          {colors.slice(0, 3).map((color, i) => (
+            <path
+              key={`wave${i + 1}`}
+              id={`wave${i + 1}`}
+              stroke={color || ACCENT_COLOR}
+              strokeOpacity={1} // 100% opacity
+            />
+          ))}
+        </g>
       </svg>
     </div>
   );
