@@ -15,7 +15,7 @@ import {
   MessageSquare,
 } from "lucide-react";
 import Image from "next/image";
-import { AIAssistantInterface } from "@/components/ui/ai-assistant-interface";
+import AIAssistantInterface from "@/components/ui/ai-assistant-interface";
 import { AuroraText } from "@/components/ui/aurora-text";
 import SiriWave from "@/components/ui/ai";
 import { Badge } from "@/components/ui/badge";
