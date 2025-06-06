@@ -1,7 +1,4 @@
 "use client";
-
-import type React from "react";
-
 import { useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import {
@@ -15,19 +12,13 @@ import {
   MessageSquare,
 } from "lucide-react";
 import Image from "next/image";
-import AIAssistantInterface from "@/components/ui/ai-assistant-interface";
+import AIAssistantForm from "@/components/ui/ai-assistant-interface";
 import { AuroraText } from "@/components/ui/aurora-text";
 import SiriWave from "@/components/ui/ai";
 import { Badge } from "@/components/ui/badge";
 
 interface SectionHeadingProps {
   subtitle: string;
-  title: string;
-  description: string;
-}
-
-interface ServiceCardProps {
-  icon: React.ReactNode;
   title: string;
   description: string;
 }
@@ -53,9 +44,13 @@ interface TestimonialCardProps {
 export default function LawyerHome() {
   const [inputValue, setInputValue] = useState("");
   const [inputFocused, setInputFocused] = useState(false);
-  const inputRef = useRef<HTMLInputElement>(null);
+  const [isGlobalLoading, setIsGlobalLoading] = useState(false);
 
   const isWaveActive = inputValue.trim() !== "" || inputFocused;
+
+  const handleLoadingChange = (loading: boolean) => {
+    setIsGlobalLoading(loading);
+  };
 
   return (
     <div className="min-h-full max-w-[90rem] mx-auto relative overflow-hidden px-4 sm:px-6 lg:px-8">
@@ -64,9 +59,9 @@ export default function LawyerHome() {
         <div
           className={`w-full h-full flex items-center justify-center transition-all transform duration-1000 ease-in-out scale-150 sm:scale-180 ${
             isWaveActive
-              ? "-translate-y-32 sm:-translate-y-30"
+              ? "-translate-y-32 sm:-translate-y-36"
               : "-translate-y-44 sm:-translate-y-43"
-          } transform opacity-40`}
+          } transform opacity-90 ${isGlobalLoading ? "blur-xs" : "blur-none"}`}
         >
           <SiriWave
             colors={[
@@ -80,10 +75,14 @@ export default function LawyerHome() {
         </div>
       </div>
 
-      <main className="pt-10 sm:pt-20 relative z-10">
+      <div className="pt-10 sm:pt-20 relative z-10">
         {/* Hero Section - Lawyer Professional */}
-        <div className="mt-6 sm:mt-10">
-          <div className="flex flex-col items-center text-center mb-6 sm:mb-8 md:mb-10">
+        <div
+          className={`mt-6 sm:mt-10 ${
+            isGlobalLoading ? "blur-md opacity-50" : "blur-0 opacity-100"
+          }`}
+        >
+          <div className="flex flex-col items-center text-center">
             <div className="flex flex-col items-center text-center mt-6 sm:mt-10 mb-0 relative">
               {/* Xegality AI Text - Professional Amber/Slate theme */}
               <div className="relative z-20 flex flex-col items-center justify-center">
@@ -93,7 +92,7 @@ export default function LawyerHome() {
                     className={`transition-all duration-700 transform ${
                       !isWaveActive && !inputFocused
                         ? "opacity-100 scale-100 translate-y-28"
-                        : "opacity-100 scale-95 translate-y-44"
+                        : "opacity-100 scale-95 translate-y-40"
                     }`}
                   >
                     <Badge className="bg-gradient-to-r from-slate-700 to-amber-600 text-white px-4 sm:px-6 py-2 text-xs sm:text-sm font-medium rounded-full shadow-lg">
@@ -104,7 +103,7 @@ export default function LawyerHome() {
                 <div
                   className={`transition-all duration-1000 ease-in-out transform ${
                     inputFocused || isWaveActive || inputValue != ""
-                      ? "scale-105 sm:scale-110 -translate-y-10  drop-shadow-2xl"
+                      ? "scale-105 sm:scale-110 -translate-y-20  drop-shadow-2xl"
                       : "scale-100 -translate-y-20 drop-shadow-lg"
                   }`}
                 >
@@ -147,30 +146,39 @@ export default function LawyerHome() {
                 </div>
               </div>
             </div>
-
-            {/* Search/Input Section */}
-            <div className="w-full max-w-5xl relative z-30 px-4">
-              <div className="relative z-20">
-                <div
-                  className={`transition-all duration-500 ${
-                    isWaveActive
-                      ? "drop-shadow-2xl scale-102 sm:scale-105"
-                      : "drop-shadow-lg scale-100"
-                  }`}
-                >
-                  <AIAssistantInterface
-                    onFocus={() => setInputFocused(true)}
-                    onBlur={() => setInputFocused(false)}
-                    placeholder="Ask about case management, client communications, legal research..."
-                    from="slate-800"
-                    to="amber-800"
-                  />
-                </div>
-              </div>
-            </div>
           </div>
         </div>
+      </div>
 
+      {/* AI Assistant Form - Always Visible */}
+      <div className="w-full max-w-5xl mx-auto relative z-40 px-4 mb-8">
+        <div className="relative z-20">
+          <div
+            className={`transition-all duration-500 ${
+              isWaveActive
+                ? "drop-shadow-2xl scale-102 sm:scale-105"
+                : "drop-shadow-lg scale-100"
+            }`}
+          >
+            <AIAssistantForm
+              onFocus={() => setInputFocused(true)}
+              onBlur={() => setInputFocused(false)}
+              onChange={setInputValue}
+              onLoadingChange={handleLoadingChange}
+              placeholder="Ask about case management, client communications, legal research..."
+              from="slate-800"
+              to="amber-800"
+            />
+          </div>
+        </div>
+      </div>
+
+      {/* Main Content with Conditional Blur - Excluding AI Assistant */}
+      <main
+        className={`relative z-10 transition-all duration-500 ${
+          isGlobalLoading ? "blur-md opacity-50" : "blur-0 opacity-100"
+        }`}
+      >
         {/* Professional Services Section */}
         <section id="services" className="py-12 sm:py-16 lg:py-20 relative">
           <div className="relative">

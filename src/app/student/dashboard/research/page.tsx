@@ -1,7 +1,8 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import type React from "react";
+
+import { useState, useEffect } from "react";
 import {
   Search,
   BookOpen,
@@ -13,9 +14,6 @@ import {
   CheckCircle2,
   X,
   BookMarked,
-  History,
-  Filter,
-  Download,
   Share2,
   Scale,
   Gavel,
@@ -270,13 +268,13 @@ interface BookmarkedCode {
 const getSeverityColor = (severity: string) => {
   switch (severity) {
     case "Felony":
-      return "bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400";
+      return "bg-red-50 text-red-700 border-red-200 dark:bg-red-900/20 dark:text-red-300 dark:border-red-800";
     case "Misdemeanor":
-      return "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-400";
+      return "bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-900/20 dark:text-amber-300 dark:border-amber-800";
     case "Wobbler":
-      return "bg-orange-100 text-orange-800 dark:bg-orange-900/20 dark:text-orange-400";
+      return "bg-orange-50 text-orange-700 border-orange-200 dark:bg-orange-900/20 dark:text-orange-300 dark:border-orange-800";
     default:
-      return "bg-gray-100 text-gray-800 dark:bg-gray-900/20 dark:text-gray-400";
+      return "bg-slate-50 text-slate-700 border-slate-200 dark:bg-slate-900/20 dark:text-slate-300 dark:border-slate-800";
   }
 };
 
@@ -285,34 +283,63 @@ const getCategoryColor = (category: string) => {
     case "Violent Crimes":
       return "bg-red-50 text-red-700 border-red-200 dark:bg-red-900/10 dark:text-red-400 dark:border-red-800";
     case "Property Crimes":
-      return "bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-900/10 dark:text-blue-400 dark:border-blue-800";
+      return "bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-900/10 dark:text-emerald-400 dark:border-emerald-800";
     case "White Collar":
       return "bg-purple-50 text-purple-700 border-purple-200 dark:bg-purple-900/10 dark:text-purple-400 dark:border-purple-800";
     case "Sex Crimes":
       return "bg-pink-50 text-pink-700 border-pink-200 dark:bg-pink-900/10 dark:text-pink-400 dark:border-pink-800";
     default:
-      return "bg-gray-50 text-gray-700 border-gray-200 dark:bg-gray-900/10 dark:text-gray-400 dark:border-gray-800";
+      return "bg-slate-50 text-slate-700 border-slate-200 dark:bg-slate-900/10 dark:text-slate-400 dark:border-slate-800";
   }
 };
 
-export default function PenalCodeSearch() {
+// SectionCard component for displaying sections in a card layout
+interface SectionCardProps {
+  title: string;
+  icon: React.ReactNode;
+  iconBg?: string;
+  children: React.ReactNode;
+}
+
+function SectionCard({
+  title,
+  icon,
+  iconBg = "bg-slate-100",
+  children,
+}: SectionCardProps) {
+  return (
+    <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-5 shadow-sm flex flex-col gap-3">
+      <div className="flex items-center gap-3 mb-2">
+        <div
+          className={`w-8 h-8 rounded-lg flex items-center justify-center ${iconBg}`}
+        >
+          {icon}
+        </div>
+        <h4 className="text-base font-medium text-slate-900 dark:text-white">
+          {title}
+        </h4>
+      </div>
+      <div>{children}</div>
+    </div>
+  );
+}
+
+export default function Research() {
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState<string[]>([]);
   const [selectedCode, setSelectedCode] = useState<string | null>(null);
-  const [searchHistory, setSearchHistory] = useState<SearchHistoryItem[]>([]);
   const [bookmarkedCodes, setBookmarkedCodes] = useState<BookmarkedCode[]>([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [activeTab, setActiveTab] = useState<
-    "search" | "bookmarks" | "history"
-  >("search");
+  const [activeTab, setActiveTab] = useState<"search" | "bookmarks">("search");
   const [showBookmarkSuccess, setShowBookmarkSuccess] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
-  const searchInputRef = useRef<HTMLInputElement>(null);
+  const [isSearchFocused, setIsSearchFocused] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
 
   // Get popular codes for trending section
   const popularCodes = Object.entries(mockPenalCodes)
     .sort(([, a], [, b]) => b.popularity - a.popularity)
-    .slice(0, 5);
+    .slice(0, 4);
 
   // Get unique categories
   const categories = Array.from(
@@ -321,21 +348,19 @@ export default function PenalCodeSearch() {
 
   // Handle search input changes
   useEffect(() => {
-    if (searchQuery) {
+    if (searchTerm) {
       setIsLoading(true);
 
       const timer = setTimeout(() => {
         const results = Object.keys(mockPenalCodes).filter((code) => {
           const penalCode = mockPenalCodes[code as keyof typeof mockPenalCodes];
           const matchesQuery =
-            code.includes(searchQuery) ||
-            penalCode.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            code.includes(searchTerm) ||
+            penalCode.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
             penalCode.description
               .toLowerCase()
-              .includes(searchQuery.toLowerCase()) ||
-            penalCode.category
-              .toLowerCase()
-              .includes(searchQuery.toLowerCase());
+              .includes(searchTerm.toLowerCase()) ||
+            penalCode.category.toLowerCase().includes(searchTerm.toLowerCase());
 
           const matchesCategory =
             !selectedCategory || penalCode.category === selectedCategory;
@@ -350,7 +375,17 @@ export default function PenalCodeSearch() {
     } else {
       setSearchResults([]);
     }
-  }, [searchQuery, selectedCategory]);
+  }, [searchTerm, selectedCategory]);
+
+  const handleSearch = () => {
+    setSearchTerm(searchQuery);
+  };
+
+  const handleKeyPress = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter") {
+      handleSearch();
+    }
+  };
 
   // Handle code selection
   const handleSelectCode = (code: string) => {
@@ -360,11 +395,6 @@ export default function PenalCodeSearch() {
       code,
       timestamp: new Date(),
     };
-
-    setSearchHistory((prev) => {
-      const filteredHistory = prev.filter((item) => item.code !== code);
-      return [newHistoryItem, ...filteredHistory].slice(0, 20);
-    });
   };
 
   // Handle bookmark toggle
@@ -389,86 +419,98 @@ export default function PenalCodeSearch() {
     return bookmarkedCodes.some((item) => item.code === code);
   };
 
-  useEffect(() => {
-    if (searchInputRef.current) {
-      searchInputRef.current.focus();
-    }
-  }, []);
-
   return (
-    <div className="flex flex-col relative border-[1.5px] rounded-lg shadow-none border-b-0 bg-gradient-to-br from-slate-50 to-blue-50 dark:from-slate-900 dark:to-blue-950">
-      <div className="rounded-md h-full">
-        {/* Modern Header with Gradient */}
-        <div className="relative overflow-hidden">
-          <div className="absolute inset-0 bg-gradient-to-r from-blue-600 via-purple-600 to-blue-800 opacity-90"></div>
-          <div className='absolute inset-0 bg-[url(&apos;data:image/svg+xml,%3Csvg width="60" height="60" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg"%3E%3Cg fill="none" fillRule="evenodd"%3E%3Cg fill="%23ffffff" fillOpacity="0.05"%3E%3Ccircle cx="30" cy="30" r="2"/%3E%3C/g%3E%3C/g%3E%3C/svg%3E&apos;)]'></div>
-          <div className="relative px-10 pt-10 pb-8">
-            <div className="flex items-center justify-between">
-              <div>
-                <h1 className="text-3xl font-bold text-white mb-2 flex items-center gap-3">
-                  <div className="p-2 bg-white/20 rounded-xl backdrop-blur-sm">
-                    <Scale className="h-8 w-8 text-white" />
-                  </div>
-                  Penal Code Search
-                </h1>
-                <p className="text-blue-100 text-lg">
-                  Comprehensive legal research tool for California Penal Codes
-                </p>
-              </div>
-              <div className="hidden md:flex items-center gap-4">
-                <div className="text-center">
-                  <div className="text-2xl font-bold text-white">
-                    {Object.keys(mockPenalCodes).length}
-                  </div>
-                  <div className="text-blue-200 text-sm">Total Codes</div>
-                </div>
-                <div className="text-center">
-                  <div className="text-2xl font-bold text-white">
-                    {categories.length}
-                  </div>
-                  <div className="text-blue-200 text-sm">Categories</div>
-                </div>
-              </div>
+    <div className="flex flex-col h-screen relative border border-slate-200 dark:border-slate-800 rounded-xl shadow-sm bg-white dark:bg-slate-900 overflow-hidden max-w-7xl mx-auto">
+      {/* Compact Header */}
+      <div
+        className={cn(
+          "relative overflow-hidden bg-gradient-to-br from-emerald-900 via-cyan-950 to-emerald-900 transition-all duration-300",
+          isSearchFocused ? "blur-md" : "blur-0"
+        )}
+      >
+        <div className="absolute inset-0 bg-gradient-to-r from-emerald-600/20 via-green-600/20 to-emerald-600/20"></div>
+        <div className="relative px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-white/10 backdrop-blur-sm rounded-xl">
+              <Scale className="h-5 w-5 sm:h-6 sm:w-6 text-white" />
+            </div>
+            <div>
+              <h1 className="text-lg sm:text-xl font-bold text-white tracking-tight">
+                Legal Research
+              </h1>
+              <p className="text-emerald-100 text-sm font-medium">
+                Comprehensive Penal Code Database
+              </p>
             </div>
           </div>
         </div>
+      </div>
 
-        {/* Enhanced Search Bar */}
-        <div className="px-10 -mt-6 relative z-10">
-          <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-2xl border border-white/20 p-6">
+      {/* Compact Search Section */}
+      <div className="px-4 sm:px-6 lg:px-8 -mt-4 relative z-10">
+        <div
+          className={cn(
+            "bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 p-4 sm:p-6 transition-all duration-300",
+            isSearchFocused
+              ? "shadow-2xl shadow-emerald-800/30 -translate-y-2"
+              : "shadow-lg shadow-emerald-800/20"
+          )}
+        >
+          <div className="space-y-4">
+            {/* Search Input */}
             <div className="relative">
-              <div className="absolute inset-y-0 left-4 flex items-center pointer-events-none">
-                <Search className="h-6 w-6 text-gray-400" />
+              <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none">
+                <Search className="h-4 w-4 text-slate-400" />
               </div>
               <Input
-                ref={searchInputRef}
                 placeholder="Search by code number, title, or keyword..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-12 pr-4 py-4 text-lg bg-gray-50 dark:bg-gray-800 border-0 rounded-xl focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
+                onKeyPress={handleKeyPress}
+                onFocus={() => setIsSearchFocused(true)}
+                onBlur={() => setIsSearchFocused(false)}
+                className="pl-10 pr-20 py-2.5 text-sm bg-slate-50 dark:bg-slate-900 border-emerald-700/20 dark:border-slate-700 rounded-lg focus-visible:ring-0 focus-visible:border-emerald-500 border-2 transition-all duration-200"
               />
-              {searchQuery && (
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => setSearchQuery("")}
-                  className="absolute right-2 top-1/2 -translate-y-1/2 h-8 w-8 p-0 rounded-full"
-                >
-                  <X className="h-4 w-4" />
-                </Button>
-              )}
+              <div className="absolute right-1 top-1/2 -translate-y-1/2 flex items-center gap-1">
+                {searchQuery && (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => {
+                      setSearchQuery("");
+                      setSearchTerm("");
+                    }}
+                    className="h-6 w-6 p-0 rounded-full hover:text-red-600 text-emerald-600 dark:hover:bg-slate-700"
+                  >
+                    <X className="h-3 w-3" />
+                  </Button>
+                )}
+                {searchQuery && (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={handleSearch}
+                    disabled={!searchQuery.trim()}
+                    className="h-7 px-2 rounded-md rounded-l-none border-emerald-500 border-l-2 bg-emerald-50 text-emerald-600 hover:bg-emerald-500 hover:text-white dark:hover:bg-emerald-900/20 disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    Search
+                  </Button>
+                )}{" "}
+              </div>
             </div>
 
             {/* Category Filters */}
-            <div className="flex items-center gap-2 mt-4 flex-wrap">
-              <span className="text-sm font-medium text-gray-600 dark:text-gray-400">
-                Categories:
-              </span>
+            <div className="flex items-center gap-2 flex-wrap">
               <Button
                 variant={selectedCategory === null ? "default" : "outline"}
                 size="sm"
                 onClick={() => setSelectedCategory(null)}
-                className="rounded-full"
+                className={cn(
+                  "rounded-full border transition-colors duration-200 text-xs px-3 py-1.5 h-auto",
+                  selectedCategory === null
+                    ? "bg-emerald-600 hover:bg-emerald-700 text-white shadow-md border-emerald-600"
+                    : "border-slate-300 dark:border-slate-600 hover:bg-transparent hover:border-emerald-400 hover:text-emerald-600"
+                )}
               >
                 All
               </Button>
@@ -480,222 +522,234 @@ export default function PenalCodeSearch() {
                   }
                   size="sm"
                   onClick={() => setSelectedCategory(category)}
-                  className="rounded-full"
+                  className={cn(
+                    "rounded-full border transition-colors duration-200 text-xs px-3 py-1.5 h-auto",
+                    selectedCategory === category
+                      ? "bg-emerald-600 hover:bg-emerald-700 text-white shadow-md border-emerald-600"
+                      : "border-slate-300 dark:border-slate-600 hover:bg-transparent hover:border-emerald-400 hover:text-emerald-600"
+                  )}
                 >
-                  {category}
+                  {category.replace(" Crimes", "")}
                 </Button>
               ))}
             </div>
           </div>
         </div>
+      </div>
 
-        {/* Tab Navigation */}
-        <div className="px-10 pt-8 pb-2 flex">
+      {/* Compact Tab Navigation */}
+      <div
+        className={cn(
+          "px-4 sm:px-6 lg:px-8 pt-6 pb-2 transition-all duration-300",
+          isSearchFocused ? "blur-md" : "blur-0"
+        )}
+      >
+        <div className="flex bg-slate-100 dark:bg-slate-800 rounded-lg p-1">
           {[
-            { id: "search", label: "Search Results", icon: Search },
+            { id: "search", label: "Search", icon: Search },
             { id: "bookmarks", label: "Bookmarks", icon: BookMarked },
-            { id: "history", label: "History", icon: History },
           ].map((tab) => {
             const Icon = tab.icon;
             return (
               <button
                 key={tab.id}
-                onClick={() =>
-                  setActiveTab(tab.id as "search" | "bookmarks" | "history")
-                }
+                onClick={() => setActiveTab(tab.id as "search" | "bookmarks")}
                 className={cn(
-                  "flex-1 py-4 text-center font-medium cursor-pointer transition-all duration-200 relative",
+                  "flex-1 py-2 px-3 text-center font-medium cursor-pointer transition-all duration-200 rounded-md relative text-sm",
                   activeTab === tab.id
-                    ? "text-blue-600 dark:text-blue-400"
-                    : "text-gray-600 dark:text-gray-300 hover:text-blue-500"
+                    ? "bg-white dark:bg-slate-700 text-emerald-600 dark:text-emerald-400 shadow-sm"
+                    : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200"
                 )}
               >
-                <div className="flex items-center justify-center gap-2 hover:scale-105 duration-200">
-                  <Icon className="h-5 w-5" />
-                  <span>{tab.label}</span>
+                <div className="flex items-center justify-center gap-2">
+                  <Icon className="h-4 w-4" />
+                  <span className="font-semibold">{tab.label}</span>
+                  {tab.id === "bookmarks" && bookmarkedCodes.length > 0 && (
+                    <Badge className="ml-1 bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400 text-xs px-1.5 py-0.5">
+                      {bookmarkedCodes.length}
+                    </Badge>
+                  )}
                 </div>
-                {activeTab === tab.id && (
-                  <motion.div
-                    layoutId="activeTab"
-                    className="absolute bottom-0 left-0 right-0 h-0.5 bg-blue-600 dark:bg-blue-400"
-                    initial={false}
-                    transition={{ type: "spring", stiffness: 500, damping: 30 }}
-                  />
-                )}
               </button>
             );
           })}
         </div>
+      </div>
 
-        {/* Content */}
-        <div className="flex-1">
-          <ScrollArea className="h-full">
-            <div className="px-10 pb-10">
-              {activeTab === "search" && (
-                <div className="space-y-6">
-                  {selectedCode ? (
-                    // Detailed View
-                    <motion.div
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      className="space-y-6"
-                    >
-                      {/* Back Button and Header */}
-                      <div className="flex items-center gap-4">
+      {/* Content */}
+      <div
+        className={cn(
+          "flex-1 min-h-0 transition-all duration-300",
+          isSearchFocused ? "blur-md" : "blur-0"
+        )}
+      >
+        <ScrollArea className="h-full">
+          <div className="px-4 sm:px-6 lg:px-8 pb-6 min-h-full">
+            {activeTab === "search" && (
+              <div className="space-y-6 min-h-full">
+                {selectedCode ? (
+                  // Detailed View
+                  <div className="space-y-6">
+                    {/* Back Button and Header */}
+                    <div className="space-y-8 mt-3">
+                      <div className="flex items-start gap-4">
                         <Button
-                          variant="ghost"
+                          variant="outline"
                           size="sm"
                           onClick={() => setSelectedCode(null)}
-                          className="rounded-full p-2"
+                          className="rounded-full border-0 hover:bg-emerald-800 hover:text-white text-emerald-800 bg-emerald-700/15"
                         >
                           <ArrowLeft className="h-4 w-4" />
                         </Button>
-                        <div className="flex-1">
-                          <div className="flex items-center gap-3 mb-2">
-                            <h2 className="text-3xl font-bold text-gray-900 dark:text-white">
-                              Section {selectedCode}
-                            </h2>
-                            <Badge
-                              className={getSeverityColor(
-                                mockPenalCodes[
-                                  selectedCode as keyof typeof mockPenalCodes
-                                ].severity
-                              )}
-                            >
-                              {
-                                mockPenalCodes[
-                                  selectedCode as keyof typeof mockPenalCodes
-                                ].severity
-                              }
-                            </Badge>
-                          </div>
-                          <h3 className="text-xl text-gray-700 dark:text-gray-300 mb-3">
-                            {
-                              mockPenalCodes[
-                                selectedCode as keyof typeof mockPenalCodes
-                              ].title
-                            }
-                          </h3>
-                          <div className="flex items-center gap-4">
-                            <Badge
-                              variant="outline"
-                              className={getCategoryColor(
-                                mockPenalCodes[
-                                  selectedCode as keyof typeof mockPenalCodes
-                                ].category
-                              )}
-                            >
-                              {
-                                mockPenalCodes[
-                                  selectedCode as keyof typeof mockPenalCodes
-                                ].category
-                              }
-                            </Badge>
-                            <span className="text-sm text-gray-500">
-                              Updated{" "}
-                              {
-                                mockPenalCodes[
-                                  selectedCode as keyof typeof mockPenalCodes
-                                ].lastUpdated
-                              }
-                            </span>
-                            <div className="flex items-center gap-1">
-                              <Star className="h-4 w-4 text-yellow-500" />
-                              <span className="text-sm text-gray-600">
+
+                        <div className="flex-1 space-y-4">
+                          {/* Title & Meta */}
+                          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                            <div>
+                              <div className="flex items-center gap-2 flex-wrap">
+                                <h2 className="text-2xl font-medium text-slate-900 dark:text-white">
+                                  Section {selectedCode}
+                                </h2>
+                                <Badge
+                                  variant="outline"
+                                  className={cn(
+                                    "text-xs font-semibold",
+                                    getSeverityColor(
+                                      mockPenalCodes[
+                                        selectedCode as keyof typeof mockPenalCodes
+                                      ].severity
+                                    )
+                                  )}
+                                >
+                                  {
+                                    mockPenalCodes[
+                                      selectedCode as keyof typeof mockPenalCodes
+                                    ].severity
+                                  }
+                                </Badge>
+                              </div>
+                              <h3 className="text-lg text-slate-700 dark:text-slate-300 font-medium">
                                 {
                                   mockPenalCodes[
                                     selectedCode as keyof typeof mockPenalCodes
-                                  ].popularity
+                                  ].title
                                 }
-                                % relevance
+                              </h3>
+                            </div>
+
+                            <div className="flex items-center gap-2">
+                              {/* Bookmark */}
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() =>
+                                  handleToggleBookmark(selectedCode)
+                                }
+                                className={cn(
+                                  "rounded-full p-2 transition-all duration-200",
+                                  isCodeBookmarked(selectedCode)
+                                    ? "bg-emerald-50 border-emerald-200 text-emerald-600 hover:bg-emerald-100 dark:bg-emerald-900/20 dark:border-emerald-800 dark:text-emerald-400"
+                                    : "border-slate-300 dark:border-slate-600 hover:border-emerald-400 hover:text-emerald-600"
+                                )}
+                              >
+                                {isCodeBookmarked(selectedCode) ? (
+                                  <BookMarked className="h-4 w-4" />
+                                ) : (
+                                  <BookmarkPlus className="h-4 w-4" />
+                                )}
+                              </Button>
+
+                              {/* Share */}
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                className="rounded-full p-2 border-slate-300 dark:border-slate-600 hover:border-slate-400"
+                              >
+                                <Share2 className="h-4 w-4" />
+                              </Button>
+                            </div>
+                          </div>
+
+                          {/* Meta Info */}
+                          <div className="flex items-center gap-4 flex-wrap text-xs text-slate-500 dark:text-slate-400">
+                            <Badge
+                              variant="outline"
+                              className={cn(
+                                "font-medium text-xs",
+                                getCategoryColor(
+                                  mockPenalCodes[selectedCode].category
+                                )
+                              )}
+                            >
+                              {mockPenalCodes[selectedCode].category}
+                            </Badge>
+                            <div className="flex items-center gap-1">
+                              <Clock className="h-3 w-3" />
+                              Updated {mockPenalCodes[selectedCode].lastUpdated}
+                            </div>
+                            <div className="flex items-center gap-1 text-amber-500">
+                              <Star className="h-3 w-3" />
+                              <span className="font-medium text-slate-600 dark:text-slate-400">
+                                {mockPenalCodes[selectedCode].popularity}%
                               </span>
                             </div>
                           </div>
                         </div>
-                        <div className="flex items-center gap-2">
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => handleToggleBookmark(selectedCode)}
-                            className={cn(
-                              "rounded-full p-2",
-                              isCodeBookmarked(selectedCode)
-                                ? "text-blue-600 bg-blue-50"
-                                : "text-gray-500"
-                            )}
-                          >
-                            {isCodeBookmarked(selectedCode) ? (
-                              <BookMarked className="h-5 w-5" />
-                            ) : (
-                              <BookmarkPlus className="h-5 w-5" />
-                            )}
-                          </Button>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            className="rounded-full p-2 text-gray-500"
-                          >
-                            <Share2 className="h-5 w-5" />
-                          </Button>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            className="rounded-full p-2 text-gray-500"
-                          >
-                            <Download className="h-5 w-5" />
-                          </Button>
-                        </div>
                       </div>
 
-                      {/* Content Grid */}
+                      {/* Main Content */}
                       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                        {/* Description */}
-                        <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-sm border border-gray-100 dark:border-gray-700">
-                          <h4 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
-                            <Scale className="h-5 w-5 text-blue-600" />
-                            Legal Definition
-                          </h4>
-                          <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
+                        {/* Legal Definition */}
+                        <SectionCard
+                          title="Legal Definition"
+                          icon={
+                            <Scale className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
+                          }
+                          iconBg="bg-emerald-100 dark:bg-emerald-900/30"
+                        >
+                          <p className="text-sm text-slate-700 dark:text-slate-300 leading-relaxed">
                             {
                               mockPenalCodes[
                                 selectedCode as keyof typeof mockPenalCodes
                               ].description
                             }
                           </p>
-                        </div>
+                        </SectionCard>
 
-                        {/* Punishment */}
-                        <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-sm border border-gray-100 dark:border-gray-700">
-                          <h4 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
-                            <Gavel className="h-5 w-5 text-red-600" />
-                            Penalties
-                          </h4>
-                          <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
+                        {/* Penalties */}
+                        <SectionCard
+                          title="Penalties"
+                          icon={
+                            <Gavel className="h-4 w-4 text-red-600 dark:text-red-400" />
+                          }
+                          iconBg="bg-red-100 dark:bg-red-900/30"
+                        >
+                          <p className="text-sm text-slate-700 dark:text-slate-300 leading-relaxed mb-4">
                             {
                               mockPenalCodes[
                                 selectedCode as keyof typeof mockPenalCodes
                               ].punishment
                             }
                           </p>
-                          <div className="mt-4 p-3 bg-red-50 dark:bg-red-900/20 rounded-lg">
-                            <div className="text-sm font-medium text-red-800 dark:text-red-400">
-                              Maximum Sentence:{" "}
-                              {
-                                mockPenalCodes[
-                                  selectedCode as keyof typeof mockPenalCodes
-                                ].maxSentence
-                              }
-                            </div>
+                          <div className="p-3 bg-red-50 dark:bg-red-900/20 rounded-lg border border-red-200 dark:border-red-800 text-xs font-medium text-red-800 dark:text-red-300">
+                            Maximum:{" "}
+                            {
+                              mockPenalCodes[
+                                selectedCode as keyof typeof mockPenalCodes
+                              ].maxSentence
+                            }
                           </div>
-                        </div>
+                        </SectionCard>
 
-                        {/* Elements */}
-                        <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-sm border border-gray-100 dark:border-gray-700">
-                          <h4 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
-                            <FileText className="h-5 w-5 text-green-600" />
-                            Required Elements
-                          </h4>
-                          <ul className="space-y-3">
+                        {/* Required Elements */}
+                        <SectionCard
+                          title="Required Elements"
+                          icon={
+                            <FileText className="h-4 w-4 text-green-600 dark:text-green-400" />
+                          }
+                          iconBg="bg-green-100 dark:bg-green-900/30"
+                        >
+                          <ul className="space-y-2">
                             {mockPenalCodes[
                               selectedCode as keyof typeof mockPenalCodes
                             ].elements.map((element, index) => (
@@ -703,25 +757,27 @@ export default function PenalCodeSearch() {
                                 key={index}
                                 className="flex items-start gap-3"
                               >
-                                <div className="w-6 h-6 rounded-full bg-green-100 dark:bg-green-900/20 flex items-center justify-center flex-shrink-0 mt-0.5">
+                                <div className="w-5 h-5 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center flex-shrink-0 mt-0.5">
                                   <span className="text-xs font-medium text-green-700 dark:text-green-400">
                                     {index + 1}
                                   </span>
                                 </div>
-                                <span className="text-gray-700 dark:text-gray-300">
+                                <span className="text-sm text-slate-700 dark:text-slate-300 leading-relaxed">
                                   {element}
                                 </span>
                               </li>
                             ))}
                           </ul>
-                        </div>
+                        </SectionCard>
 
-                        {/* Related Codes */}
-                        <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-sm border border-gray-100 dark:border-gray-700">
-                          <h4 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
-                            <BookOpen className="h-5 w-5 text-purple-600" />
-                            Related Sections
-                          </h4>
+                        {/* Related Sections */}
+                        <SectionCard
+                          title="Related Sections"
+                          icon={
+                            <BookOpen className="h-4 w-4 text-purple-600 dark:text-purple-400" />
+                          }
+                          iconBg="bg-purple-100 dark:bg-purple-900/30"
+                        >
                           <div className="flex flex-wrap gap-2">
                             {mockPenalCodes[
                               selectedCode as keyof typeof mockPenalCodes
@@ -731,501 +787,330 @@ export default function PenalCodeSearch() {
                                 variant="outline"
                                 size="sm"
                                 onClick={() => handleSelectCode(code)}
-                                className="rounded-full hover:bg-purple-50 hover:border-purple-300 hover:text-purple-700"
+                                className="rounded-full border-purple-200 dark:border-purple-800 hover:bg-purple-50 hover:border-purple-300 hover:text-purple-700 dark:hover:bg-purple-900/20 dark:hover:text-purple-400 transition-all duration-200 text-xs px-3 py-1 h-auto"
                               >
-                                Section {code}
+                                {code}
                               </Button>
                             ))}
                           </div>
-                        </div>
+                        </SectionCard>
                       </div>
+                    </div>
+                  </div>
+                ) : (
+                  // Search Results or Landing
+                  <div className="space-y-6">
+                    {searchTerm ? (
+                      // Search Results
+                      <div>
+                        <div className="flex items-center justify-between my-3 ml-2">
+                          <h2 className="text-lg font-medium text-slate-900 dark:text-white">
+                            Results ({searchResults.length})
+                          </h2>
+                        </div>
 
-                      {/* Case References */}
-                      <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-sm border border-gray-100 dark:border-gray-700">
-                        <h4 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
-                          <ExternalLink className="h-5 w-5 text-blue-600" />
-                          Key Case Law
-                        </h4>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                          {mockPenalCodes[
-                            selectedCode as keyof typeof mockPenalCodes
-                          ].caseReferences.map((caseRef, index) => (
-                            <div
-                              key={index}
-                              className="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-xl border border-blue-200 dark:border-blue-800"
-                            >
-                              <div className="flex items-start gap-3">
-                                <BookOpen className="h-5 w-5 text-blue-600 flex-shrink-0 mt-0.5" />
-                                <div>
-                                  <span className="text-blue-800 dark:text-blue-300 font-medium">
-                                    {caseRef}
-                                  </span>
-                                  <Button
-                                    variant="ghost"
-                                    size="sm"
-                                    className="ml-2 h-6 w-6 p-0"
-                                  >
-                                    <ExternalLink className="h-3 w-3" />
-                                  </Button>
-                                </div>
-                              </div>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    </motion.div>
-                  ) : (
-                    // Search Results or Landing
-                    <div className="space-y-8">
-                      {searchQuery ? (
-                        // Search Results
                         <div>
-                          <div className="flex items-center justify-between mb-6">
-                            <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
-                              Search Results ({searchResults.length})
-                            </h2>
-                            {searchResults.length > 0 && (
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                className="gap-2"
-                              >
-                                <Filter className="h-4 w-4" />
-                                Filter
-                              </Button>
-                            )}
-                          </div>
-
-                          <AnimatePresence mode="wait">
-                            {isLoading ? (
-                              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                                {[1, 2, 3, 4, 5, 6].map((i) => (
-                                  <div
-                                    key={i}
-                                    className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-sm animate-pulse"
-                                  >
-                                    <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded w-1/3 mb-3"></div>
-                                    <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-full mb-2"></div>
-                                    <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-2/3"></div>
-                                  </div>
-                                ))}
-                              </div>
-                            ) : searchResults.length > 0 ? (
-                              <motion.div
-                                initial={{ opacity: 0 }}
-                                animate={{ opacity: 1 }}
-                                className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
-                              >
-                                {searchResults.map((code) => {
-                                  const penalCode =
-                                    mockPenalCodes[
-                                      code as keyof typeof mockPenalCodes
-                                    ];
-                                  return (
-                                    <motion.div
-                                      key={code}
-                                      initial={{ opacity: 0, y: 20 }}
-                                      animate={{ opacity: 1, y: 0 }}
-                                      whileHover={{ y: -4, scale: 1.02 }}
-                                      whileTap={{ scale: 0.98 }}
-                                      onClick={() => handleSelectCode(code)}
-                                      className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-sm border border-gray-100 dark:border-gray-700 cursor-pointer hover:shadow-lg transition-all duration-200"
-                                    >
-                                      <div className="flex items-start justify-between mb-4">
-                                        <div className="flex items-center gap-2">
-                                          <div className="w-10 h-10 bg-blue-100 dark:bg-blue-900/20 rounded-xl flex items-center justify-center">
-                                            <span className="text-blue-600 dark:text-blue-400 font-bold text-sm">
-                                              {code}
-                                            </span>
-                                          </div>
-                                          <Badge
-                                            className={getSeverityColor(
-                                              penalCode.severity
-                                            )}
-                                          >
-                                            {penalCode.severity}
-                                          </Badge>
-                                        </div>
-                                        <Button
-                                          variant="ghost"
-                                          size="sm"
-                                          onClick={(e) => {
-                                            e.stopPropagation();
-                                            handleToggleBookmark(code);
-                                          }}
-                                          className="h-8 w-8 p-0 rounded-full"
-                                        >
-                                          {isCodeBookmarked(code) ? (
-                                            <BookMarked className="h-4 w-4 text-blue-600" />
-                                          ) : (
-                                            <BookmarkPlus className="h-4 w-4 text-gray-400" />
-                                          )}
-                                        </Button>
-                                      </div>
-
-                                      <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
-                                        {penalCode.title}
-                                      </h3>
-                                      <p className="text-gray-600 dark:text-gray-400 text-sm line-clamp-2 mb-4">
-                                        {penalCode.description}
-                                      </p>
-
-                                      <div className="flex items-center justify-between">
-                                        <Badge
-                                          variant="outline"
-                                          className={getCategoryColor(
-                                            penalCode.category
-                                          )}
-                                        >
-                                          {penalCode.category}
-                                        </Badge>
-                                        <div className="flex items-center gap-1">
-                                          <Star className="h-3 w-3 text-yellow-500" />
-                                          <span className="text-xs text-gray-500">
-                                            {penalCode.popularity}%
-                                          </span>
-                                        </div>
-                                      </div>
-                                    </motion.div>
-                                  );
-                                })}
-                              </motion.div>
-                            ) : (
-                              <motion.div
-                                initial={{ opacity: 0 }}
-                                animate={{ opacity: 1 }}
-                                className="text-center py-16"
-                              >
-                                <AlertCircle className="h-16 w-16 mx-auto text-gray-400 mb-4" />
-                                <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
-                                  No results found
-                                </h3>
-                                <p className="text-gray-600 dark:text-gray-400 max-w-md mx-auto">
-                                  We couldn't find any penal codes matching "
-                                  {searchQuery}". Try adjusting your search
-                                  terms or filters.
-                                </p>
-                              </motion.div>
-                            )}
-                          </AnimatePresence>
-                        </div>
-                      ) : (
-                        // Landing Page
-                        <div className="space-y-8">
-                          {/* Quick Access */}
-                          <div>
-                            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6 flex items-center gap-2">
-                              <Zap className="h-6 w-6 text-yellow-500" />
-                              Quick Access
-                            </h2>
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                              {["187", "211", "459"].map((code) => {
+                          {isLoading ? (
+                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                              {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
+                                <div
+                                  key={i}
+                                  className="bg-slate-50 dark:bg-slate-800 rounded-xl p-4 animate-pulse border border-slate-200 dark:border-slate-700"
+                                >
+                                  <div className="h-4 bg-slate-200 dark:bg-slate-700 rounded w-1/3 mb-3"></div>
+                                  <div className="h-3 bg-slate-200 dark:bg-slate-700 rounded w-full mb-2"></div>
+                                  <div className="h-3 bg-slate-200 dark:bg-slate-700 rounded w-2/3"></div>
+                                </div>
+                              ))}
+                            </div>
+                          ) : searchResults.length > 0 ? (
+                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                              {searchResults.map((code) => {
                                 const penalCode =
                                   mockPenalCodes[
                                     code as keyof typeof mockPenalCodes
                                   ];
                                 return (
-                                  <motion.div
+                                  <div
                                     key={code}
-                                    whileHover={{ scale: 1.02 }}
-                                    whileTap={{ scale: 0.98 }}
                                     onClick={() => handleSelectCode(code)}
-                                    className="bg-gradient-to-br from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20 rounded-2xl p-6 cursor-pointer border border-blue-200 dark:border-blue-800 hover:shadow-lg transition-all duration-200"
+                                    className="bg-white dark:bg-slate-800 rounded-xl p-4 border border-slate-200 dark:border-slate-700 cursor-pointer hover:shadow-lg hover:border-emerald-300 dark:hover:border-emerald-600 transition-all duration-200"
                                   >
-                                    <div className="flex items-center gap-3 mb-3">
-                                      <div className="w-12 h-12 bg-blue-600 rounded-xl flex items-center justify-center">
-                                        <span className="text-white font-bold">
-                                          {code}
-                                        </span>
-                                      </div>
-                                      <div>
-                                        <h3 className="font-semibold text-gray-900 dark:text-white">
-                                          {penalCode.title}
-                                        </h3>
+                                    <div className="flex items-start justify-between mb-3">
+                                      <div className="flex items-center gap-2">
+                                        <div className="w-8 h-8 bg-emerald-100 dark:bg-emerald-900/30 rounded-lg flex items-center justify-center">
+                                          <span className="text-emerald-600 dark:text-emerald-400 font-medium text-sm">
+                                            {code}
+                                          </span>
+                                        </div>
                                         <Badge
-                                          className={getSeverityColor(
-                                            penalCode.severity
+                                          variant="outline"
+                                          className={cn(
+                                            "font-medium text-xs",
+                                            getSeverityColor(penalCode.severity)
                                           )}
                                         >
                                           {penalCode.severity}
                                         </Badge>
                                       </div>
+                                      <Button
+                                        variant="ghost"
+                                        size="sm"
+                                        onClick={(e) => {
+                                          e.stopPropagation();
+                                          handleToggleBookmark(code);
+                                        }}
+                                        className="h-6 w-6 p-0 rounded-full hover:bg-slate-100 dark:hover:bg-slate-700"
+                                      >
+                                        {isCodeBookmarked(code) ? (
+                                          <BookMarked className="h-3 w-3 text-emerald-600" />
+                                        ) : (
+                                          <BookmarkPlus className="h-3 w-3 text-slate-400" />
+                                        )}
+                                      </Button>
                                     </div>
-                                    <p className="text-gray-600 dark:text-gray-400 text-sm line-clamp-2">
+
+                                    <h3 className="text-sm font-medium text-slate-900 dark:text-white mb-2 line-clamp-1">
+                                      {penalCode.title}
+                                    </h3>
+                                    <p className="text-slate-600 dark:text-slate-400 text-xs line-clamp-2 mb-3 leading-relaxed">
                                       {penalCode.description}
                                     </p>
-                                  </motion.div>
-                                );
-                              })}
-                            </div>
-                          </div>
 
-                          {/* Trending */}
-                          <div>
-                            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6 flex items-center gap-2">
-                              <TrendingUp className="h-6 w-6 text-green-500" />
-                              Most Searched
-                            </h2>
-                            <div className="space-y-3">
-                              {popularCodes.map(([code, penalCode], index) => (
-                                <motion.div
-                                  key={code}
-                                  initial={{ opacity: 0, x: -20 }}
-                                  animate={{ opacity: 1, x: 0 }}
-                                  transition={{ delay: index * 0.1 }}
-                                  whileHover={{ x: 4 }}
-                                  onClick={() => handleSelectCode(code)}
-                                  className="bg-white dark:bg-gray-800 rounded-xl p-4 shadow-sm border border-gray-100 dark:border-gray-700 cursor-pointer hover:shadow-md transition-all duration-200"
-                                >
-                                  <div className="flex items-center gap-4">
-                                    <div className="w-8 h-8 bg-green-100 dark:bg-green-900/20 rounded-lg flex items-center justify-center">
-                                      <span className="text-green-600 dark:text-green-400 font-bold text-sm">
-                                        #{index + 1}
-                                      </span>
-                                    </div>
-                                    <div className="flex-1">
-                                      <div className="flex items-center gap-2 mb-1">
-                                        <h3 className="font-semibold text-gray-900 dark:text-white">
-                                          Section {code}: {penalCode.title}
-                                        </h3>
-                                        <Badge
-                                          className={getSeverityColor(
-                                            penalCode.severity
-                                          )}
-                                        >
-                                          {penalCode.severity}
-                                        </Badge>
-                                      </div>
-                                      <p className="text-gray-600 dark:text-gray-400 text-sm line-clamp-1">
-                                        {penalCode.description}
-                                      </p>
-                                    </div>
-                                    <div className="flex items-center gap-2">
+                                    <div className="flex items-center justify-between">
+                                      <Badge
+                                        variant="outline"
+                                        className={cn(
+                                          "font-medium text-xs",
+                                          getCategoryColor(penalCode.category)
+                                        )}
+                                      >
+                                        {penalCode.category.replace(
+                                          " Crimes",
+                                          ""
+                                        )}
+                                      </Badge>
                                       <div className="flex items-center gap-1">
-                                        <Star className="h-4 w-4 text-yellow-500" />
-                                        <span className="text-sm text-gray-600">
+                                        <Star className="h-3 w-3 text-amber-500" />
+                                        <span className="text-xs text-slate-500 font-medium">
                                           {penalCode.popularity}%
                                         </span>
                                       </div>
-                                      <ChevronRight className="h-5 w-5 text-gray-400" />
                                     </div>
                                   </div>
-                                </motion.div>
-                              ))}
+                                );
+                              })}
                             </div>
+                          ) : (
+                            <div className="text-center py-12">
+                              <AlertCircle className="h-12 w-12 mx-auto text-slate-400 mb-4" />
+                              <h3 className="text-lg font-medium text-slate-900 dark:text-white mb-2">
+                                No results found
+                              </h3>
+                              <p className="text-slate-600 dark:text-slate-400 max-w-md mx-auto text-sm">
+                                We couldn't find any penal codes matching "
+                                {searchQuery}". Try adjusting your search terms.
+                              </p>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    ) : (
+                      // Landing Page
+                      <div className="space-y-8 mt-3">
+                        {/* Most Searched */}
+                        <div>
+                          <h2 className="text-lg font-medium text-slate-900 dark:text-white mb-4 flex items-center gap-2">
+                            <div className="p-1.5 bg-green-100 dark:bg-green-900/30 rounded-lg">
+                              <TrendingUp className="h-5 w-5 text-green-600 dark:text-green-400" />
+                            </div>
+                            Most Searched
+                          </h2>
+                          <div className="space-y-3">
+                            {popularCodes.map(([code, penalCode], index) => (
+                              <div
+                                key={code}
+                                className="bg-white dark:bg-slate-800 rounded-xl p-4 border border-slate-200 dark:border-slate-700 cursor-pointer hover:shadow-lg hover:border-emerald-300 dark:hover:border-emerald-600 transition-all duration-200"
+                                onClick={() => handleSelectCode(code)}
+                              >
+                                <div className="flex items-center gap-4">
+                                  <div className="w-8 h-8 bg-green-100 dark:bg-green-900/30 rounded-lg flex items-center justify-center">
+                                    <span className="text-green-600 dark:text-green-400 font-medium text-sm">
+                                      #{index + 1}
+                                    </span>
+                                  </div>
+                                  <div className="flex-1 min-w-0">
+                                    <div className="flex items-center gap-2 mb-1 flex-wrap">
+                                      <h3 className="font-medium text-slate-900 dark:text-white text-sm">
+                                        Section {code}: {penalCode.title}
+                                      </h3>
+                                      <Badge
+                                        variant="outline"
+                                        className={cn(
+                                          "font-medium text-xs",
+                                          getSeverityColor(penalCode.severity)
+                                        )}
+                                      >
+                                        {penalCode.severity}
+                                      </Badge>
+                                    </div>
+                                    <p className="text-slate-600 dark:text-slate-400 line-clamp-1 leading-relaxed text-xs">
+                                      {penalCode.description}
+                                    </p>
+                                  </div>
+                                  <div className="flex items-center gap-3">
+                                    <div className="flex items-center gap-1">
+                                      <Star className="h-3 w-3 text-amber-500" />
+                                      <span className="text-slate-600 dark:text-slate-400 font-semibold text-xs">
+                                        {penalCode.popularity}%
+                                      </span>
+                                    </div>
+                                    <ChevronRight className="h-4 w-4 text-slate-400" />
+                                  </div>
+                                </div>
+                              </div>
+                            ))}
                           </div>
                         </div>
-                      )}
-                    </div>
-                  )}
-                </div>
-              )}
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+            )}
 
-              {activeTab === "bookmarks" && (
-                <div className="space-y-6">
-                  <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
-                    Bookmarked Codes
-                  </h2>
+            {activeTab === "bookmarks" && (
+              <div className="space-y-6 min-h-full">
+                <h2 className="text-lg font-medium text-slate-900 dark:text-white">
+                  Bookmarked Codes
+                </h2>
 
-                  {bookmarkedCodes.length > 0 ? (
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                      {bookmarkedCodes.map((bookmark) => {
-                        const penalCode =
-                          mockPenalCodes[
-                            bookmark.code as keyof typeof mockPenalCodes
-                          ];
-                        return (
-                          <motion.div
-                            key={bookmark.code}
-                            initial={{ opacity: 0, y: 20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-sm border border-gray-100 dark:border-gray-700"
-                          >
-                            <div className="flex items-start justify-between mb-4">
-                              <div className="flex items-center gap-2">
-                                <div className="w-10 h-10 bg-blue-100 dark:bg-blue-900/20 rounded-xl flex items-center justify-center">
-                                  <span className="text-blue-600 dark:text-blue-400 font-bold text-sm">
-                                    {bookmark.code}
-                                  </span>
-                                </div>
-                                <Badge
-                                  className={getSeverityColor(
-                                    penalCode.severity
-                                  )}
-                                >
-                                  {penalCode.severity}
-                                </Badge>
+                {bookmarkedCodes.length > 0 ? (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                    {bookmarkedCodes.map((bookmark) => {
+                      const penalCode =
+                        mockPenalCodes[
+                          bookmark.code as keyof typeof mockPenalCodes
+                        ];
+                      return (
+                        <div
+                          key={bookmark.code}
+                          className="bg-white dark:bg-slate-800 rounded-xl p-4 border border-slate-200 dark:border-slate-700 hover:shadow-lg transition-all duration-200"
+                        >
+                          <div className="flex items-start justify-between mb-3">
+                            <div className="flex items-center gap-2">
+                              <div className="w-8 h-8 bg-emerald-100 dark:bg-emerald-900/30 rounded-lg flex items-center justify-center">
+                                <span className="text-emerald-600 dark:text-emerald-400 font-medium text-sm">
+                                  {bookmark.code}
+                                </span>
                               </div>
-                              <div className="flex items-center gap-2">
-                                <Button
-                                  variant="ghost"
-                                  size="sm"
-                                  onClick={() =>
-                                    handleToggleBookmark(bookmark.code)
-                                  }
-                                  className="h-8 w-8 p-0 text-blue-600"
-                                >
-                                  <BookMarked className="h-4 w-4" />
-                                </Button>
-                                <Button
-                                  variant="ghost"
-                                  size="sm"
-                                  onClick={() => {
-                                    setSelectedCode(bookmark.code);
-                                    setActiveTab("search");
-                                  }}
-                                  className="h-8 w-8 p-0 text-gray-500"
-                                >
-                                  <ArrowRight className="h-4 w-4" />
-                                </Button>
-                              </div>
-                            </div>
-
-                            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
-                              {penalCode.title}
-                            </h3>
-                            <p className="text-gray-600 dark:text-gray-400 text-sm line-clamp-2 mb-4">
-                              {penalCode.description}
-                            </p>
-
-                            <div className="flex items-center justify-between">
                               <Badge
                                 variant="outline"
-                                className={getCategoryColor(penalCode.category)}
+                                className={cn(
+                                  "font-medium text-xs",
+                                  getSeverityColor(penalCode.severity)
+                                )}
                               >
-                                {penalCode.category}
+                                {penalCode.severity}
                               </Badge>
-                              <span className="text-xs text-gray-500">
-                                {bookmark.dateBookmarked.toLocaleDateString()}
-                              </span>
                             </div>
-                          </motion.div>
-                        );
-                      })}
-                    </div>
-                  ) : (
-                    <div className="text-center py-16">
-                      <BookmarkPlus className="h-16 w-16 mx-auto text-gray-400 mb-4" />
-                      <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
-                        No bookmarks yet
-                      </h3>
-                      <p className="text-gray-600 dark:text-gray-400 mb-6">
-                        Save important penal codes for quick reference
-                      </p>
-                      <Button
-                        onClick={() => setActiveTab("search")}
-                        className="bg-blue-600 hover:bg-blue-700"
-                      >
-                        Start Searching
-                      </Button>
-                    </div>
-                  )}
-                </div>
-              )}
-
-              {activeTab === "history" && (
-                <div className="space-y-6">
-                  <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
-                    Search History
-                  </h2>
-
-                  {searchHistory.length > 0 ? (
-                    <div className="space-y-3">
-                      {searchHistory.map((item, index) => {
-                        const penalCode =
-                          mockPenalCodes[
-                            item.code as keyof typeof mockPenalCodes
-                          ];
-                        return (
-                          <motion.div
-                            key={`${item.code}-${index}`}
-                            initial={{ opacity: 0, y: 10 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            className="bg-white dark:bg-gray-800 rounded-xl p-4 shadow-sm border border-gray-100 dark:border-gray-700 flex items-center justify-between"
-                          >
-                            <div className="flex items-center gap-4">
-                              <div className="w-10 h-10 bg-gray-100 dark:bg-gray-700 rounded-xl flex items-center justify-center">
-                                <Clock className="h-5 w-5 text-gray-600 dark:text-gray-400" />
-                              </div>
-                              <div>
-                                <h3 className="font-semibold text-gray-900 dark:text-white">
-                                  Section {item.code}: {penalCode?.title}
-                                </h3>
-                                <p className="text-sm text-gray-500 dark:text-gray-400">
-                                  {item.timestamp.toLocaleString()}
-                                </p>
-                              </div>
+                            <div className="flex items-center gap-1">
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() =>
+                                  handleToggleBookmark(bookmark.code)
+                                }
+                                className="h-6 w-6 p-0 text-emerald-600 hover:bg-emerald-50 dark:hover:bg-emerald-900/20"
+                              >
+                                <BookMarked className="h-3 w-3" />
+                              </Button>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => {
+                                  setSelectedCode(bookmark.code);
+                                  setActiveTab("search");
+                                }}
+                                className="h-6 w-6 p-0 text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-700"
+                              >
+                                <ArrowRight className="h-3 w-3" />
+                              </Button>
                             </div>
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => {
-                                setSelectedCode(item.code);
-                                setActiveTab("search");
-                              }}
-                              className="h-8 w-8 p-0 text-gray-500"
+                          </div>
+
+                          <h3 className="text-sm font-medium text-slate-900 dark:text-white mb-2 line-clamp-1">
+                            {penalCode.title}
+                          </h3>
+                          <p className="text-slate-600 dark:text-slate-400 text-xs line-clamp-2 mb-3 leading-relaxed">
+                            {penalCode.description}
+                          </p>
+
+                          <div className="flex items-center justify-between">
+                            <Badge
+                              variant="outline"
+                              className={cn(
+                                "font-medium text-xs",
+                                getCategoryColor(penalCode.category)
+                              )}
                             >
-                              <ArrowRight className="h-4 w-4" />
-                            </Button>
-                          </motion.div>
-                        );
-                      })}
-                    </div>
-                  ) : (
-                    <div className="text-center py-16">
-                      <History className="h-16 w-16 mx-auto text-gray-400 mb-4" />
-                      <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
-                        No search history
-                      </h3>
-                      <p className="text-gray-600 dark:text-gray-400 mb-6">
-                        Your recent searches will appear here
-                      </p>
-                      <Button
-                        onClick={() => setActiveTab("search")}
-                        className="bg-blue-600 hover:bg-blue-700"
-                      >
-                        Start Searching
-                      </Button>
-                    </div>
-                  )}
-                </div>
-              )}
-            </div>
-          </ScrollArea>
-        </div>
+                              {penalCode.category.replace(" Crimes", "")}
+                            </Badge>
+                            <span className="text-xs text-slate-500 font-medium">
+                              {bookmark.dateBookmarked.toLocaleDateString()}
+                            </span>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                ) : (
+                  <div className="flex flex-col items-center justify-center min-h-[400px] text-center py-12">
+                    <BookmarkPlus className="h-12 w-12 mx-auto text-slate-400 mb-4" />
+                    <h3 className="text-lg font-medium text-slate-900 dark:text-white mb-2">
+                      No bookmarks yet
+                    </h3>
+                    <p className="text-slate-600 dark:text-slate-400 mb-6 text-sm">
+                      Save important penal codes for quick reference
+                    </p>
+                    <Button
+                      onClick={() => setActiveTab("search")}
+                      className="bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-2 rounded-lg font-semibold text-sm"
+                    >
+                      Start Searching
+                    </Button>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+        </ScrollArea>
       </div>
 
       {/* Success Toast */}
-      <AnimatePresence>
-        {showBookmarkSuccess && (
-          <motion.div
-            initial={{ opacity: 0, y: 50, scale: 0.9 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 50, scale: 0.9 }}
-            className="fixed bottom-6 right-6 bg-white dark:bg-gray-800 rounded-2xl shadow-2xl border border-green-200 dark:border-green-800 p-4 flex items-center gap-3 z-50"
+      {showBookmarkSuccess && (
+        <div className="fixed bottom-4 right-4 bg-white dark:bg-slate-800 rounded-xl shadow-2xl border border-green-200 dark:border-green-800 p-4 flex items-center gap-3 z-50 max-w-sm">
+          <div className="w-8 h-8 bg-green-100 dark:bg-green-900/30 rounded-lg flex items-center justify-center">
+            <CheckCircle2 className="h-5 w-5 text-green-600 dark:text-green-400" />
+          </div>
+          <div className="flex-1">
+            <h4 className="font-medium text-slate-900 dark:text-white text-sm">
+              Bookmark Added!
+            </h4>
+            <p className="text-xs text-slate-600 dark:text-slate-400">
+              Code saved to your collection
+            </p>
+          </div>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => setShowBookmarkSuccess(false)}
+            className="h-6 w-6 p-0 rounded-full hover:bg-slate-100 dark:hover:bg-slate-700"
           >
-            <div className="w-10 h-10 bg-green-100 dark:bg-green-900/20 rounded-xl flex items-center justify-center">
-              <CheckCircle2 className="h-6 w-6 text-green-600 dark:text-green-400" />
-            </div>
-            <div>
-              <h4 className="font-semibold text-gray-900 dark:text-white">
-                Bookmark Added!
-              </h4>
-              <p className="text-sm text-gray-600 dark:text-gray-400">
-                Code saved to your collection
-              </p>
-            </div>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => setShowBookmarkSuccess(false)}
-              className="h-8 w-8 p-0 ml-2 rounded-full"
-            >
-              <X className="h-4 w-4" />
-            </Button>
-          </motion.div>
-        )}
-      </AnimatePresence>
+            <X className="h-3 w-3" />
+          </Button>
+        </div>
+      )}
     </div>
   );
 }

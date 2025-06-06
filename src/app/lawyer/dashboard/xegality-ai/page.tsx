@@ -309,7 +309,7 @@ export default function XegalityAI() {
                     )}
                   >
                     {message.sender === "ai" && (
-                      <div className="w-10 h-10 bg-amber-600 rounded-full rounded-r-none flex items-center justify-center shadow-md">
+                      <div className="w-10 h-10 bg-amber-700 rounded-full rounded-r-none flex items-center justify-center shadow-md">
                         <Brain className="h-6 w-6 text-white" />
                       </div>
                     )}
@@ -332,7 +332,7 @@ export default function XegalityAI() {
                       </p>
                     </div>
                     {message.sender === "user" && (
-                      <div className="w-10 h-10 bg-slate-500 rounded-full rounded-l-none flex items-center justify-center shadow-md">
+                      <div className="w-10 h-10 bg-slate-700 rounded-full rounded-l-none flex items-center justify-center shadow-md">
                         <User className="h-6 w-6 text-white" />
                       </div>
                     )}

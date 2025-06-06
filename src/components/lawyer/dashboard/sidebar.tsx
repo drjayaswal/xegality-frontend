@@ -115,7 +115,7 @@ export function AppSidebar() {
   return (
     <Sidebar collapsible="icon" variant="floating" className="bg-transparent">
       <SidebarHeader className="w-full flex flex-col items-center bg-amber-700/10 rounded-t-[9px]">
-        <Link href="/lawyer" className="">
+        <Link href="/lawyer">
           <SidebarGroupLabel className="py-8 text-4xl bg-clip-text text-transparent font-extrabold bg-gradient-to-r from-slate-600 to-amber-600 tracking-wide">
             Xegality
           </SidebarGroupLabel>
@@ -123,9 +123,9 @@ export function AppSidebar() {
       </SidebarHeader>
 
       <SidebarContent className={`text-gray-700 font-medium bg-amber-700/10`}>
-        <SidebarGroup className="">
-          <SidebarGroupContent className="">
-            <SidebarMenu className="">
+        <SidebarGroup>
+          <SidebarGroupContent>
+            <SidebarMenu>
               {services.map((item, index) => {
                 const isActive = pathname === item.url;
 
@@ -157,7 +157,7 @@ export function AppSidebar() {
           </SidebarGroupContent>
         </SidebarGroup>
 
-        <SidebarGroup className="border-t">
+        <SidebarGroup>
           <SidebarGroupContent>
             <SidebarMenu className="">
               {other_menu_items.map((item, index) => {

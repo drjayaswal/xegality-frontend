@@ -1054,10 +1054,10 @@ export default function Clients() {
               <div className="text-center max-w-md px-4">
                 <User className="h-16 w-16 mx-auto text-emerald-700 dark:text-white/60 mb-6" />
                 <h2 className="text-2xl font-bold text-emerald-700 dark:text-white/90 mb-4">
-                  Client Conversation
+                  Professionals
                 </h2>
                 <p className="dark:text-white/70 text-emerald-700 mb-6">
-                  Choose a client from the sidebar to start conversation
+                  Choose a Professional from the sidebar to start conversation
                 </p>
                 <Button className="bg-transparent dark:text-white text-emerald-700 hover:text-white hover:bg-emerald-700 backdrop-blur-sm border-2 border-emerald-700 gap-2">
                   <Plus className="h-4 w-4" /> Start New Conversation

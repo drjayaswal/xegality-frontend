@@ -594,8 +594,8 @@ export default function Clients() {
                         className={cn(
                           "px-4 py-3 rounded-[36px] cursor-pointer transition-all duration-200 mb-2 relative",
                           selectedConversation === conversation.id
-                            ? "bg-gray-50/30 backdrop-blur-lg shadow-lg"
-                            : "hover:bg-gray-50/20 backdrop-blur-sm m-2"
+                            ? "bg-gray-50/30 backdrop-blur-lg shadow-lg shadow-amber-800"
+                            : "hover:bg-gray-50/20 backdrop-blur-sm m-1 shadow-amber-800"
                         )}
                         whileHover={{ scale: 1.01 }}
                         whileTap={{ scale: 0.98 }}

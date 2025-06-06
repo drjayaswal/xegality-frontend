@@ -160,7 +160,7 @@ export function AppSidebar() {
 
       <SidebarContent className={`text-gray-700 font-medium bg-emerald-700/10`}>
         <SidebarGroup>
-          <SidebarGroupContent className="">
+          <SidebarGroupContent>
             <SidebarMenu className="">
               {services.map((item, index) => {
                 const isActive = pathname === item.url;
@@ -193,7 +193,7 @@ export function AppSidebar() {
           </SidebarGroupContent>
         </SidebarGroup>
 
-        <SidebarGroup className="border-t">
+        <SidebarGroup>
           <SidebarGroupContent>
             <SidebarMenu className="">
               {other_menu_items.map((item, index) => {

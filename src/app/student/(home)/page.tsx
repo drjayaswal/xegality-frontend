@@ -53,10 +53,12 @@ interface TestimonialCardProps {
 export default function StudentHome() {
   const [inputValue, setInputValue] = useState("");
   const [inputFocused, setInputFocused] = useState(false);
-  const inputRef = useRef<HTMLInputElement>(null);
+  const [isGlobalLoading, setIsGlobalLoading] = useState(false);
 
   const isWaveActive = inputValue.trim() !== "" || inputFocused;
-
+  const handleLoadingChange = (loading: boolean) => {
+    setIsGlobalLoading(loading);
+  };
   return (
     <div className="min-h-full max-w-[90rem] mx-auto relative overflow-hidden px-4 sm:px-6 lg:px-8">
       {/* SiriWave Background - Amber/Slate theme */}
@@ -64,9 +66,9 @@ export default function StudentHome() {
         <div
           className={`w-full h-full flex items-center justify-center transition-all transform duration-1000 ease-in-out scale-150 sm:scale-180 ${
             isWaveActive
-              ? "-translate-y-32 sm:-translate-y-30"
+              ? "-translate-y-32 sm:-translate-y-36"
               : "-translate-y-44 sm:-translate-y-43"
-          } transform opacity-40`}
+          } transform opacity-90 ${isGlobalLoading ? "blur-md" : "blur-0"}`}
         >
           <SiriWave
             colors={[
@@ -84,7 +86,11 @@ export default function StudentHome() {
         {/* Hero Section - Lawyer Professional */}
         <div className="mt-6 sm:mt-10">
           <div className="flex flex-col items-center text-center mb-6 sm:mb-8 md:mb-10">
-            <div className="flex flex-col items-center text-center mt-6 sm:mt-10 mb-0 relative">
+            <div
+              className={`flex flex-col items-center text-center mt-6 sm:mt-10 mb-0 relative ${
+                isGlobalLoading ? "blur-md opacity-50" : "blur-0 opacity-100"
+              }`}
+            >
               {/* Xegality AI Text - Professional Amber/Slate theme */}
               <div className="relative z-20 flex flex-col items-center justify-center">
                 {/* Professional Badge - Animated */}
@@ -93,7 +99,7 @@ export default function StudentHome() {
                     className={`transition-all duration-700 transform ${
                       !isWaveActive && !inputFocused
                         ? "opacity-100 scale-100 translate-y-28"
-                        : "opacity-100 scale-95 translate-y-44"
+                        : "opacity-100 scale-95 translate-y-40"
                     }`}
                   >
                     <Badge className="bg-gradient-to-r from-slate-700 to-emerald-600 text-white px-4 sm:px-6 py-2 text-xs sm:text-sm font-medium rounded-full shadow-lg">
@@ -104,7 +110,7 @@ export default function StudentHome() {
                 <div
                   className={`transition-all duration-1000 ease-in-out transform ${
                     inputFocused || isWaveActive || inputValue != ""
-                      ? "scale-105 sm:scale-110 -translate-y-10  drop-shadow-2xl"
+                      ? "scale-105 sm:scale-110 -translate-y-20  drop-shadow-2xl"
                       : "scale-100 -translate-y-20 drop-shadow-lg"
                   }`}
                 >
@@ -160,6 +166,7 @@ export default function StudentHome() {
                   <AIAssistantInterface
                     onFocus={() => setInputFocused(true)}
                     onBlur={() => setInputFocused(false)}
+                    onLoadingChange={handleLoadingChange}
                     placeholder="Ask about constitutional law, contracts, torts, legal writing..."
                     from="slate-800"
                     to="emerald-800"
@@ -171,7 +178,12 @@ export default function StudentHome() {
         </div>
 
         {/* Professional Services Section */}
-        <section id="services" className="py-12 sm:py-16 lg:py-20 relative">
+        <section
+          id="services"
+          className={`py-12 sm:py-16 lg:py-20 relative ${
+            isGlobalLoading ? "blur-md opacity-50" : "blur-0 opacity-100"
+          }`}
+        >
           <div className="relative">
             {/* Background - Professional Amber/Slate theme */}
             <div
@@ -260,7 +272,11 @@ export default function StudentHome() {
         </section>
 
         {/* Professional Process */}
-        <section className="py-12 sm:py-16 lg:py-20 relative z-10">
+        <section
+          className={`py-12 sm:py-16 lg:py-20 relative z-10 ${
+            isGlobalLoading ? "blur-md opacity-50" : "blur-0 opacity-100"
+          }`}
+        >
           <div className="container mx-auto px-4">
             <SectionHeading
               subtitle="Professional Implementation"
@@ -291,7 +307,9 @@ export default function StudentHome() {
         {/* Professional Features */}
         <section
           id="features"
-          className="py-12 sm:py-16 lg:py-20 relative z-10"
+          className={`py-12 sm:py-16 lg:py-20 relative z-10 ${
+            isGlobalLoading ? "blur-md opacity-50" : "blur-0 opacity-100"
+          }`}
         >
           <div className="container mx-auto p-4 sm:p-6 lg:p-8 rounded-2xl sm:rounded-4xl bg-white/80 backdrop-blur-sm">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 sm:gap-12 lg:gap-16 items-center">
@@ -387,7 +405,9 @@ export default function StudentHome() {
         {/* Professional Testimonials */}
         <section
           id="testimonials"
-          className="mt-6 sm:mt-10 py-12 sm:py-16 lg:py-20 relative z-10"
+          className={`mt-6 sm:mt-10 py-12 sm:py-16 lg:py-20 relative z-10 ${
+            isGlobalLoading ? "blur-md opacity-50" : "blur-0 opacity-100"
+          }`}
         >
           <div className="container mx-auto px-4">
             <SectionHeading
@@ -420,7 +440,11 @@ export default function StudentHome() {
         </section>
 
         {/* Professional CTA */}
-        <section className="py-12 sm:py-16 lg:py-20 bg-gradient-to-r from-slate-800 via-slate-900 to-emerald-800 relative z-10 mx-4 sm:mx-0 rounded-2xl sm:rounded-none">
+        <section
+          className={`py-12 sm:py-16 lg:py-20 bg-gradient-to-r from-slate-800 via-slate-900 to-emerald-800 relative z-10 mx-4 sm:mx-0 rounded-2xl sm:rounded-none ${
+            isGlobalLoading ? "blur-md opacity-50" : "blur-0 opacity-100"
+          }`}
+        >
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
             <div className="max-w-3xl mx-auto text-center">
               <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-4 sm:mb-6">
