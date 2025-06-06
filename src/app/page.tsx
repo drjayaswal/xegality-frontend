@@ -14,6 +14,9 @@ export default function LandingPage() {
         <Link href="/lawyer">
           <Button>Visit Lawyer homepage</Button>
         </Link>
+        <Link href="/student">
+          <Button>Visit Student homepage</Button>
+        </Link>
       </div>
       <div className="flex gap-2 mt-4">
         <Link href="/consumer/dashboard">
@@ -21,6 +24,9 @@ export default function LandingPage() {
         </Link>
         <Link href="/lawyer/dashboard">
           <Button>Visit Lawyer dashboard</Button>
+        </Link>
+        <Link href="/student/dashboard">
+          <Button>Visit Student dashboard</Button>
         </Link>
       </div>
     </>

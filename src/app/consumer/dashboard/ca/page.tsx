@@ -1,445 +1,391 @@
-"use client";
+"use client"
 
-import {
-  CheckCircle,
-  ChevronDown,
-  MoreVertical,
-} from "lucide-react"
-import { Badge } from "@/components/ui/badge"
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
-
-import { useState } from "react";
-import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useState } from "react"
 import {
   Search,
-  Filter,
-  FileText,
-  Calendar,
-  Clock,
-  User,
-  MoreHorizontal,
-  CheckCircle2,
-  AlertCircle,
-  Clock3,
-  Download,
-  Upload,
-  Building2,
-  Receipt,
-  Scale,
-  FileSignature,
-  ChevronRight,
-  ArrowRight,
-  Plus,
-  Bell,
-  Settings,
-  HelpCircle,
   Phone,
   MessageSquare,
-} from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
-import { Card, CardContent } from "@/components/ui/card";
+  MoreVertical,
+  FileText,
+  CheckCircle,
+  Clock,
+  AlertCircle,
+  ChevronDown,
+  Home,
+  FileCheck,
+  Settings,
+  CreditCard,
+  HelpCircle,
+  User,
+  PlusCircle,
+  Download,
+  Calendar,
+  Building,
+  Briefcase,
+  Award,
+  Bookmark,
+} from "lucide-react"
+import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
+import { Card, CardContent } from "@/components/ui/card"
+import { Input } from "@/components/ui/input"
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { Progress } from "@/components/ui/progress"
 
-interface Service {
-  id: string;
-  title: string;
-  category: "Company Registration" | "Licenses" | "Tax" | "Trademark";
-  status: "pending" | "in-progress" | "completed" | "rejected";
-  priority: "high" | "medium" | "low";
-  assignedTo: string;
-  startDate: Date;
-  lastUpdate: Date;
-  nextStep?: string;
-  description: string;
-  documents: Document[];
-  updates: Update[];
-}
-
-interface Document {
-  id: string;
-  name: string;
-  type: string;
-  size: string;
-  uploadedBy: string;
-  uploadedAt: Date;
-}
-
-interface Update {
-  id: string;
-  content: string;
-  timestamp: Date;
-  status: "info" | "success" | "warning" | "error";
-}
-
-export default function CADashboard() {
-  const [searchQuery, setSearchQuery] = useState("");
-  const [filterStatus, setFilterStatus] = useState<"all" | "pending" | "in-progress" | "completed" | "rejected">("all");
-  const [selectedService, setSelectedService] = useState<string | null>(null);
-  const [activeTab, setActiveTab] = useState<"overview" | "documents" | "updates">("overview");
+export default function Dashboard() {
   const [selectedApplication, setSelectedApplication] = useState(applications[0])
 
-  // Sample services data
-  const services: Service[] = [
-    {
-      id: "svc-001",
-      title: "Private Limited Company Registration",
-      category: "Company Registration",
-      status: "in-progress",
-      priority: "high",
-      assignedTo: "CA Rajesh Kumar",
-      startDate: new Date(2024, 2, 15),
-      lastUpdate: new Date(2024, 3, 10),
-      nextStep: "Submit additional documents",
-      description: "Registration of a new private limited company for tech startup",
-      documents: [
-        {
-          id: "doc-001",
-          name: "Company_Registration_Form.pdf",
-          type: "application/pdf",
-          size: "1.2 MB",
-          uploadedBy: "Client",
-          uploadedAt: new Date(2024, 2, 15),
-        },
-        {
-          id: "doc-002",
-          name: "Business_Plan.docx",
-          type: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-          size: "2.8 MB",
-          uploadedBy: "Client",
-          uploadedAt: new Date(2024, 2, 20),
-        },
-      ],
-      updates: [
-        {
-          id: "update-001",
-          content: "Initial application submitted",
-          timestamp: new Date(2024, 2, 15),
-          status: "info",
-        },
-        {
-          id: "update-002",
-          content: "Documents under review",
-          timestamp: new Date(2024, 2, 20),
-          status: "info",
-        },
-        {
-          id: "update-003",
-          content: "Additional documents requested",
-          timestamp: new Date(2024, 3, 10),
-          status: "warning",
-        },
-      ],
-    },
-    {
-      id: "svc-002",
-      title: "GST Registration",
-      category: "Tax",
-      status: "completed",
-      priority: "high",
-      assignedTo: "CA Priya Sharma",
-      startDate: new Date(2024, 1, 10),
-      lastUpdate: new Date(2024, 2, 5),
-      description: "GST registration for e-commerce business",
-      documents: [
-        {
-          id: "doc-003",
-          name: "GST_Registration_Form.pdf",
-          type: "application/pdf",
-          size: "0.8 MB",
-          uploadedBy: "Client",
-          uploadedAt: new Date(2024, 1, 10),
-        },
-      ],
-      updates: [
-        {
-          id: "update-004",
-          content: "Application submitted",
-          timestamp: new Date(2024, 1, 10),
-          status: "info",
-        },
-        {
-          id: "update-005",
-          content: "Registration approved",
-          timestamp: new Date(2024, 2, 5),
-          status: "success",
-        },
-      ],
-    },
-  ];
-
-  const currentService = services.find((svc) => svc.id === selectedService);
-
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case "pending":
-        return "bg-yellow-100 text-yellow-800";
-      case "in-progress":
-        return "bg-blue-100 text-blue-800";
-      case "completed":
-        return "bg-green-100 text-green-800";
-      case "rejected":
-        return "bg-red-100 text-red-800";
-      default:
-        return "bg-gray-100 text-gray-800";
-    }
-  };
-
-  const getStatusIcon = (status: string) => {
-    switch (status) {
-      case "pending":
-        return <Clock3 className="w-4 h-4" />;
-      case "in-progress":
-        return <Clock className="w-4 h-4" />;
-      case "completed":
-        return <CheckCircle2 className="w-4 h-4" />;
-      case "rejected":
-        return <AlertCircle className="w-4 h-4" />;
-      default:
-        return null;
-    }
-  };
-
-  const getCategoryIcon = (category: string) => {
-    switch (category) {
-      case "Company Registration":
-        return <Building2 className="w-4 h-4" />;
-      case "Licenses":
-        return <FileSignature className="w-4 h-4" />;
-      case "Tax":
-        return <Receipt className="w-4 h-4" />;
-      case "Trademark":
-        return <Scale className="w-4 h-4" />;
-      default:
-        return <FileText className="w-4 h-4" />;
-    }
-  };
-
   return (
-    <div className="flex-1 flex flex-col overflow-hidden backdrop-blur-md rounded-lg">
-      {/* Top bar */}
-      <header className="bg-white border-b px-6 py-4">
-        <div className="flex items-center justify-between">
-          <div className="relative w-64">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
-            <Input placeholder="Search applications..." className="pl-10 h-9 w-full" />
+    <div className="flex h-full bg-slate-50">
+      {/* Main content */}
+      <div className="flex-1 flex flex-col overflow-hidden">
+        {/* Top bar */}
+        <header className=" border-b px-8 py-4 shadow-sm">
+          <div className="flex items-center justify-between">
+            <div className="relative w-72">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+              <Input
+                placeholder="Search applications..."
+                className="pl-10 h-10 w-full bg-gray-50 border-gray-200 focus:bg-white transition-colors"
+              />
+            </div>
+            <div className="flex items-center space-x-4">
+              <Button
+                variant="outline"
+                size="sm"
+                className="h-10 px-4 border-gray-200 text-gray-700 hover:bg-gray-50 hover:text-gray-900 transition-colors"
+              >
+                <Phone className="h-4 w-4 mr-2" />
+                Contact CA
+              </Button>
+              <Button
+                size="sm"
+                className="h-10 px-4 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white transition-colors"
+              >
+                <MessageSquare className="h-4 w-4 mr-2" />
+                Message
+              </Button>
+            </div>
           </div>
-          <div className="flex items-center space-x-4">
-            <Button variant="outline" size="sm">
-              <Phone className="h-4 w-4 mr-2" />
-              Contact CA
-            </Button>
-            <Button size="sm">
-              <MessageSquare className="h-4 w-4 mr-2" />
-              Message
-            </Button>
-          </div>
-        </div>
-      </header>
+        </header>
 
-      {/* Application list */}
-      <div className="flex-1 flex overflow-hidden">
-        <div className="w-80 border-r bg-white overflow-y-auto">
-          <div className="p-4">
-            <h2 className="text-lg font-semibold mb-4">Your Applications</h2>
-            <div className="space-y-3">
-              {applications.map((app) => (
-                <Card
-                  key={app.id}
-                  className={`cursor-pointer hover:border-purple-200 ${selectedApplication.id === app.id ? "border-purple-500" : ""}`}
-                  onClick={() => setSelectedApplication(app)}
-                >
-                  <CardContent className="p-4">
-                    <div className="flex items-start justify-between">
-                      <div>
+        {/* Application list */}
+        <div className="flex-1 flex overflow-hidden">
+          <div className="w-96 border-r bg-white overflow-y-auto">
+            <div className="p-6">
+              <h2 className="text-lg font-semibold mb-4">Your Applications</h2>
+              <div className="space-y-4">
+                {applications.map((app) => (
+                  <Card
+                    key={app.id}
+                    className={`cursor-pointer border-2 border-gray-500/10 shadow-none hover:shadow-lg transition-all duration-200 ${selectedApplication.id === app.id
+                      ? "border-2 border-accent-violet/30 shadow-lg bg-accent-violet/3 "
+                      : "hover:border-gray-300"
+                      }`}
+                    onClick={() => setSelectedApplication(app)}
+                  >
+                    <CardContent className="p-4">
+                      <div className="flex items-start justify-between">
                         <div className="flex items-center">
                           <div
-                            className={`h-8 w-8 rounded-full flex items-center justify-center text-white ${getStatusColor(app.status).bgColor}`}
+                            className={`h-10 w-10 rounded-full flex items-center justify-center text-white shadow-sm ${getStatusColor(app.status).bgColor}`}
                           >
-                            {getStatusIcon(app.status)}
+                            {getCategoryIcon(app.category)}
                           </div>
                           <div className="ml-3">
-                            <h3 className="font-medium text-sm">{app.service}</h3>
-                            <p className="text-xs text-gray-500">Ref: {app.reference}</p>
+                            <h3 className="font-medium">{app.service}</h3>
+                            <p className="text-xs text-gray-500 mt-0.5">Ref: {app.reference}</p>
                           </div>
                         </div>
+                        <Badge className={`${getStatusColor(app.status).badgeColor} ml-2`}>{app.status}</Badge>
                       </div>
-                      <Badge className={`${getStatusColor(app.status).badgeColor}`}>{app.status}</Badge>
-                    </div>
-                    <p className="text-xs text-gray-500 mt-2">Last updated: {app.lastUpdated}</p>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          </div>
-        </div>
 
-        {/* Application details */}
-        <div className="flex-1 overflow-y-auto p-6">
-          <div className="flex items-center justify-between mb-6">
-            <div>
-              <div className="flex items-center">
-                <h1 className="text-2xl font-bold">{selectedApplication.service}</h1>
-                <Badge className={`ml-4 ${getStatusColor(selectedApplication.status).badgeColor}`}>
-                  {selectedApplication.status}
-                </Badge>
+                      <div className="mt-3 pt-3 border-t border-dashed">
+                        <div className="flex justify-between items-center text-xs text-gray-500">
+                          <span>Progress</span>
+                          <span>{getProgressPercentage(app.status)}%</span>
+                        </div>
+                        <Progress
+                          value={getProgressPercentage(app.status)}
+                          className="h-1.5 mt-1.5"
+                          indicatorClassName={getStatusColor(app.status).progressColor}
+                        />
+                        <div className="flex justify-between items-center mt-3">
+                          <span className="text-xs text-gray-500">Last updated: {app.lastUpdated}</span>
+                          <span className="text-xs font-medium text-gray-700">{app.assignedTo.split(",")[0]}</span>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
               </div>
-              <p className="text-gray-500">Reference: {selectedApplication.reference}</p>
-            </div>
-            <div className="flex space-x-2">
-              <Button variant="outline">Download Documents</Button>
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="icon">
-                    <MoreVertical className="h-4 w-4" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                  <DropdownMenuItem>View all documents</DropdownMenuItem>
-                  <DropdownMenuItem>Contact assigned CA</DropdownMenuItem>
-                  <DropdownMenuItem>Cancel application</DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
             </div>
           </div>
 
-          <Tabs defaultValue="details">
-            <TabsList>
-              <TabsTrigger value="details">Application Details</TabsTrigger>
-              <TabsTrigger value="timeline">Timeline</TabsTrigger>
-              <TabsTrigger value="documents">Documents</TabsTrigger>
-            </TabsList>
-
-            <TabsContent value="details" className="mt-6">
-              <Card>
-                <CardContent className="p-6">
-                  <div className="grid grid-cols-2 gap-6">
-                    <div>
-                      <h3 className="text-sm font-medium text-gray-500">Service Type</h3>
-                      <p className="mt-1">{selectedApplication.category}</p>
+          {/* Application details */}
+          <div className="flex-1 overflow-y-auto bg-slate-50">
+            <div className="max-w-5xl mx-auto p-8">
+              <div className="flex items-center justify-between mb-8">
+                <div>
+                  <div className="flex items-center">
+                    <div
+                      className={`h-12 w-12 rounded-full flex items-center justify-center text-white shadow-md ${getStatusColor(selectedApplication.status).bgColor} mr-4`}
+                    >
+                      {getCategoryIcon(selectedApplication.category)}
                     </div>
                     <div>
-                      <h3 className="text-sm font-medium text-gray-500">Service Name</h3>
-                      <p className="mt-1">{selectedApplication.service}</p>
-                    </div>
-                    <div>
-                      <h3 className="text-sm font-medium text-gray-500">Status</h3>
-                      <p className="mt-1">{selectedApplication.status}</p>
-                    </div>
-                    <div>
-                      <h3 className="text-sm font-medium text-gray-500">Assigned To</h3>
-                      <p className="mt-1">{selectedApplication.assignedTo}</p>
-                    </div>
-                    <div>
-                      <h3 className="text-sm font-medium text-gray-500">Submission Date</h3>
-                      <p className="mt-1">{selectedApplication.submissionDate}</p>
-                    </div>
-                    <div>
-                      <h3 className="text-sm font-medium text-gray-500">Expected Completion</h3>
-                      <p className="mt-1">{selectedApplication.expectedCompletion}</p>
+                      <h1 className="text-2xl font-bold">{selectedApplication.service}</h1>
+                      <div className="flex items-center mt-1">
+                        <Badge className={`rounded-full border-none ${getStatusColor(selectedApplication.status).badgeColor} mr-3`}>
+                          {selectedApplication.status}
+                        </Badge>
+                        <p className="text-gray-500 text-sm">Reference: {selectedApplication.reference}</p>
+                      </div>
                     </div>
                   </div>
-                </CardContent>
-              </Card>
-            </TabsContent>
+                </div>
+                <div className="flex space-x-3">
+                  <Button
+                    variant="outline"
+                    className="border-gray-200 text-gray-700 hover:bg-gray-50 hover:text-gray-900 transition-colors"
+                  >
+                    <Download className="h-4 w-4 mr-2" />
+                    Download Documents
+                  </Button>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="ghost" size="icon" className="h-10 w-10 rounded-full">
+                        <MoreVertical className="h-5 w-5" />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end" className="w-56">
+                      <DropdownMenuItem className="cursor-pointer">View all documents</DropdownMenuItem>
+                      <DropdownMenuItem className="cursor-pointer">Contact assigned CA</DropdownMenuItem>
+                      <DropdownMenuItem className="cursor-pointer text-red-600">Cancel application</DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </div>
+              </div>
 
-            <TabsContent value="timeline" className="mt-6">
-              <Card>
-                <CardContent className="p-6">
-                  <h3 className="text-lg font-semibold mb-6">Application Timeline</h3>
-                  <div className="space-y-8">
-                    {selectedApplication.timeline.map((item, index) => (
-                      <div key={index} className="relative pl-8">
-                        {index !== selectedApplication.timeline.length - 1 && (
-                          <div className="absolute left-3.5 top-6 h-full w-px bg-gray-200" />
-                        )}
-                        <div
-                          className={`absolute left-0 top-1 h-7 w-7 rounded-full flex items-center justify-center ${getTimelineItemColor(item.type).bgColor}`}
-                        >
-                          {getTimelineItemIcon(item.type)}
+              <Tabs defaultValue="details" className="mt-4">
+                <TabsList className="bg-white shadow-lg rounded-full py-5 px-1.5 gap-5">
+                  <TabsTrigger value="details" className="data-[state=active]:bg-accent-violet/5 data-[state=active]:text-accent-violet rounded-full py-3.5 px-3 ">
+                    Application Details
+                  </TabsTrigger>
+                  <TabsTrigger value="timeline" className="data-[state=active]:bg-accent-violet/5 data-[state=active]:text-accent-violet rounded-full py-3.5 px-3 ">
+                    Timeline
+                  </TabsTrigger>
+                  <TabsTrigger value="documents" className="data-[state=active]:bg-accent-violet/5 data-[state=active]:text-accent-violet rounded-full py-3.5 px-3 ">
+                    Documents
+                  </TabsTrigger>
+                </TabsList>
+
+                <TabsContent value="details" className="mt-6">
+                  <Card className="overflow-hidden shadow-none p-0 border-gray-500/10 border-2">
+                    <div className="bg-gradient-to-r from-purple-600/10 to-indigo-600/10 px-6 py-4">
+                      <h3 className="text-lg font-semibold text-purple-600">Application Overview</h3>
+                    </div>
+                    <CardContent className="p-6 bg-white">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <div className="space-y-6">
+                          <div>
+                            <h3 className="text-sm font-medium text-gray-500">Service Category</h3>
+                            <div className="mt-2 flex items-center">
+                              {getCategoryIcon(selectedApplication.category, "text-purple-600")}
+                              <p className="ml-2 font-medium">{selectedApplication.category}</p>
+                            </div>
+                          </div>
+
+                          <div>
+                            <h3 className="text-sm font-medium text-gray-500">Service Name</h3>
+                            <p className="mt-2 font-medium">{selectedApplication.service}</p>
+                          </div>
+
+                          <div>
+                            <h3 className="text-sm font-medium text-gray-500">Status</h3>
+                            <div className="mt-2">
+                              <Badge className={`${getStatusColor(selectedApplication.status).badgeColor}`}>
+                                {selectedApplication.status}
+                              </Badge>
+                            </div>
+                          </div>
                         </div>
-                        <div>
-                          <h4 className="font-medium">{item.title}</h4>
-                          <p className="text-sm text-gray-600 mt-1">{item.description}</p>
-                          <div className="flex items-center mt-2 text-xs text-gray-500">
-                            <span>{item.date}</span>
-                            {item.by && (
-                              <>
-                                <span className="mx-2">•</span>
-                                <span>{item.by}</span>
-                              </>
-                            )}
+
+                        <div className="space-y-6">
+                          <div>
+                            <h3 className="text-sm font-medium text-gray-500">Assigned To</h3>
+                            <div className="mt-2 flex items-center">
+                              <Avatar className="h-8 w-8 mr-2">
+                                <AvatarImage src="/placeholder.svg?height=32&width=32" />
+                                <AvatarFallback>
+                                  {selectedApplication.assignedTo.split(" ")[0][0]}
+                                  {selectedApplication.assignedTo.split(" ")[1][0]}
+                                </AvatarFallback>
+                              </Avatar>
+                              <p className="font-medium">{selectedApplication.assignedTo}</p>
+                            </div>
+                          </div>
+
+                          <div>
+                            <h3 className="text-sm font-medium text-gray-500">Submission Date</h3>
+                            <p className="mt-2 font-medium">{selectedApplication.submissionDate}</p>
+                          </div>
+
+                          <div>
+                            <h3 className="text-sm font-medium text-gray-500">Expected Completion</h3>
+                            <p className="mt-2 font-medium">{selectedApplication.expectedCompletion}</p>
                           </div>
                         </div>
                       </div>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
-            </TabsContent>
 
-            <TabsContent value="documents" className="mt-6">
-              <Card>
-                <CardContent className="p-6">
-                  <h3 className="text-lg font-semibold mb-6">Application Documents</h3>
-                  <div className="space-y-4">
-                    {selectedApplication.documents.map((doc, index) => (
-                      <div key={index} className="flex items-center justify-between p-3 border rounded-md">
-                        <div className="flex items-center">
-                          <FileText className="h-5 w-5 text-gray-500 mr-3" />
-                          <div>
-                            <p className="font-medium text-sm">{doc.name}</p>
-                            <p className="text-xs text-gray-500">
-                              {doc.size} • {doc.uploadedOn}
-                            </p>
-                          </div>
+                      <div className="mt-8 pt-6 border-t">
+                        <h3 className="text-sm font-medium text-gray-500 mb-3">Application Progress</h3>
+                        <div className="flex justify-between items-center text-sm mb-2">
+                          <span>Overall Completion</span>
+                          <span className="font-medium">{getProgressPercentage(selectedApplication.status)}%</span>
                         </div>
-                        <Button variant="ghost" size="sm">
-                          Download
+                        <Progress
+                          value={getProgressPercentage(selectedApplication.status)}
+                          className="h-2"
+                          indicatorClassName={getStatusColor(selectedApplication.status).progressColor}
+                        />
+                      </div>
+                    </CardContent>
+                  </Card>
+                </TabsContent>
+
+                <TabsContent value="timeline" className="mt-6 border border-accent-violet/0 shadow-none">
+                  <Card className="overflow-hidden shadow-none p-0 border-gray-500/10 border-2">
+                    <div className="bg-gradient-to-r from-purple-600/10 to-indigo-600/10 px-6 py-4">
+                      <h3 className="text-lg font-semibold text-purple-600">Application Timeline</h3>
+                    </div>
+                    <CardContent className="p-6 bg-white">
+                      <div className="space-y-8">
+                        {selectedApplication.timeline.map((item, index) => (
+                          <div key={index} className="relative pl-10">
+                            {index !== selectedApplication.timeline.length - 1 && (
+                              <div className="absolute left-4 top-8 h-full w-0.5 bg-gray-200" />
+                            )}
+                            <div
+                              className={`absolute left-0 top-1 h-8 w-8 rounded-full flex items-center justify-center shadow-sm ${getTimelineItemColor(item.type).bgColor}`}
+                            >
+                              {getTimelineItemIcon(item.type)}
+                            </div>
+                            <div className="bg-white rounded-lg p-4 hover:bg-gray-50 transition-colors">
+                              <h4 className="font-semibold text-gray-900">{item.title}</h4>
+                              <p className="text-gray-600 mt-1">{item.description}</p>
+                              <div className="flex items-center mt-3 text-sm">
+                                <span className="text-gray-500 font-medium">{item.date}</span>
+                                {item.by && (
+                                  <>
+                                    <span className="mx-2 text-gray-300">•</span>
+                                    <div className="flex items-center">
+                                      <Avatar className="h-5 w-5 mr-1">
+                                        <AvatarFallback className="text-[10px]">
+                                          {item.by.split(" ")[0][0]}
+                                          {item.by.split(" ")[1]?.[0] || ""}
+                                        </AvatarFallback>
+                                      </Avatar>
+                                      <span className="text-gray-700">{item.by}</span>
+                                    </div>
+                                  </>
+                                )}
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </CardContent>
+                  </Card>
+                </TabsContent>
+
+                <TabsContent value="documents" className="mt-6">
+                  <Card className="overflow-hidden shadow-none p-0 border-gray-500/10 border-2">
+                    <div className="bg-gradient-to-r from-purple-600/10 to-indigo-600/10 px-6 py-4">
+                      <h3 className="text-lg font-semibold text-purple-600">Application Documents</h3>
+                    </div>
+                    <CardContent className="p-6 bg-white">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        {selectedApplication.documents.map((doc, index) => (
+                          <div
+                            key={index}
+                            className="flex items-center justify-between p-4 border rounded-lg hover:shadow-sm transition-shadow"
+                          >
+                            <div className="flex items-center">
+                              <div className="h-10 w-10 rounded-lg bg-purple-100 flex items-center justify-center text-purple-600 mr-3">
+                                <FileText className="h-5 w-5" />
+                              </div>
+                              <div>
+                                <p className="font-medium">{doc.name}</p>
+                                <p className="text-xs text-gray-500 mt-0.5">
+                                  {doc.size} • Uploaded on {doc.uploadedOn}
+                                </p>
+                              </div>
+                            </div>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="h-8 text-gray-700 hover:text-gray-900 hover:bg-gray-100"
+                            >
+                              <Download className="h-4 w-4 mr-1" />
+                              Download
+                            </Button>
+                          </div>
+                        ))}
+                      </div>
+
+                      <div className="mt-6 flex justify-center">
+                        <Button variant="outline" className="border-dashed border-gray-300 text-gray-600">
+                          <PlusCircle className="h-4 w-4 mr-2" />
+                          Upload Additional Document
                         </Button>
                       </div>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
-            </TabsContent>
-          </Tabs>
+                    </CardContent>
+                  </Card>
+                </TabsContent>
+              </Tabs>
+            </div>
+          </div>
         </div>
       </div>
     </div>
-  );
+  )
 }
-
 
 // Helper functions
 function getStatusColor(status: string) {
   switch (status) {
     case "In Progress":
       return {
-        bgColor: "bg-blue-500",
-        badgeColor: "bg-blue-100 text-blue-800",
+        bgColor: "bg-blue-600",
+        badgeColor: "bg-blue-100 text-blue-800 border-blue-200",
+        progressColor: "bg-blue-600",
       }
     case "Completed":
       return {
-        bgColor: "bg-green-500",
-        badgeColor: "bg-green-100 text-green-800",
+        bgColor: "bg-emerald-600",
+        badgeColor: "bg-emerald-100 text-emerald-800 border-emerald-200",
+        progressColor: "bg-emerald-600",
       }
     case "Pending":
       return {
-        bgColor: "bg-yellow-500",
-        badgeColor: "bg-yellow-100 text-yellow-800",
+        bgColor: "bg-amber-500",
+        badgeColor: "bg-amber-100 text-amber-800 border-amber-200",
+        progressColor: "bg-amber-500",
       }
     case "Requires Action":
       return {
-        bgColor: "bg-red-500",
-        badgeColor: "bg-red-100 text-red-800",
+        bgColor: "bg-rose-600",
+        badgeColor: "bg-rose-100 text-rose-800 border-rose-200",
+        progressColor: "bg-rose-600",
       }
     default:
       return {
-        bgColor: "bg-gray-500",
-        badgeColor: "bg-gray-100 text-gray-800",
+        bgColor: "bg-gray-600",
+        badgeColor: "bg-gray-100 text-gray-800 border-gray-200",
+        progressColor: "bg-gray-600",
       }
   }
 }
@@ -447,28 +393,43 @@ function getStatusColor(status: string) {
 function getStatusIcon(status: string) {
   switch (status) {
     case "In Progress":
-      return <Clock className="h-4 w-4" />
+      return <Clock className="h-5 w-5" />
     case "Completed":
-      return <CheckCircle className="h-4 w-4" />
+      return <CheckCircle className="h-5 w-5" />
     case "Pending":
-      return <Clock className="h-4 w-4" />
+      return <Clock className="h-5 w-5" />
     case "Requires Action":
-      return <AlertCircle className="h-4 w-4" />
+      return <AlertCircle className="h-5 w-5" />
     default:
-      return <FileText className="h-4 w-4" />
+      return <FileText className="h-5 w-5" />
+  }
+}
+
+function getCategoryIcon(category: string, className = "") {
+  switch (category) {
+    case "Company Registration and Setup":
+      return <Building className={`h-5 w-5 ${className}`} />
+    case "Tax & Compliances":
+      return <FileCheck className={`h-5 w-5 ${className}`} />
+    case "Trademark and Intellectual Property":
+      return <Award className={`h-5 w-5 ${className}`} />
+    case "Licenses & Registrations":
+      return <Bookmark className={`h-5 w-5 ${className}`} />
+    default:
+      return <Briefcase className={`h-5 w-5 ${className}`} />
   }
 }
 
 function getTimelineItemColor(type: string) {
   switch (type) {
     case "success":
-      return { bgColor: "bg-green-100 text-green-600" }
+      return { bgColor: "bg-emerald-100 text-emerald-600" }
     case "info":
       return { bgColor: "bg-blue-100 text-blue-600" }
     case "warning":
-      return { bgColor: "bg-yellow-100 text-yellow-600" }
+      return { bgColor: "bg-amber-100 text-amber-600" }
     case "error":
-      return { bgColor: "bg-red-100 text-red-600" }
+      return { bgColor: "bg-rose-100 text-rose-600" }
     default:
       return { bgColor: "bg-gray-100 text-gray-600" }
   }
@@ -486,6 +447,21 @@ function getTimelineItemIcon(type: string) {
       return <AlertCircle className="h-4 w-4" />
     default:
       return <FileText className="h-4 w-4" />
+  }
+}
+
+function getProgressPercentage(status: string) {
+  switch (status) {
+    case "In Progress":
+      return 65
+    case "Completed":
+      return 100
+    case "Pending":
+      return 25
+    case "Requires Action":
+      return 45
+    default:
+      return 0
   }
 }
 
