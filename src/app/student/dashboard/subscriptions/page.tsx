@@ -145,7 +145,7 @@ export default function Subscription() {
   return (
     <div className=" h-full shadow-lg border-[1.5px] rounded-lg">
       {/* Content */}
-      <div className="flex-1 bg-emerald-700/5 p-8 rounded-md">
+      <div className="flex-1 p-8 rounded-md">
         <ScrollArea className="h-full">
           {/* Current Plan */}
           <div className="bg-gray-50/30 dark:bg-gray-50/10 backdrop-blur-sm rounded-lg p-6 mb-8">

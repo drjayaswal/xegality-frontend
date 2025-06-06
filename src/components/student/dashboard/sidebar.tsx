@@ -115,7 +115,7 @@ const other_menu_items = [
     icon: SquareChartGantt,
   },
   {
-    title: "AI Research",
+    title: "Research",
     url: "/student/dashboard/research",
     icon: FileSearch2,
   },

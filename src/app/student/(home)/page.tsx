@@ -15,7 +15,7 @@ import {
   MessageSquare,
 } from "lucide-react";
 import Image from "next/image";
-import { AIAssistantInterface } from "@/components/ui/ai-assistant-interface";
+import AIAssistantInterface from "@/components/ui/ai-assistant-interface";
 import { AuroraText } from "@/components/ui/aurora-text";
 import SiriWave from "@/components/ui/ai";
 import { Badge } from "@/components/ui/badge";
@@ -50,7 +50,7 @@ interface TestimonialCardProps {
   image: string;
 }
 
-export default function LawyerHome() {
+export default function StudentHome() {
   const [inputValue, setInputValue] = useState("");
   const [inputFocused, setInputFocused] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);

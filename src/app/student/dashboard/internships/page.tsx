@@ -392,7 +392,7 @@ export default function HireAnInternPage() {
 
   return (
     <div className="min-h-screen border-[1.5px] shadow-lg rounded-lg">
-      <div className="p-6 bg-emerald-700/5 rounded-md">
+      <div className="p-6 rounded-md">
         <div className="max-w-7xl mx-auto">
           {/* Header */}
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8">
@@ -406,12 +406,6 @@ export default function HireAnInternPage() {
                 organizations
               </p>
             </div>
-            <Link href="/lawyer/dashboard/add-internships">
-              <Button className="bg-transparent text-black hover:bg-white shadow-none hover:shadow-xl hover:scale-102">
-                <Plus className="h-4 w-4 mr-2" />
-                Add Internships
-              </Button>
-            </Link>
           </div>
 
           {/* Search and Filters */}

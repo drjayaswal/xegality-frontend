@@ -1,7 +1,6 @@
 "use client";
 
 import type React from "react";
-
 import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { cn } from "@/lib/utils";
@@ -18,12 +17,11 @@ import {
   EarIcon,
   X,
   ImageIcon,
-  Cross,
-  XCircle,
   SendHorizonal,
-  SendToBack,
 } from "lucide-react";
 import SiriWave from "@/components/ui/ai";
+import { useSearchParams } from "next/navigation";
+import { useQueryStore } from "@/stores/query-store";
 
 interface Message {
   id: string;
@@ -42,9 +40,15 @@ interface UploadedFile {
 }
 
 export default function XegalityAI() {
+  const searchParams = useSearchParams();
+  const { query, isProcessing, setQuery, setIsProcessing, clearQuery } =
+    useQueryStore();
+
+  const [inputValue, setInputValue] = useState("");
   const [isListening, setIsListening] = useState(false);
   const [showUploadAnimation, setShowUploadAnimation] = useState(false);
   const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>([]);
+  const [hasAutoSearched, setHasAutoSearched] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [messages, setMessages] = useState<Message[]>([
@@ -55,12 +59,36 @@ export default function XegalityAI() {
       timestamp: new Date(),
     },
   ]);
-  const [inputValue, setInputValue] = useState("");
+
   const isReadyToSend = inputValue.trim().length > 0;
   const [isTyping, setIsTyping] = useState(false);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  // Initialize query from URL params and auto-search
+  const hasSentInitialQuery = useRef(false);
+
+  useEffect(() => {
+    const urlQuery = searchParams.get("query");
+
+    if (urlQuery && !hasSentInitialQuery.current) {
+      hasSentInitialQuery.current = true;
+      setQuery(urlQuery);
+      setInputValue(urlQuery);
+
+      setTimeout(() => {
+        handleSendMessage(urlQuery);
+      }, 100);
+    }
+  }, [searchParams]);
+
+  // Sync input value with store query
+  useEffect(() => {
+    if (query && query !== inputValue) {
+      setInputValue(query);
+    }
+  }, [query]);
 
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files;
@@ -118,20 +146,6 @@ export default function XegalityAI() {
     return <ImageIcon className="h-5 w-5 text-purple-500" />;
   };
 
-  const getFileColor = (fileType: string, fileName: string) => {
-    if (fileType.includes("pdf"))
-      return "from-red-500/20 to-red-600/20 border-red-500/30";
-    if (
-      fileType.includes("word") ||
-      fileType.includes("document") ||
-      fileName.includes(".doc")
-    )
-      return "from-slate-500/20 to-slate-600/20 border-slate-500/30";
-    if (fileType.includes("image"))
-      return "from-green-500/20 to-green-600/20 border-green-500/30";
-    return "from-purple-500/20 to-purple-600/20 border-purple-500/30";
-  };
-
   const handleUploadClick = () => {
     fileInputRef.current?.click();
   };
@@ -154,6 +168,7 @@ export default function XegalityAI() {
       recognition.onresult = (event: any) => {
         const transcript = event.results[0][0].transcript;
         setInputValue(transcript);
+        setQuery(transcript);
         setIsListening(false);
       };
 
@@ -171,35 +186,37 @@ export default function XegalityAI() {
     }
   };
 
-  const handleQuickAction = (message: string) => {
-    setInputValue(message);
-    inputRef.current?.focus();
-  };
+  const handleSendMessage = async (messageContent?: string) => {
+    const content = messageContent || inputValue;
+    console.log("called with input: ", content);
 
-  const handleSendMessage = async () => {
-    if (!inputValue.trim()) return;
+    if (!content.trim()) return;
+
+    setIsProcessing(true);
 
     const userMessage: Message = {
       id: Date.now().toString(),
-      content: inputValue,
+      content: content,
       sender: "user",
       timestamp: new Date(),
     };
 
     setMessages((prev) => [...prev, userMessage]);
     setInputValue("");
+    clearQuery();
     setIsTyping(true);
 
     // Simulate AI response
     setTimeout(() => {
       const aiResponse: Message = {
         id: (Date.now() + 1).toString(),
-        content: generateAIResponse(inputValue),
+        content: generateAIResponse(content),
         sender: "ai",
         timestamp: new Date(),
       };
       setMessages((prev) => [...prev, aiResponse]);
       setIsTyping(false);
+      setIsProcessing(false);
     }, 1500);
   };
 
@@ -221,6 +238,12 @@ export default function XegalityAI() {
     }
   };
 
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setInputValue(value);
+    setQuery(value);
+  };
+
   useEffect(() => {
     const scrollToBottom = () => {
       messagesEndRef.current?.scrollIntoView({
@@ -236,7 +259,7 @@ export default function XegalityAI() {
   }, [messages, isTyping]);
 
   return (
-    <div className="h-full shadow-lg border-[1.5px] bg-gray-50 flex flex-col relative rounded-lg">
+    <div className="shadow-lg border-[1.5px] bg-gray-50 flex flex-col relative rounded-lg h-full">
       {/* Hidden file input */}
       <input
         ref={fileInputRef}
@@ -246,8 +269,9 @@ export default function XegalityAI() {
         onChange={handleFileUpload}
         className="hidden"
       />
-      {/* Header */}
-      <div className="relative h-24 bg-emerald-700/5 overflow-hidden rounded-t-md">
+
+      {/* Header - Fixed at top */}
+      <div className="sticky top-0 z-30 h-24 bg-emerald-700/5 overflow-hidden rounded-t-md">
         <div className="absolute inset-0 flex items-center justify-center">
           <div className="w-full h-fit flex items-center justify-center opacity-50">
             <SiriWave
@@ -257,73 +281,85 @@ export default function XegalityAI() {
                 "#059669", // emerald-600
                 "#047857", // emerald-700
               ]}
-              isWaveMode={isListening || isTyping || inputValue != ""}
+              isWaveMode={
+                isListening || isTyping || inputValue !== "" || isProcessing
+              }
             />
           </div>
         </div>
       </div>
-      {/* Chat Messages */}
-      <div className="flex-1 px-5 py-10 bg-emerald-700/5 rounded-b-2xl">
-        <ScrollArea className="h-full" ref={scrollAreaRef}>
-          <div className="space-y-4 pb-20">
-            <AnimatePresence>
-              {messages.map((message) => (
-                <motion.div
-                  key={message.id}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -20 }}
-                  className={cn(
-                    "flex gap-2",
-                    message.sender === "user" ? "justify-end" : "justify-start"
-                  )}
-                >
-                  {message.sender === "ai" && (
-                    <div className="w-10 h-10 bg-emerald-600 rounded-full rounded-r-none flex items-center justify-center shadow-md">
-                      <Brain className="h-6 w-6 text-white" />
-                    </div>
-                  )}
-                  <div
+
+      {/* Chat Messages - Scrollable area */}
+      <div className="flex-1 overflow-hidden">
+        <div className="h-full px-5 py-10 bg-emerald-700/5">
+          <ScrollArea className="h-full pr-4" ref={scrollAreaRef}>
+            <div className="space-y-4 pb-4">
+              <AnimatePresence>
+                {messages.map((message) => (
+                  <motion.div
+                    key={message.id}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -20 }}
                     className={cn(
-                      "max-w-[80%] p-4 relative rounded-2xl shadow-none duration-200 hover:shadow-lg",
+                      "flex gap-2",
                       message.sender === "user"
-                        ? "-mr-2 bg-gray-50/20 backdrop-blur-lg dark:text-white/90 text-black/90 rounded-tr-none"
-                        : "-ml-2 bg-gray-50/20 backdrop-blur-lg dark:text-white/90 text-black/90 rounded-tl-none"
+                        ? "justify-end"
+                        : "justify-start"
                     )}
                   >
-                    <p className="text-sm leading-relaxed">{message.content}</p>
-                    <p className="text-xs mt-2 text-black/40 dark:text-white/40">
-                      {message.timestamp.toLocaleTimeString([], {
-                        hour: "2-digit",
-                        minute: "2-digit",
-                      })}
-                    </p>
-                  </div>
-                  {message.sender === "user" && (
-                    <div className="w-10 h-10 bg-slate-500 rounded-full rounded-l-none flex items-center justify-center shadow-md">
-                      <User className="h-6 w-6 text-white" />
+                    {message.sender === "ai" && (
+                      <div className="w-10 h-10 bg-emerald-600 rounded-full rounded-r-none flex items-center justify-center shadow-md">
+                        <Brain className="h-6 w-6 text-white" />
+                      </div>
+                    )}
+                    <div
+                      className={cn(
+                        "max-w-[80%] p-4 relative rounded-2xl shadow-none duration-200 hover:shadow-lg",
+                        message.sender === "user"
+                          ? "-mr-2 bg-gray-50/20 backdrop-blur-lg dark:text-white/90 text-black/90 rounded-tr-none"
+                          : "-ml-2 bg-gray-50/20 backdrop-blur-lg dark:text-white/90 text-black/90 rounded-tl-none"
+                      )}
+                    >
+                      <p className="text-sm leading-relaxed">
+                        {message.content}
+                      </p>
+                      <p className="text-xs mt-2 text-black/40 dark:text-white/40">
+                        {message.timestamp.toLocaleTimeString([], {
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        })}
+                      </p>
                     </div>
-                  )}
+                    {message.sender === "user" && (
+                      <div className="w-10 h-10 bg-slate-500 rounded-full rounded-l-none flex items-center justify-center shadow-md">
+                        <User className="h-6 w-6 text-white" />
+                      </div>
+                    )}
+                  </motion.div>
+                ))}
+              </AnimatePresence>
+
+              {/* Typing Indicator */}
+              {isTyping && (
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="flex gap-3"
+                >
+                  <div className="w-10 h-10 animate-gradient rounded-full flex items-center justify-center shadow-none">
+                    <Brain className="h-5 w-5 text-white" />
+                  </div>
                 </motion.div>
-              ))}
-            </AnimatePresence>
-            {/* Typing Indicator */}
-            {isTyping && (
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="flex gap-3"
-              >
-                <div className="w-10 h-10 animate-gradient rounded-full flex items-center justify-center shadow-none">
-                  <Brain className="h-5 w-5 text-white" />
-                </div>
-              </motion.div>
-            )}
-            {/* Auto-scroll anchor */}
-            <div ref={messagesEndRef} />
-          </div>
-        </ScrollArea>
+              )}
+
+              {/* Auto-scroll anchor */}
+              <div ref={messagesEndRef} />
+            </div>
+          </ScrollArea>
+        </div>
       </div>
+
       {/* Floating Uploaded Files Display */}
       <AnimatePresence>
         {uploadedFiles.length > 0 && (
@@ -333,8 +369,8 @@ export default function XegalityAI() {
             exit={{ opacity: 0, y: 50, scale: 0.9 }}
             className="absolute bottom-24 overflow-visible left-6 right-6 z-40"
           >
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-2 max-h-100 overflow-y-auto">
-              {uploadedFiles.map((file, index) => (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-2 max-h-100 overflow-hidden">
+              {uploadedFiles.map((file) => (
                 <div
                   key={file.id}
                   className="relative group bg-gray-50/30 backdrop-blur-md rounded-2xl p-2 border border-white/10 dark:border-black/20 shadow-sm hover:shadow-md transition-all duration-300"
@@ -360,7 +396,7 @@ export default function XegalityAI() {
                       onClick={() => removeFile(file.id)}
                       className="opacity-0 group-hover:opacity-100 transition-opacity h-5 w-5 p-0 hover:bg-red-500 hover:text-white text-red-500"
                     >
-                      <X className="h-3 w-3  stroke-3" />
+                      <X className="h-3 w-3 stroke-3" />
                     </Button>
                   </div>
                 </div>
@@ -369,6 +405,7 @@ export default function XegalityAI() {
           </motion.div>
         )}
       </AnimatePresence>
+
       {/* Upload Animation Overlay */}
       <AnimatePresence>
         {showUploadAnimation && (
@@ -376,7 +413,7 @@ export default function XegalityAI() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="absolute inset-0  backdrop-blur-xs flex items-center justify-center z-50"
+            className="absolute inset-0 backdrop-blur-xs flex items-center justify-center z-50"
           >
             <motion.div
               initial={{ scale: 0.8, opacity: 0 }}
@@ -405,17 +442,19 @@ export default function XegalityAI() {
           </motion.div>
         )}
       </AnimatePresence>
-      {/* Input Area */}
-      <div className="absolute bottom-0 left-0 w-full z-30 py-1 bg-emerald-700/5 backdrop-blur-sm rounded-b-md">
-        <div className="pt-4 px-4 pb-0 rounded-none ">
+
+      {/* Input Area - Fixed at bottom */}
+      <div className="sticky bottom-0 left-0 w-full z-30 bg-emerald-700/5 backdrop-blur-sm rounded-b-md">
+        <div className="pt-4 px-4 pb-0 rounded-none">
           <div className="flex items-center gap-1 py-2 rounded-none">
             <div className="flex-1 relative">
               <Input
                 ref={inputRef}
                 value={inputValue}
-                onChange={(e) => setInputValue(e.target.value)}
+                onChange={handleInputChange}
                 onKeyPress={handleKeyPress}
                 placeholder="Ask Xegality AI anything about law, cases, or legal research..."
+                disabled={isProcessing}
                 className="w-full py-2.5 pr-24 pl-4 font-medium
                  rounded-l-2xl border-none shadow-sm focus-visible:ring-0 text-gray-500
                 bg-gray-50/30
@@ -427,7 +466,7 @@ export default function XegalityAI() {
             {/* Upload Button */}
             <Button
               onClick={handleUploadClick}
-              disabled={showUploadAnimation}
+              disabled={showUploadAnimation || isProcessing}
               className="relative h-10 w-10 min-w-[2.5rem] flex items-center justify-center 
 bg-gray-50/30 dark:bg-gray-50/10 
 hover:bg-gray-50/40 dark:hover:bg-gray-50/20 
@@ -476,35 +515,53 @@ transition-all duration-150"
             {/* Voice Button */}
             <Button
               className="relative h-10 w-10 min-w-[2.5rem] flex items-center justify-center 
-              bg-gray-50/30 dark:bg-gray-50/10 
-              hover:bg-gray-50/40 dark:hover:bg-gray-50/20 
-              rounded-2xl shadow-sm active:shadow-inner 
-              transition-all duration-150"
+    bg-gray-50/30 dark:bg-gray-50/10 
+    hover:bg-gray-50/40 dark:hover:bg-gray-50/20 
+    rounded-2xl shadow-sm active:shadow-inner 
+    transition-all duration-150 overflow-visible"
               onClick={handleVoiceSearch}
+              disabled={isProcessing}
             >
+              {isListening && (
+                // Ripple container
+                <>
+                  {[...Array(6)].map((_, i) => (
+                    <motion.span
+                      key={i}
+                      className="absolute inset-0 m-auto w-full h-full rounded-2xl bg-emerald-700/20 pointer-events-none"
+                      initial={{ scale: 1, opacity: 0.4 }}
+                      animate={{ scale: 2.8, opacity: 0 }}
+                      transition={{
+                        duration: 2.4,
+                        repeat: Number.POSITIVE_INFINITY,
+                        ease: "easeInOut",
+                        delay: i * 0.3,
+                      }}
+                    />
+                  ))}
+                </>
+              )}
               {isListening ? (
-                <EarIcon className="h-5 w-5 text-black animate-pulse" />
+                <EarIcon className="h-5 w-5 text-black z-10" />
               ) : (
                 <Mic className="h-5 w-5 text-black" />
               )}
             </Button>
 
             {/* Send Button */}
-
             <Button
-              disabled={!isReadyToSend || isTyping}
-              onClick={handleSendMessage}
+              disabled={!isReadyToSend || isTyping || isProcessing}
+              onClick={() => handleSendMessage()}
               className={`relative h-10 w-10 min-w-[2.5rem] flex items-center justify-center
                 rounded-2xl overflow-hidden transition-all duration-200
                 ${
-                  isReadyToSend && !isTyping
+                  isReadyToSend && !isTyping && !isProcessing
                     ? "bg-gray-50/30 dark:bg-gray-50/10 hover:bg-gray-50/40 dark:hover:bg-gray-50/20 shadow-sm active:shadow-inner"
                     : "bg-transparent shadow-none"
                 }`}
             >
-              {" "}
               <AnimatePresence mode="wait">
-                {!isReadyToSend ? (
+                {!isReadyToSend || isProcessing ? (
                   <motion.div
                     key="idle"
                     initial={{ opacity: 0, y: 10 }}
@@ -529,7 +586,7 @@ transition-all duration-150"
               </AnimatePresence>
             </Button>
           </div>
-          <p className="text-[8px] text-center mt-2 text-black/40 dark:text-white/40">
+          <p className="text-[8px] text-center mt-2 mb-2 text-black/40 dark:text-white/40">
             Xegality AI can make mistakes. Please verify important information.
           </p>
         </div>

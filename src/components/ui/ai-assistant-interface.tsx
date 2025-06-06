@@ -18,9 +18,10 @@ import {
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
-import { Button } from "./button";
+import { Button } from "@/components/ui/button";
+import { useRouter, usePathname } from "next/navigation";
 
-export function AIAssistantInterface({
+export default function AIAssistantForm({
   onFocus,
   onBlur,
   onChange,
@@ -45,6 +46,9 @@ export function AIAssistantInterface({
   const [activeCommandCategory, setActiveCommandCategory] = useState<
     string | null
   >(null);
+
+  const router = useRouter();
+  const pathname = usePathname();
   const inputRef = useRef<HTMLInputElement>(null);
 
   const commandSuggestions = {
@@ -129,15 +133,44 @@ export function AIAssistantInterface({
     inputRef.current?.focus();
   };
 
-  const handleSendMessage = () => {
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
     if (inputValue.trim()) {
+      const basePath = pathname.slice(1);
+      const dashboardUrl = `/${basePath}/dashboard/xegality-ai?query=${encodeURIComponent(
+        inputValue
+      )}`;
+
+      // Clear the form
       setInputValue("");
       onChange?.("");
+
+      // Redirect to dashboard
+      router.push(dashboardUrl);
+    }
+  };
+
+  const handleSendMessage = () => {
+    if (inputValue.trim()) {
+      const basePath = pathname.slice(1);
+      const dashboardUrl = `/${basePath}/dashboard/xegality-ai?query=${encodeURIComponent(
+        inputValue
+      )}`;
+
+      // Clear the form
+      setInputValue("");
+      onChange?.("");
+
+      // Redirect to dashboard
+      router.push(dashboardUrl);
     }
   };
 
   return (
-    <div className="w-full max-w-4xl mx-auto p-3 sm:p-5">
+    <form
+      onSubmit={handleSubmit}
+      className="w-full max-w-4xl mx-auto p-3 sm:p-5"
+    >
       {/* Main Input Container */}
       <div className="bg-white/60 backdrop-blur-lg mt-1 rounded-2xl sm:rounded-3xl dark:border-white-900/10 shadow-none focus-within:shadow-xl dark:focus-within:bg-white-900/10 transition-all duration-300 mb-4">
         {/* Input Field */}
@@ -166,6 +199,7 @@ export function AIAssistantInterface({
           />
           <div className="flex items-center gap-2">
             <button
+              type="button"
               onClick={handleVoiceSearch}
               className={`w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-transparent border-2 ${getBorderColorClass(
                 from
@@ -192,7 +226,7 @@ export function AIAssistantInterface({
               )}
             </button>
             <Button
-              onClick={handleSendMessage}
+              type="submit"
               disabled={!inputValue}
               className={cn(
                 "w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center transition-all duration-200 active:scale-95 border-0 p-0",
@@ -252,6 +286,7 @@ export function AIAssistantInterface({
                       {file}
                     </span>
                     <button
+                      type="button"
                       onClick={() =>
                         setUploadedFiles((prev) =>
                           prev.filter((_, i) => i !== index)
@@ -299,6 +334,7 @@ export function AIAssistantInterface({
               ].map(({ key, label, icon: Icon, state, setter }) => (
                 <button
                   key={key}
+                  type="button"
                   onClick={() => setter(!state)}
                   className={cn(
                     "flex cursor-pointer items-center gap-1.5 px-3 py-1.5 rounded-full text-xs sm:text-sm font-medium transition-all duration-200 border-2",
@@ -324,6 +360,7 @@ export function AIAssistantInterface({
               ))}
             </div>
             <Button
+              type="button"
               onClick={handleUploadFile}
               className={`rounded-full bg-transparent border-2 ${getBorderColorClass(
                 from
@@ -372,6 +409,7 @@ export function AIAssistantInterface({
         ].map(({ key, label, icon: Icon }) => (
           <button
             key={key}
+            type="button"
             onClick={() =>
               setActiveCommandCategory(
                 activeCommandCategory === key ? null : key
@@ -408,6 +446,7 @@ export function AIAssistantInterface({
             ].map((suggestion, index) => (
               <motion.button
                 key={index}
+                type="button"
                 initial={{ opacity: 0, x: -10 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: index * 0.05 }}
@@ -436,6 +475,6 @@ export function AIAssistantInterface({
           </motion.div>
         )}
       </AnimatePresence>
-    </div>
+    </form>
   );
 }
