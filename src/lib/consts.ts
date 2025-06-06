@@ -25,7 +25,7 @@ export const LAWYER_NAVLINKS = [
 ];
 export const STUDENT_NAVLINKS = [
   { title: "Dashboard", href: "/student/dashboard/xegality-ai" },
-  { title: "AI Research", href: "/student/dashboard/ai-research" },
+  { title: "Research", href: "/student/dashboard/research" },
   { title: "Internships", href: "/student/dashboard/internships" },
   { title: "Archives", href: "/archives" },
   { title: "About", href: "/about" },

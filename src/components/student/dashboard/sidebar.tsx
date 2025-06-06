@@ -19,6 +19,7 @@ import {
   Zap,
   LogOut,
   Home,
+  FileSearch2,
 } from "lucide-react";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -112,6 +113,11 @@ const other_menu_items = [
     title: "Internships",
     url: "/student/dashboard/internships",
     icon: SquareChartGantt,
+  },
+  {
+    title: "AI Research",
+    url: "/student/dashboard/research",
+    icon: FileSearch2,
   },
   {
     title: "Subscription",
