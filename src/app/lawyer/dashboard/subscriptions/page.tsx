@@ -1,17 +1,21 @@
 "use client";
 
+import type React from "react";
 import { useState } from "react";
-import { motion } from "motion/react";
+import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { ScrollArea } from "@/components/ui/scroll-area";
+import { Badge } from "@/components/ui/badge";
+import { Card, CardContent } from "@/components/ui/card";
 import {
   Check,
-  Calendar,
-  Download,
   ArrowRight,
-  AlertCircle,
   CheckCircle2,
+  Star,
+  Crown,
+  Building,
+  Rocket,
+  Shield,
 } from "lucide-react";
 
 interface Plan {
@@ -23,94 +27,81 @@ interface Plan {
   features: string[];
   isPopular?: boolean;
   isCurrent?: boolean;
+  icon: React.ReactNode;
+  gradient: string;
+  borderColor: string;
+  buttonColor: string;
+  shadowColor: string;
 }
 
-interface BillingHistory {
-  id: string;
-  date: Date;
-  amount: number;
-  status: "paid" | "pending" | "failed";
-  invoice?: string;
-}
-
-export default function Subscription() {
+export default function CompactSubscription() {
   const [billingCycle, setBillingCycle] = useState<"monthly" | "yearly">(
     "monthly"
   );
 
   const plans: Plan[] = [
     {
-      id: "basic",
-      name: "Basic",
-      price: billingCycle === "monthly" ? 49 : 470,
+      id: "starter",
+      name: "Starter",
+      price: billingCycle === "monthly" ? 29 : 290,
       billing: billingCycle,
-      description: "Essential legal tools for solo practitioners",
+      description: "Perfect for individual lawyers",
+      buttonColor: "bg-blue-500 hover:bg-blue-600 text-white",
       features: [
-        "Case management",
-        "Client portal",
-        "Document storage (10GB)",
-        "Basic reporting",
+        "Up to 25 active cases",
+        "5GB secure cloud storage",
+        "Basic client portal",
         "Email support",
+        "Mobile app access",
       ],
+      icon: <Rocket className="h-4 w-4" />,
+      gradient: "bg-gradient-to-br from-blue-500 to-sky-500",
+      borderColor: "border-blue-300",
+      shadowColor: "shadow-blue-500/20",
     },
     {
       id: "professional",
       name: "Professional",
-      price: billingCycle === "monthly" ? 99 : 950,
+      price: billingCycle === "monthly" ? 79 : 790,
       billing: billingCycle,
-      description: "Advanced features for growing practices",
+      buttonColor: "bg-yellow-500 hover:bg-amber-600 text-white",
+      description: "Advanced tools for growing firms",
       features: [
-        "Everything in Basic",
-        "Client billing & invoicing",
-        "Document storage (50GB)",
-        "Advanced reporting",
+        "Unlimited cases",
+        "50GB secure cloud storage",
+        "Advanced client portal",
         "Priority email support",
-        "Client intake forms",
-        "Calendar integrations",
+        "Advanced analytics",
+        "Custom branding",
+        "Time tracking & billing",
       ],
       isPopular: true,
       isCurrent: true,
+      icon: <Building className="h-4 w-4" />,
+      gradient: "bg-gradient-to-br from-yellow-500 to-amber-600",
+      borderColor: "border-yellow-500",
+      shadowColor: "shadow-yellow-500/20",
     },
     {
       id: "enterprise",
       name: "Enterprise",
-      price: billingCycle === "monthly" ? 199 : 1900,
+      price: billingCycle === "monthly" ? 149 : 1490,
+      buttonColor: "bg-purple-500 hover:bg-fuschia-600 text-white",
       billing: billingCycle,
-      description: "Complete solution for established firms",
+      description: "Complete solution for large firms",
       features: [
         "Everything in Professional",
-        "Unlimited document storage",
-        "Custom reporting",
+        "Unlimited storage",
+        "White-label solution",
         "24/7 phone support",
-        "Advanced analytics",
-        "Multi-user permissions",
+        "Advanced security",
         "API access",
-        "Dedicated account manager",
+        "Custom integrations",
       ],
-    },
-  ];
-
-  const billingHistory: BillingHistory[] = [
-    {
-      id: "inv-001",
-      date: new Date(2023, 4, 1),
-      amount: 99,
-      status: "paid",
-      invoice: "INV-2023-001",
-    },
-    {
-      id: "inv-002",
-      date: new Date(2023, 3, 1),
-      amount: 99,
-      status: "paid",
-      invoice: "INV-2023-002",
-    },
-    {
-      id: "inv-003",
-      date: new Date(2023, 2, 1),
-      amount: 99,
-      status: "paid",
-      invoice: "INV-2023-003",
+      icon: <Crown className="h-4 w-4" />,
+      gradient: "bg-gradient-to-br from-purple-600 to-fuchsia-500",
+      borderColor: "border-purple-300",
+      shadowColor: "shadow-purple-500/20",
     },
   ];
 
@@ -118,166 +109,180 @@ export default function Subscription() {
     return new Intl.NumberFormat("en-US", {
       style: "currency",
       currency: "USD",
+      minimumFractionDigits: 0,
     }).format(amount);
   };
 
-  const formatDate = (date: Date) => {
-    return date.toLocaleDateString("en-US", {
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-    });
-  };
-
-  const getStatusIcon = (status: string) => {
-    switch (status) {
-      case "paid":
-        return <CheckCircle2 className="h-4 w-4 text-green-600" />;
-      case "pending":
-        return <Calendar className="h-4 w-4 text-yellow-600" />;
-      case "failed":
-        return <AlertCircle className="h-4 w-4 text-red-600" />;
-      default:
-        return null;
-    }
-  };
-
   return (
-    <div className=" h-full dark:bg-black bg-gray-50 shadow-lg border-[1.5px] rounded-lg">
-      {/* Content */}
-      <div className="flex-1 bg-amber-700/5 p-8 rounded-md">
-        <ScrollArea className="h-full">
-          {/* Current Plan */}
-          <div className="bg-gray-50/30 dark:bg-gray-50/10 backdrop-blur-sm rounded-lg p-6 mb-8">
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-              <div>
-                <div className="flex items-center gap-2">
-                  <h2 className="text-xl font-semibold text-gray-800 dark:text-white">
-                    Professional Plan
-                  </h2>
-                  <span className="px-3 py-1 text-xs dark:bg-amber-700/30 font-bold bg-amber-700/60 text-white dark:text-white/80 rounded-full">
-                    Current Plan
-                  </span>
-                </div>
-                <p className="text-gray-600 dark:text-gray-300 mt-1">
-                  Your subscription renews on June 1, 2023
-                </p>
-              </div>
+    <div className="h-full flex flex-col overflow-hidden">
+      {/* Main Content */}
+      <div className="flex-1 px-6 py-6 min-h-0">
+        <div className="max-w-7xl mx-auto h-full flex flex-col">
+          {/* Header */}
+          <div className="text-center mb-10">
+            <h1 className="text-4xl font-extrabold text-slate-900 mb-3">
+              <span className="bg-gradient-to-r from-indigo-600 via-amber-500 to-rose-500 bg-clip-text text-transparent">
+                Xegality's Plan
+              </span>
+            </h1>
+            <p className="text-slate-600 text-base max-w-xl mx-auto mb-6">
+              Whether you're solo or scaling your firm, Xegality adapts to your
+              legal workflow with secure, efficient, and smart tools.
+            </p>
 
-              <div className="flex flex-col md:flex-row gap-2">
-                <Button
-                  //   variant="outline"
-                  className="bg-transparent rounded-3xl rounded-r-none border-r-1 border-2 border-amber-700/60 dark:border-white/40 hover:border-transparent dark: hover:bg-amber-700/60 dark: hover:text-white dark:text-white text-amber-700/60 dark:hover:text-white"
-                >
-                  Manage Payment Methods
-                </Button>
-                <Button className="bg-transparent rounded-3xl -ml-2 rounded-l-none border-l-1 border-2 border-amber-700/60 dark:border-white/40 hover:border-transparent dark: hover:bg-amber-700/60 dark: hover:text-white dark:text-white text-amber-700/60 dark:hover:text-white">
-                  Upgrade Plan
-                </Button>
-              </div>
-            </div>
-          </div>
-
-          {/* Plan Selection */}
-          <div className="mb-8">
-            <div className="flex justify-between items-center mb-6">
-              <h2 className="text-4xl ml-4 font-semibold text-gray-800 dark:text-white">
-                Available Plans
-              </h2>
-
-              <div className="flex p-1 bg-gray-50/20 backdrop-blur-sm rounded-full">
-                <button
-                  onClick={() => setBillingCycle("monthly")}
-                  className={cn(
-                    "px-4 py-2 text-sm font-medium rounded-full transition-colors",
-                    billingCycle === "monthly"
-                      ? "bg-gray-50 text-black shadow-sm"
-                      : "text-gray-600 dark:text-gray-300 hover:text-black outline-0 ring-0"
-                  )}
-                >
-                  Monthly
-                </button>
-                <button
-                  onClick={() => setBillingCycle("yearly")}
-                  className={cn(
-                    "px-4 py-2 text-sm font-medium rounded-full transition-colors",
-                    billingCycle === "yearly"
-                      ? "bg-gray-50 text-black shadow-sm"
-                      : "text-gray-600 dark:text-gray-300 hover:text-black"
-                  )}
-                >
-                  Yearly
-                  <span className="ml-2 text-green-600 font-medium">
-                    Save 20%
-                  </span>
-                </button>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              {plans.map((plan) => (
+            {/* Plans Grid */}
+            <div className="flex-1 grid grid-cols-3 gap-6 min-h-0">
+              {plans.map((plan, index) => (
                 <motion.div
                   key={plan.id}
-                  initial={{ opacity: 0, y: 10 }}
+                  initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
-                  className={cn(
-                    "bg-gray-50/30 dark:bg-gray-50/10 backdrop-blur-sm rounded-[36px] relative",
-                    plan.isPopular
-                      ? " border-4 border-amber-700/60 shadow-lg shadow-amber-700/10"
-                      : ""
-                  )}
+                  transition={{ delay: index * 0.1 }}
+                  className="relative h-full"
                 >
                   {plan.isPopular && (
-                    <div className="absolute top-0 right-0 bg-amber-700/60 text-white text-xs font-medium py-2 px-3 rounded-full m-3">
-                      Most Popular
+                    <div className="absolute -top-3 left-1/2 transform -translate-x-1/2 z-10">
+                      <div className="bg-gradient-to-r from-yellow-500 to-amber-600 text-white px-3 py-1.5 rounded-full text-xs font-bold shadow-lg">
+                        <div className="flex items-center gap-1">
+                          <Star className="h-3 w-3" />
+                          Most Popular
+                        </div>
+                      </div>
                     </div>
                   )}
 
-                  <div className="p-6">
-                    <h3 className="text-lg font-semibold text-gray-800 dark:text-white">
-                      {plan.name}
-                    </h3>
-                    <p className="text-gray-600 dark:text-gray-300 mt-1 h-12">
-                      {plan.description}
-                    </p>
+                  <Card
+                    className={cn(
+                      "h-full transition-all duration-300 hover:shadow-xl flex flex-col",
+                      `${plan.shadowColor} ${plan.borderColor}`
+                    )}
+                  >
+                    <CardContent className="p-6 h-full flex flex-col">
+                      {/* Plan Header */}
+                      <div className="text-center mb-4">
+                        <div
+                          className={cn(
+                            "w-12 h-12 rounded-xl flex items-center justify-center text-white mx-auto mb-3",
+                            plan.gradient
+                          )}
+                        >
+                          {plan.icon}
+                        </div>
+                        <div className="flex items-center justify-center gap-2 mb-1">
+                          <h3 className="text-xl font-bold text-slate-900">
+                            {plan.name}
+                          </h3>
+                          {plan.isCurrent && (
+                            <Badge
+                              variant="outline"
+                              className="border-amber-200 text-amber-700 text-xs"
+                            >
+                              Current
+                            </Badge>
+                          )}
+                        </div>
+                        <p className="text-slate-600 text-sm">
+                          {plan.description}
+                        </p>
+                      </div>
 
-                    <div className="mt-4 mb-6">
-                      <span className="text-3xl font-bold text-gray-800 dark:text-white">
-                        ₹ {plan.price}
-                      </span>
-                      <span className="text-gray-600 dark:text-gray-300">
-                        {" "}
-                        / {plan.billing === "monthly" ? "month" : "year"}
-                      </span>
-                    </div>
-
-                    <ul className="space-y-3 mb-6">
-                      {plan.features.map((feature, index) => (
-                        <li key={index} className="flex items-start gap-2">
-                          <Check className="h-5 w-5 text-green-600 flex-shrink-0 mt-0.5" />
-                          <span className="text-gray-700 dark:text-gray-300">
-                            {feature}
+                      {/* Pricing */}
+                      <div className="text-center mb-4">
+                        <div className="flex items-baseline justify-center gap-1 mb-1">
+                          <span className="text-3xl font-bold text-slate-900">
+                            {formatCurrency(plan.price)}
                           </span>
-                        </li>
-                      ))}
-                    </ul>
-                    <Button
-                      className={cn(
-                        "w-full",
-                        plan.isCurrent
-                          ? "bg-amber-700/60 rounded-3xl text-white hover:text-black"
-                          : "bg-transparent rounded-3xl border-2 border-amber-700/60 hover:bg-amber-700/60 hover:text-white hover:border-transparent text-amber-700/60 dark:border-white dark:hover:text-white dark:text-white"
-                      )}
-                      disabled={plan.isCurrent}
-                    >
-                      {plan.isCurrent ? "Current Plan" : "Select Plan"}
-                    </Button>
-                  </div>
+                          <span className="text-slate-500 text-sm">
+                            /{plan.billing === "monthly" ? "mo" : "yr"}
+                          </span>
+                        </div>
+                        {billingCycle === "yearly" && (
+                          <p className="text-amber-600 font-medium text-xs">
+                            Save 2 months free
+                          </p>
+                        )}
+                      </div>
+
+                      {/* Features */}
+                      <div className="flex-1 mb-4">
+                        <ul className="space-y-2.5">
+                          {plan.features.map((feature, featureIndex) => (
+                            <li
+                              key={featureIndex}
+                              className="flex items-center gap-2.5"
+                            >
+                              <div
+                                className={cn(
+                                  "w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0",
+                                  plan.gradient
+                                )}
+                              >
+                                <Check className="h-3 w-3 text-white" />
+                              </div>
+                              <span className="text-slate-700 text-sm">
+                                {feature}
+                              </span>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+
+                      <Button
+                        className={cn(
+                          "w-full h-10 rounded-lg font-semibold text-sm transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2",
+                          plan.isCurrent
+                            ? "bg-slate-100 text-slate-500 cursor-not-allowed hover:bg-slate-100 dark:bg-slate-800 dark:text-slate-400"
+                            : `${plan.buttonColor} shadow-md hover:shadow-xl hover:scale-[1.03]`
+                        )}
+                        disabled={plan.isCurrent}
+                      >
+                        {plan.isCurrent ? (
+                          <>
+                            <CheckCircle2 className="h-4 w-4 mr-2" />
+                            Current Plan
+                          </>
+                        ) : (
+                          <>
+                            {plan.isPopular ? "Get Started" : "Choose Plan"}
+                            <ArrowRight className="h-4 w-4 ml-2" />
+                          </>
+                        )}
+                      </Button>
+                    </CardContent>
+                  </Card>
                 </motion.div>
               ))}
             </div>
+
+            {/* Footer */}
+            <div className="mt-8 pt-6 border-t border-amber-100 dark:border-amber-800 bg-gradient-to-r from-amber-50/30 to-orange-100/30 dark:from-amber-900/10 dark:to-orange-900/10 rounded-xl">
+              <div className="flex flex-col sm:flex-row items-center justify-center gap-6 text-sm text-gray-700 dark:text-gray-300">
+                <div className="flex items-center gap-2">
+                  <div className="p-1.5 bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300 rounded-full">
+                    <Shield className="h-4 w-4" />
+                  </div>
+                  <span className="font-medium">Bank-level Security</span>
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <div className="p-1.5 bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300 rounded-full">
+                    <CheckCircle2 className="h-4 w-4" />
+                  </div>
+                  <span className="font-medium">30-day Money Back</span>
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <div className="p-1.5 bg-purple-100 text-purple-700 dark:bg-purple-900 dark:text-purple-300 rounded-full">
+                    <Star className="h-4 w-4" />
+                  </div>
+                  <span className="font-medium">
+                    Trusted by 10,000+ Lawyers
+                  </span>
+                </div>
+              </div>
+            </div>
           </div>
-        </ScrollArea>
+        </div>
       </div>
     </div>
   );

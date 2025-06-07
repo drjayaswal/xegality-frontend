@@ -120,11 +120,6 @@ const other_menu_items = [
     icon: FileSearch2,
   },
   {
-    title: "Subscription",
-    url: "/student/dashboard/subscriptions",
-    icon: Receipt,
-  },
-  {
     title: "Help & Support",
     url: "/student/dashboard/help-support",
     icon: HandHelping,

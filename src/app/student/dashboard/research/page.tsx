@@ -299,6 +299,7 @@ interface SectionCardProps {
   icon: React.ReactNode;
   iconBg?: string;
   children: React.ReactNode;
+  className?: string;
 }
 
 function SectionCard({
@@ -306,9 +307,12 @@ function SectionCard({
   icon,
   iconBg = "bg-slate-100",
   children,
+  className = "",
 }: SectionCardProps) {
   return (
-    <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-5 shadow-sm flex flex-col gap-3">
+    <div
+      className={`bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-5 shadow-sm flex flex-col gap-3 ${className}`}
+    >
       <div className="flex items-center gap-3 mb-2">
         <div
           className={`w-8 h-8 rounded-lg flex items-center justify-center ${iconBg}`}
@@ -420,7 +424,7 @@ export default function Research() {
   };
 
   return (
-    <div className="flex flex-col h-screen relative border border-slate-200 dark:border-slate-800 rounded-xl shadow-sm bg-white dark:bg-slate-900 overflow-hidden max-w-7xl mx-auto">
+    <div className="flex flex-col h-full relative border border-slate-200 dark:border-slate-800 rounded-xl shadow-sm bg-white dark:bg-slate-900 overflow-hidden max-w-7xl mx-auto">
       {/* Compact Header */}
       <div
         className={cn(
@@ -436,7 +440,7 @@ export default function Research() {
             </div>
             <div>
               <h1 className="text-lg sm:text-xl font-bold text-white tracking-tight">
-                Legal Research
+                Research Tool
               </h1>
               <p className="text-emerald-100 text-sm font-medium">
                 Comprehensive Penal Code Database
@@ -677,28 +681,43 @@ export default function Research() {
                               className={cn(
                                 "font-medium text-xs",
                                 getCategoryColor(
-                                  mockPenalCodes[selectedCode].category
+                                  mockPenalCodes[
+                                    selectedCode as keyof typeof mockPenalCodes
+                                  ].category
                                 )
                               )}
                             >
-                              {mockPenalCodes[selectedCode].category}
+                              {
+                                mockPenalCodes[
+                                  selectedCode as keyof typeof mockPenalCodes
+                                ].category
+                              }
                             </Badge>
                             <div className="flex items-center gap-1">
                               <Clock className="h-3 w-3" />
-                              Updated {mockPenalCodes[selectedCode].lastUpdated}
+                              Updated{" "}
+                              {
+                                mockPenalCodes[
+                                  selectedCode as keyof typeof mockPenalCodes
+                                ].lastUpdated
+                              }
                             </div>
                             <div className="flex items-center gap-1 text-amber-500">
                               <Star className="h-3 w-3" />
                               <span className="font-medium text-slate-600 dark:text-slate-400">
-                                {mockPenalCodes[selectedCode].popularity}%
+                                {
+                                  mockPenalCodes[
+                                    selectedCode as keyof typeof mockPenalCodes
+                                  ].popularity
+                                }
+                                %
                               </span>
                             </div>
                           </div>
                         </div>
                       </div>
-
                       {/* Main Content */}
-                      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                      <div className="grid grid-cols-1 gap-4">
                         {/* Legal Definition */}
                         <SectionCard
                           title="Legal Definition"
@@ -707,7 +726,7 @@ export default function Research() {
                           }
                           iconBg="bg-emerald-100 dark:bg-emerald-900/30"
                         >
-                          <p className="text-sm text-slate-700 dark:text-slate-300 leading-relaxed">
+                          <p className="text-[13px] text-slate-700 dark:text-slate-300 leading-snug">
                             {
                               mockPenalCodes[
                                 selectedCode as keyof typeof mockPenalCodes
@@ -723,22 +742,23 @@ export default function Research() {
                             <Gavel className="h-4 w-4 text-red-600 dark:text-red-400" />
                           }
                           iconBg="bg-red-100 dark:bg-red-900/30"
+                          className="text-sm p-4 sm:p-5 relative"
                         >
-                          <p className="text-sm text-slate-700 dark:text-slate-300 leading-relaxed mb-4">
-                            {
-                              mockPenalCodes[
-                                selectedCode as keyof typeof mockPenalCodes
-                              ].punishment
-                            }
-                          </p>
-                          <div className="p-3 bg-red-50 dark:bg-red-900/20 rounded-lg border border-red-200 dark:border-red-800 text-xs font-medium text-red-800 dark:text-red-300">
-                            Maximum:{" "}
-                            {
-                              mockPenalCodes[
-                                selectedCode as keyof typeof mockPenalCodes
-                              ].maxSentence
-                            }
-                          </div>
+                            <p className="text-[13px] text-slate-700 dark:text-slate-300 leading-snug mb-3">
+                              {
+                                mockPenalCodes[
+                                  selectedCode as keyof typeof mockPenalCodes
+                                ].punishment
+                              }
+                            </p>
+                            <div className="absolute top-4 right-4 p-2 bg-red-50 dark:bg-red-900/20 rounded-md border border-red-200 dark:border-red-800 text-[12px] font-medium text-red-800 dark:text-red-300">
+                              Maximum:{" "}
+                              {
+                                mockPenalCodes[
+                                  selectedCode as keyof typeof mockPenalCodes
+                                ].maxSentence
+                              }
+                            </div>
                         </SectionCard>
 
                         {/* Required Elements */}
@@ -748,6 +768,7 @@ export default function Research() {
                             <FileText className="h-4 w-4 text-green-600 dark:text-green-400" />
                           }
                           iconBg="bg-green-100 dark:bg-green-900/30"
+                          className="text-sm p-4 sm:p-5"
                         >
                           <ul className="space-y-2">
                             {mockPenalCodes[
@@ -755,44 +776,17 @@ export default function Research() {
                             ].elements.map((element, index) => (
                               <li
                                 key={index}
-                                className="flex items-start gap-3"
+                                className="flex items-start gap-2"
                               >
-                                <div className="w-5 h-5 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center flex-shrink-0 mt-0.5">
-                                  <span className="text-xs font-medium text-green-700 dark:text-green-400">
-                                    {index + 1}
-                                  </span>
+                                <div className="w-5 h-5 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center text-[11px] font-semibold text-green-700 dark:text-green-400 mt-0.5">
+                                  {index + 1}
                                 </div>
-                                <span className="text-sm text-slate-700 dark:text-slate-300 leading-relaxed">
+                                <span className="text-[13px] text-slate-700 dark:text-slate-300 leading-snug">
                                   {element}
                                 </span>
                               </li>
                             ))}
                           </ul>
-                        </SectionCard>
-
-                        {/* Related Sections */}
-                        <SectionCard
-                          title="Related Sections"
-                          icon={
-                            <BookOpen className="h-4 w-4 text-purple-600 dark:text-purple-400" />
-                          }
-                          iconBg="bg-purple-100 dark:bg-purple-900/30"
-                        >
-                          <div className="flex flex-wrap gap-2">
-                            {mockPenalCodes[
-                              selectedCode as keyof typeof mockPenalCodes
-                            ].relatedCodes.map((code) => (
-                              <Button
-                                key={code}
-                                variant="outline"
-                                size="sm"
-                                onClick={() => handleSelectCode(code)}
-                                className="rounded-full border-purple-200 dark:border-purple-800 hover:bg-purple-50 hover:border-purple-300 hover:text-purple-700 dark:hover:bg-purple-900/20 dark:hover:text-purple-400 transition-all duration-200 text-xs px-3 py-1 h-auto"
-                              >
-                                {code}
-                              </Button>
-                            ))}
-                          </div>
                         </SectionCard>
                       </div>
                     </div>
