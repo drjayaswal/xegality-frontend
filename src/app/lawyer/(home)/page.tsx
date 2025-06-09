@@ -57,11 +57,10 @@ export default function LawyerHome() {
       {/* SiriWave Background - Amber/Slate theme */}
       <div className="fixed inset-0 flex items-center justify-center pointer-events-none z-0">
         <div
-          className={`w-full h-full flex items-center justify-center transition-all transform duration-1000 ease-in-out scale-150 sm:scale-180 ${
-            isWaveActive
-              ? "-translate-y-32 sm:-translate-y-36"
-              : "-translate-y-44 sm:-translate-y-43"
-          } transform opacity-90 ${isGlobalLoading ? "blur-xs" : "blur-none"}`}
+          className={`w-full h-full flex items-center justify-center transition-all transform duration-1000 ease-in-out scale-150 sm:scale-180 ${isWaveActive
+            ? "-translate-y-32 sm:-translate-y-36"
+            : "-translate-y-44 sm:-translate-y-43"
+            } transform opacity-90 ${isGlobalLoading ? "blur-xs" : "blur-none"}`}
         >
           <SiriWave
             colors={[
@@ -78,9 +77,8 @@ export default function LawyerHome() {
       <div className="pt-10 sm:pt-20 relative z-10">
         {/* Hero Section - Lawyer Professional */}
         <div
-          className={`mt-6 sm:mt-10 ${
-            isGlobalLoading ? "blur-md opacity-50" : "blur-0 opacity-100"
-          }`}
+          className={`mt-6 sm:mt-10 ${isGlobalLoading ? "blur-md opacity-50" : "blur-0 opacity-100"
+            }`}
         >
           <div className="flex flex-col items-center text-center">
             <div className="flex flex-col items-center text-center mt-6 sm:mt-10 mb-0 relative">
@@ -89,11 +87,10 @@ export default function LawyerHome() {
                 {/* Professional Badge - Animated */}
                 <div className="mb-4 sm:mb-6 h-10 flex items-center justify-center">
                   <div
-                    className={`transition-all duration-700 transform ${
-                      !isWaveActive && !inputFocused
-                        ? "opacity-100 scale-100 translate-y-28"
-                        : "opacity-100 scale-95 translate-y-40"
-                    }`}
+                    className={`transition-all duration-700 transform ${!isWaveActive && !inputFocused
+                      ? "opacity-100 scale-100 translate-y-28"
+                      : "opacity-100 scale-95 translate-y-44"
+                      }`}
                   >
                     <Badge className="bg-gradient-to-r from-slate-700 to-amber-600 text-white px-4 sm:px-6 py-2 text-xs sm:text-sm font-medium rounded-full shadow-lg">
                       For Legal Professionals
@@ -101,19 +98,17 @@ export default function LawyerHome() {
                   </div>
                 </div>
                 <div
-                  className={`transition-all duration-1000 ease-in-out transform ${
-                    inputFocused || isWaveActive || inputValue != ""
-                      ? "scale-105 sm:scale-110 -translate-y-20  drop-shadow-2xl"
-                      : "scale-100 -translate-y-20 drop-shadow-lg"
-                  }`}
+                  className={`transition-all duration-1000 ease-in-out transform ${inputFocused || isWaveActive || inputValue != ""
+                    ? "scale-105 sm:scale-110 -translate-y-10  drop-shadow-2xl"
+                    : "scale-100 -translate-y-20 drop-shadow-lg"
+                    }`}
                 >
                   <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-extralight text-gray-900 mb-4 relative">
                     <div
-                      className={`absolute inset-0 bg-gradient-to-r from-slate-600/20 via-slate-800/20 to-amber-600/20 blur-2xl sm:blur-3xl rounded-full transform transition-all duration-1000 ${
-                        isWaveActive || inputFocused || inputValue != ""
-                          ? "scale-150 sm:scale-200 opacity-60"
-                          : "scale-100 sm:scale-150 opacity-30"
-                      }`}
+                      className={`absolute inset-0 bg-gradient-to-r from-slate-600/20 via-slate-800/20 to-amber-600/20 blur-2xl sm:blur-3xl rounded-full transform transition-all duration-1000 ${isWaveActive || inputFocused || inputValue != ""
+                        ? "scale-150 sm:scale-200 opacity-60"
+                        : "scale-100 sm:scale-150 opacity-30"
+                        }`}
                     ></div>
                     <AuroraText
                       colors={[
@@ -130,11 +125,10 @@ export default function LawyerHome() {
                 </div>
 
                 <div
-                  className={`transition-all duration-800 ease-in-out ${
-                    inputFocused || isWaveActive || inputValue != ""
-                      ? "opacity-0 scale-95 translate-y-4"
-                      : "opacity-100 scale-100 translate-y-0"
-                  }`}
+                  className={`transition-all duration-800 ease-in-out ${inputFocused || isWaveActive || inputValue != ""
+                    ? "opacity-0 scale-95 translate-y-4"
+                    : "opacity-100 scale-100 translate-y-0"
+                    }`}
                 >
                   <p className="text-base sm:text-lg md:text-xl text-gray-600 max-w-2xl mt-4 px-4">
                     Professional AI-powered legal practice management
@@ -146,6 +140,26 @@ export default function LawyerHome() {
                 </div>
               </div>
             </div>
+
+            {/* Search/Input Section */}
+            <div className="w-full max-w-5xl relative z-30 px-4">
+              <div className="relative z-20">
+                <div
+                  className={`transition-all duration-500 ${isWaveActive
+                    ? "drop-shadow-2xl scale-102 sm:scale-105"
+                    : "drop-shadow-lg scale-100"
+                    }`}
+                >
+                  <AIAssistantForm
+                    onFocus={() => setInputFocused(true)}
+                    onBlur={() => setInputFocused(false)}
+                    placeholder="Ask about case management, client communications, legal research..."
+                    from="slate-800"
+                    to="amber-800"
+                  />
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -154,11 +168,10 @@ export default function LawyerHome() {
       <div className="w-full max-w-5xl mx-auto relative z-40 px-4 mb-8">
         <div className="relative z-20">
           <div
-            className={`transition-all duration-500 ${
-              isWaveActive
-                ? "drop-shadow-2xl scale-102 sm:scale-105"
-                : "drop-shadow-lg scale-100"
-            }`}
+            className={`transition-all duration-500 ${isWaveActive
+              ? "drop-shadow-2xl scale-102 sm:scale-105"
+              : "drop-shadow-lg scale-100"
+              }`}
           >
             <AIAssistantForm
               onFocus={() => setInputFocused(true)}
@@ -175,23 +188,20 @@ export default function LawyerHome() {
 
       {/* Main Content with Conditional Blur - Excluding AI Assistant */}
       <main
-        className={`relative z-10 transition-all duration-500 ${
-          isGlobalLoading ? "blur-md opacity-50" : "blur-0 opacity-100"
-        }`}
+        className={`relative z-10 transition-all duration-500 ${isGlobalLoading ? "blur-md opacity-50" : "blur-0 opacity-100"
+          }`}
       >
         {/* Professional Services Section */}
         <section id="services" className="py-12 sm:py-16 lg:py-20 relative">
           <div className="relative">
             {/* Background - Professional Amber/Slate theme */}
             <div
-              className={`absolute top-10 sm:top-20 left-4 sm:left-10 w-64 sm:w-96 h-64 sm:h-96 bg-gradient-to-r from-slate-200 to-slate-300 rounded-full mix-blend-multiply filter blur-2xl sm:blur-3xl animate-blob transition-opacity duration-1000 ${
-                isWaveActive ? "opacity-40" : "opacity-30"
-              }`}
+              className={`absolute top-10 sm:top-20 left-4 sm:left-10 w-64 sm:w-96 h-64 sm:h-96 bg-gradient-to-r from-slate-200 to-slate-300 rounded-full mix-blend-multiply filter blur-2xl sm:blur-3xl animate-blob transition-opacity duration-1000 ${isWaveActive ? "opacity-40" : "opacity-30"
+                }`}
             ></div>
             <div
-              className={`absolute top-20 sm:top-40 right-4 sm:right-10 w-56 sm:w-80 h-56 sm:h-80 bg-gradient-to-r from-amber-200 to-amber-300 rounded-full mix-blend-multiply filter blur-2xl sm:blur-3xl animate-blob animation-delay-2000 transition-opacity duration-1000 ${
-                isWaveActive ? "opacity-40" : "opacity-30"
-              }`}
+              className={`absolute top-20 sm:top-40 right-4 sm:right-10 w-56 sm:w-80 h-56 sm:h-80 bg-gradient-to-r from-amber-200 to-amber-300 rounded-full mix-blend-multiply filter blur-2xl sm:blur-3xl animate-blob animation-delay-2000 transition-opacity duration-1000 ${isWaveActive ? "opacity-40" : "opacity-30"
+                }`}
             ></div>
 
             <div className="container mx-auto px-4 relative z-10">
