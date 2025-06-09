@@ -1,1307 +1,835 @@
-"use client";
+"use client"
 
-import { useState, useRef, useMemo, useCallback } from "react";
-import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Search, Filter, Plus, FileText, Calendar, Clock, User, MoreHorizontal, ChevronDown, CheckCircle2, AlertCircle, Clock3, Send, Download, Upload, Trash2, Edit, MessageSquare, BarChart, Briefcase, Folder, ArrowRight, } from "lucide-react";
+import { useState } from "react"
+import {
+  Search,
+  Filter,
+  MoreVertical,
+  Edit,
+  MessageCircle,
+  Clock,
+  FileText,
+  AlertCircle,
+  CheckCircle,
+  Plus,
+  Download,
+  Upload,
+  Phone,
+  Video,
+  Star,
+  Archive,
+  Trash2,
+  Eye,
+  Building,
+  Scale,
+  Home,
+  Users,
+  TrendingUp,
+  Activity,
+} from "lucide-react"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Badge } from "@/components/ui/badge"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { motion } from "framer-motion";
+import { Progress } from "@/components/ui/progress"
+import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from "@/components/ui/resizable"
 
-interface Case {
-  id: string;
-  title: string;
-  client: string;
-  caseNumber: string;
-  type: string;
-  status: "active" | "pending" | "closed" | "archived";
-  priority: "high" | "medium" | "low";
-  assignedTo: string;
-  openDate: Date;
-  lastActivity: Date;
-  nextHearing?: Date;
-  description: string;
-  documents: Document[];
-  notes: Note[];
-  tasks: Task[];
-}
-
-interface Document {
-  id: string;
-  name: string;
-  type: string;
-  size: string;
-  uploadedBy: string;
-  uploadedAt: Date;
-}
-
-interface Note {
-  id: string;
-  content: string;
-  createdBy: string;
-  createdAt: Date;
-}
-
-interface Task {
-  id: string;
-  title: string;
-  description: string;
-  dueDate: Date;
-  status: "pending" | "in-progress" | "completed" | "overdue";
-  assignedTo: string;
-}
-
-export default function CaseManagement() {
-  const [searchQuery, setSearchQuery] = useState("");
-  const [filterStatus, setFilterStatus] = useState<
-    "all" | "active" | "pending" | "closed" | "archived"
-  >("all");
-  const [selectedCase, setSelectedCase] = useState<string | null>(null);
-  const [activeTab, setActiveTab] = useState<
-    "overview" | "documents" | "notes" | "tasks"
-  >("overview");
-  const [newNote, setNewNote] = useState("");
-  const fileInputRef = useRef<HTMLInputElement>(null);
-  const [isLoading, setIsLoading] = useState(false);
-  const [isMobileView, setIsMobileView] = useState(false);
-
-  // Sample cases data
-  const cases: Case[] = [
-    {
-      id: "case-001",
-      title: "Johnson v. Smith",
-      client: "Sarah Johnson",
-      caseNumber: "CV-2023-1234",
-      type: "Corporate Litigation",
-      status: "active",
-      priority: "high",
-      assignedTo: "John Doe",
-      openDate: new Date(2023, 2, 15),
-      lastActivity: new Date(2023, 5, 10),
-      nextHearing: new Date(2023, 6, 20),
-      description:
-        "Corporate merger dispute involving allegations of breach of fiduciary duty and misrepresentation of financial statements.",
-      documents: [
-        {
-          id: "doc-001",
-          name: "Complaint.pdf",
-          type: "application/pdf",
-          size: "2.4 MB",
-          uploadedBy: "John Doe",
-          uploadedAt: new Date(2023, 2, 15),
-        },
-        {
-          id: "doc-002",
-          name: "Financial_Statements_2022.xlsx",
-          type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-          size: "1.8 MB",
-          uploadedBy: "John Doe",
-          uploadedAt: new Date(2023, 3, 5),
-        },
-        {
-          id: "doc-003",
-          name: "Merger_Agreement.docx",
-          type: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-          size: "3.2 MB",
-          uploadedBy: "Jane Smith",
-          uploadedAt: new Date(2023, 3, 10),
-        },
-      ],
-      notes: [
-        {
-          id: "note-001",
-          content:
-            "Initial consultation with client. Discussed potential claims and strategy. Client provided copies of merger agreement and financial statements.",
-          createdBy: "John Doe",
-          createdAt: new Date(2023, 2, 15),
-        },
-        {
-          id: "note-002",
-          content:
-            "Reviewed financial statements. Found discrepancies in Q3 and Q4 reports that support client's claims of misrepresentation.",
-          createdBy: "Jane Smith",
-          createdAt: new Date(2023, 3, 5),
-        },
-        {
-          id: "note-003",
-          content:
-            "Drafted complaint. Focusing on breach of fiduciary duty, misrepresentation, and violation of securities regulations.",
-          createdBy: "John Doe",
-          createdAt: new Date(2023, 3, 20),
-        },
-      ],
-      tasks: [
-        {
-          id: "task-001",
-          title: "File complaint with court",
-          description: "Finalize and file complaint with the district court",
-          dueDate: new Date(2023, 4, 1),
-          status: "completed",
-          assignedTo: "John Doe",
-        },
-        {
-          id: "task-002",
-          title: "Prepare discovery requests",
-          description:
-            "Draft initial discovery requests including interrogatories and document requests",
-          dueDate: new Date(2023, 5, 15),
-          status: "in-progress",
-          assignedTo: "Jane Smith",
-        },
-        {
-          id: "task-003",
-          title: "Prepare for preliminary hearing",
-          description:
-            "Develop arguments and prepare exhibits for preliminary hearing",
-          dueDate: new Date(2023, 6, 15),
-          status: "pending",
-          assignedTo: "John Doe",
-        },
-      ],
-    },
-    {
-      id: "case-002",
-      title: "Chen Property Acquisition",
-      client: "Michael Chen",
-      caseNumber: "RE-2023-0567",
-      type: "Real Estate",
-      status: "pending",
-      priority: "medium",
-      assignedTo: "Jane Smith",
-      openDate: new Date(2023, 4, 5),
-      lastActivity: new Date(2023, 5, 12),
-      description:
-        "Commercial property acquisition requiring due diligence, contract negotiation, and title review.",
-      documents: [
-        {
-          id: "doc-004",
-          name: "Purchase_Agreement_Draft.docx",
-          type: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-          size: "1.5 MB",
-          uploadedBy: "Jane Smith",
-          uploadedAt: new Date(2023, 4, 5),
-        },
-        {
-          id: "doc-005",
-          name: "Property_Survey.pdf",
-          type: "application/pdf",
-          size: "4.2 MB",
-          uploadedBy: "Jane Smith",
-          uploadedAt: new Date(2023, 4, 20),
-        },
-      ],
-      notes: [
-        {
-          id: "note-004",
-          content:
-            "Initial meeting with client. Discussed property details, budget, and timeline. Client is looking to close within 60 days.",
-          createdBy: "Jane Smith",
-          createdAt: new Date(2023, 4, 5),
-        },
-        {
-          id: "note-005",
-          content:
-            "Reviewed property survey and title report. Found potential easement issue that needs to be addressed before closing.",
-          createdBy: "Jane Smith",
-          createdAt: new Date(2023, 4, 25),
-        },
-      ],
-      tasks: [
-        {
-          id: "task-004",
-          title: "Complete title review",
-          description:
-            "Review title report and address any issues or encumbrances",
-          dueDate: new Date(2023, 5, 1),
-          status: "completed",
-          assignedTo: "Jane Smith",
-        },
-        {
-          id: "task-005",
-          title: "Negotiate purchase agreement",
-          description:
-            "Finalize terms and conditions of the purchase agreement",
-          dueDate: new Date(2023, 5, 15),
-          status: "in-progress",
-          assignedTo: "Jane Smith",
-        },
-        {
-          id: "task-006",
-          title: "Prepare closing documents",
-          description: "Draft and review all documents required for closing",
-          dueDate: new Date(2023, 6, 1),
-          status: "pending",
-          assignedTo: "John Doe",
-        },
-      ],
-    },
-    {
-      id: "case-003",
-      title: "Rodriguez Custody Modification",
-      client: "Emily Rodriguez",
-      caseNumber: "FC-2023-0789",
-      type: "Family Law",
-      status: "closed",
-      priority: "high",
-      assignedTo: "John Doe",
-      openDate: new Date(2023, 1, 10),
-      lastActivity: new Date(2023, 4, 30),
-      description:
-        "Modification of child custody arrangement due to relocation of custodial parent.",
-      documents: [
-        {
-          id: "doc-006",
-          name: "Original_Custody_Order.pdf",
-          type: "application/pdf",
-          size: "1.2 MB",
-          uploadedBy: "John Doe",
-          uploadedAt: new Date(2023, 1, 10),
-        },
-        {
-          id: "doc-007",
-          name: "Modification_Petition.pdf",
-          type: "application/pdf",
-          size: "0.8 MB",
-          uploadedBy: "John Doe",
-          uploadedAt: new Date(2023, 1, 15),
-        },
-        {
-          id: "doc-008",
-          name: "Final_Modified_Order.pdf",
-          type: "application/pdf",
-          size: "1.5 MB",
-          uploadedBy: "John Doe",
-          uploadedAt: new Date(2023, 4, 30),
-        },
-      ],
-      notes: [
-        {
-          id: "note-006",
-          content:
-            "Client seeking modification of custody order due to job relocation. Wants to maintain primary custody with adjusted visitation schedule.",
-          createdBy: "John Doe",
-          createdAt: new Date(2023, 1, 10),
-        },
-        {
-          id: "note-007",
-          content:
-            "Mediation session with both parties. Reached tentative agreement on modified visitation schedule.",
-          createdBy: "John Doe",
-          createdAt: new Date(2023, 3, 15),
-        },
-        {
-          id: "note-008",
-          content:
-            "Court approved modified custody order. Case closed successfully.",
-          createdBy: "John Doe",
-          createdAt: new Date(2023, 4, 30),
-        },
-      ],
-      tasks: [
-        {
-          id: "task-007",
-          title: "File modification petition",
-          description:
-            "Prepare and file petition for modification of custody order",
-          dueDate: new Date(2023, 1, 20),
-          status: "completed",
-          assignedTo: "John Doe",
-        },
-        {
-          id: "task-008",
-          title: "Schedule mediation",
-          description: "Arrange mediation session with both parties",
-          dueDate: new Date(2023, 3, 1),
-          status: "completed",
-          assignedTo: "Jane Smith",
-        },
-        {
-          id: "task-009",
-          title: "Prepare final order",
-          description: "Draft modified custody order for court approval",
-          dueDate: new Date(2023, 4, 15),
-          status: "completed",
-          assignedTo: "John Doe",
-        },
-      ],
-    },
-  ];
+export default function CaseUpdatesPage() {
+  const [selectedCase, setSelectedCase] = useState(cases[0])
+  const [searchQuery, setSearchQuery] = useState("")
+  const [filterStatus, setFilterStatus] = useState("all")
 
   const filteredCases = cases.filter((caseItem) => {
     const matchesSearch =
       caseItem.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      caseItem.client.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      caseItem.caseNumber.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      caseItem.type.toLowerCase().includes(searchQuery.toLowerCase());
+      caseItem.lawyer.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      caseItem.caseNumber.toLowerCase().includes(searchQuery.toLowerCase())
 
-    const matchesFilter =
-      filterStatus === "all" || caseItem.status === filterStatus;
+    const matchesFilter = filterStatus === "all" || caseItem.status.toLowerCase() === filterStatus
 
-    return matchesSearch && matchesFilter;
-  });
+    return matchesSearch && matchesFilter
+  })
 
-  const currentCase = cases.find((caseItem) => caseItem.id === selectedCase);
-
-  const getStatusColor = useMemo(
-    () => (status: string) => {
-      switch (status) {
-        case "active":
-          return "bg-green-500/20 text-green-700 border-green-500/30";
-        case "pending":
-          return "bg-yellow-500/20 text-yellow-700 border-yellow-500/30";
-        case "closed":
-          return "bg-blue-500/20 text-blue-700 border-blue-500/30";
-        case "archived":
-          return "bg-gray-500/20 text-gray-700 border-gray-500/30";
-        default:
-          return "bg-gray-500/20 text-gray-700 border-gray-500/30";
-      }
-    },
-    []
-  );
-
-  const getPriorityColor = useMemo(
-    () => (priority: string) => {
-      switch (priority) {
-        case "high":
-          return "bg-red-500/20 text-red-700 border-red-500/30";
-        case "medium":
-          return "bg-yellow-500/20 text-yellow-700 border-yellow-500/30";
-        case "low":
-          return "bg-green-500/20 text-green-700 border-green-500/30";
-        default:
-          return "bg-gray-500/20 text-gray-700 border-gray-500/30";
-      }
-    },
-    []
-  );
-
-  const getTaskStatusColor = (status: string) => {
-    switch (status) {
-      case "completed":
-        return "bg-green-500/20 text-green-700 border-green-500/30";
-      case "in-progress":
-        return "bg-blue-500/20 text-blue-700 border-blue-500/30";
+  const getStatusColor = (status: string) => {
+    switch (status.toLowerCase()) {
+      case "active":
+        return "bg-green-100 text-green-800 border-green-200"
       case "pending":
-        return "bg-yellow-500/20 text-yellow-700 border-yellow-500/30";
-      case "overdue":
-        return "bg-red-500/20 text-red-700 border-red-500/30";
-      default:
-        return "bg-gray-500/20 text-gray-700 border-gray-500/30";
-    }
-  };
-
-  const getTaskStatusIcon = (status: string) => {
-    switch (status) {
+        return "bg-yellow-100 text-yellow-800 border-yellow-200"
       case "completed":
-        return <CheckCircle2 className="h-4 w-4 text-green-600" />;
-      case "in-progress":
-        return <Clock3 className="h-4 w-4 text-blue-600" />;
-      case "pending":
-        return <Clock className="h-4 w-4 text-yellow-600" />;
-      case "overdue":
-        return <AlertCircle className="h-4 w-4 text-red-600" />;
+        return "bg-blue-100 text-blue-800 border-blue-200"
+      case "on hold":
+        return "bg-gray-100 text-gray-800 border-gray-200"
+      case "urgent":
+        return "bg-red-100 text-red-800 border-red-200"
       default:
-        return null;
+        return "bg-gray-100 text-gray-800 border-gray-200"
     }
-  };
+  }
 
-  const getFileIcon = (type: string) => {
-    if (type.includes("pdf"))
-      return <FileText className="h-5 w-5 text-red-500" />;
-    if (
-      type.includes("spreadsheet") ||
-      type.includes("excel") ||
-      type.includes("xlsx")
-    )
-      return <BarChart className="h-5 w-5 text-green-500" />;
-    if (
-      type.includes("word") ||
-      type.includes("document") ||
-      type.includes("docx")
-    )
-      return <FileText className="h-5 w-5 text-blue-500" />;
-    return <FileText className="h-5 w-5 text-gray-500" />;
-  };
+  const getPriorityColor = (priority: string) => {
+    switch (priority.toLowerCase()) {
+      case "high":
+        return "bg-red-100 text-red-800 border-red-200"
+      case "medium":
+        return "bg-yellow-100 text-yellow-800 border-yellow-200"
+      case "low":
+        return "bg-green-100 text-green-800 border-green-200"
+      default:
+        return "bg-gray-100 text-gray-800 border-gray-200"
+    }
+  }
 
-  const formatDate = (date: Date) => {
-    return date.toLocaleDateString("en-US", {
-      year: "numeric",
-      month: "short",
-      day: "numeric",
-    });
-  };
-
-  const formatDateTime = (date: Date) => {
-    return date.toLocaleString("en-US", {
-      year: "numeric",
-      month: "short",
-      day: "numeric",
-      hour: "numeric",
-      minute: "numeric",
-    });
-  };
-
-  const handleAddNote = useCallback(() => {
-    if (!newNote.trim() || !currentCase) return;
-
-    // In a real app, you would add the note to the database
-    // For this demo, we're just showing the UI
-    alert("Note added: " + newNote);
-    setNewNote("");
-  }, [newNote, currentCase]);
-
-  const handleUploadDocument = useCallback(() => {
-    fileInputRef.current?.click();
-  }, []);
+  const getCaseTypeIcon = (type: string) => {
+    switch (type.toLowerCase()) {
+      case "real estate":
+        return <Home className="h-4 w-4" />
+      case "corporate litigation":
+        return <Building className="h-4 w-4" />
+      case "family law":
+        return <Users className="h-4 w-4" />
+      case "criminal law":
+        return <Scale className="h-4 w-4" />
+      default:
+        return <FileText className="h-4 w-4" />
+    }
+  }
 
   return (
-    <div className="w-full h-full border-[1.5px] dark:bg-black bg-white  rounded-lg">
-      <div className="w-full h-full rounded-lg overflow-hidden flex relative">
-        {/* <div className="w-full h-full rounded-2xl overflow-hidden flex flex-col relative"> */}
-        {/* Hidden file input */}
-        <input
-          ref={fileInputRef}
-          type="file"
-          multiple
-          accept=".pdf,.doc,.docx,.txt,.jpg,.jpeg,.png,.xlsx,.xls"
-          className="hidden"
-        />
+    <div className="h-screen bg-gray-50">
+      <ResizablePanelGroup direction="horizontal">
+        {/* Left Sidebar - Case List */}
+        <ResizablePanel defaultSize={30} minSize={25} maxSize={40}>
+          <div className="h-full bg-white border-r border-gray-200 flex flex-col">
+            {/* Header */}
+            <div className="p-6 border-b border-gray-200">
+              <div className="flex items-center justify-between mb-4">
+                <h1 className="text-2xl font-bold text-gray-900">Cases</h1>
+                <Button size="sm" className="bg-blue-600 hover:bg-blue-700">
+                  <Plus className="h-4 w-4 mr-2" />
+                  New Case
+                </Button>
+              </div>
 
-        {/* Main Content */}
-        <div className="flex-1 flex flex-col md:flex-row ">
-          <div
-            className={cn(
-              isMobileView
-                ? "absolute inset-y-0 left-0 z-20 w-full md:w-80"
-                : "w-80"
-            )}
-          >
-            {/* Search */}
-            <div className="p-5">
-              <div className="relative">
-                {searchQuery && (
-                  <>
-                    <ArrowRight className="absolute left-3 top-2 h-5 w-5 text-accent-violet" />
-                  </>
-                )}
-                <Input
-                  placeholder="Search Cases"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className={cn(
-                    "bg-transparent rounded-2xl text-left focus-visible:ring-0 border-2 border-accent-violet/30 focus-visible:scale-105 focus-visible:border-accent-violet/40 transition-all duration-150 dark:placeholder:text-white/40 placeholder:text-black/40",
-                    searchQuery != "" ? "text-center" : "text-left"
-                  )}
-                />
+              {/* Search and Filter */}
+              <div className="space-y-3">
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+                  <Input
+                    placeholder="Search cases..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="pl-10"
+                  />
+                </div>
               </div>
             </div>
 
             {/* Case List */}
-            <ScrollArea className="flex border-t-2 border-accent-violet/50 ">
-              <div className="p-5 h-[calc(100vh-20rem)]">
-                {isLoading ? (
-                  <></>
-                ) : cases
-                  .filter(
-                    (caseItem) =>
-                      caseItem.title
-                        .toLowerCase()
-                        .includes(searchQuery.toLowerCase()) ||
-                      (caseItem.type &&
-                        caseItem.type
-                          .toLowerCase()
-                          .includes(searchQuery.toLowerCase()))
-                  )
-                  .sort((a, b) => {
-                    // if (a.isPinned && !b.isPinned) return -1;
-                    // if (!a.isPinned && b.isPinned) return 1;
-                    return (
-                      new Date(b.openDate).getTime() -
-                      new Date(a.openDate).getTime()
-                    );
-                  }).length > 0 ? (
-                  cases
-                    .filter(
-                      (caseItem) =>
-                        caseItem.title
-                          .toLowerCase()
-                          .includes(searchQuery.toLowerCase()) ||
-                        (caseItem.type &&
-                          caseItem.type
-                            .toLowerCase()
-                            .includes(searchQuery.toLowerCase()))
-                    )
-                    .sort((a, b) => {
-                      // if (a.isPinned && !b.isPinned) return -1;
-                      // if (!a.isPinned && b.isPinned) return 1;
-                      return (
-                        new Date(b.openDate).getTime() -
-                        new Date(a.openDate).getTime()
-                      );
-                    })
-                    .map((caseItem) => (
-                      <motion.div
-                        key={caseItem.id}
-                        onClick={() => {
-                          setSelectedCase(caseItem.id);
-                          if (isMobileView) {
-                            // setShowSidebar(false);
-                          }
-                        }}
-                        className={cn(
-                          "px-4 py-3 rounded-[36px] border border-transparent cursor-pointer transition-all duration-200 mb-2 relative",
-                          selectedCase === caseItem.id
-                            ? "bg-accent-violet/5 backdrop-blur-lg shadow-lg"
-                            : "hover:border-gray-200 backdrop-blur-sm m-2"
-                        )}
-                      >
-                        <div className="flex items-center justify-center">
-                          <div className="relative">
-                            <div className="w-12 h-12 bg-accent-violet mr-4 rounded-full flex items-center justify-center">
-                              <Briefcase className="h-6 w-6 text-white" />
-                            </div>
+            <div className="flex-1 overflow-y-auto p-4">
+              <div className="space-y-3">
+                {filteredCases.map((caseItem) => (
+                  <Card
+                    key={caseItem.id}
+                    className={`cursor-pointer transition-all duration-200 shadow-none scale-95 ${selectedCase.id === caseItem.id
+                      ? "ring-2 ring-accent-violet/40 shadow-md  bg-accent-violet/5 scale-100"
+                      : "hover:shadow-sm border-gray-200"
+                      }`}
+                    onClick={() => setSelectedCase(caseItem)}
+                  >
+                    <CardContent className="">
+                      <div className="flex items-start justify-between mb-3">
+                        <div className="flex items-center space-x-2">
+                          <div className="h-8 w-8 bg-blue-100 rounded-lg flex items-center justify-center text-blue-600">
+                            {getCaseTypeIcon(caseItem.type)}
                           </div>
-                          <div className="flex-1 min-w-0 mt-0">
-                            <div className="flex items-center justify-between">
-                              <h3 className="font-medium text-gray-800 dark:text-white truncate">
-                                {caseItem.title.split(" ")[0]}
-                              </h3>
-                              <div className="flex items-center gap-1 justify-center mr-6">
-                                <span className="text-xs text-black dark:text-white/40">
-                                  {caseItem.lastActivity.toLocaleTimeString(
-                                    [],
-                                    {
-                                      hour: "2-digit",
-                                      minute: "2-digit",
-                                    }
-                                  )}
-                                </span>
-                              </div>
-                            </div>
-                            <div className="flex items-center gap-2 mt-1">
-                              <span className="text-xs text-gray-600 dark:text-gray-300">
-                                {caseItem.type}
-                              </span>
-                            </div>
+                          <div>
+                            <h3 className="font-semibold text-gray-900 text-sm">{caseItem.title}</h3>
+                            <p className="text-xs text-gray-500">{caseItem.caseNumber}</p>
                           </div>
                         </div>
-                      </motion.div>
-                    ))
-                ) : (
-                  <div className="text-center py-12 rounded-xl border border-white/40">
-                    <Briefcase className="h-12 w-12 mx-auto text-gray-400 mb-4" />
-                    <h3 className="text-xl font-medium text-gray-800 dark:text-white mb-2">
-                      No cases found
-                    </h3>
-                    <p className="text-gray-600 dark:text-gray-300">
-                      {searchQuery
-                        ? "Try adjusting your search criteria"
-                        : "You don't have any cases yet"}
-                    </p>
-                  </div>
-                )}
+                        <Badge className={`text-xs ${getStatusColor(caseItem.status)}`}>{caseItem.status}</Badge>
+                      </div>
+
+                      <div className="space-y-2">
+                        <div className="flex items-center justify-between text-xs">
+                          <span className="text-gray-500">Lawyer:</span>
+                          <span className="font-medium text-gray-900">{caseItem.lawyer}</span>
+                        </div>
+                        {/* <div className="flex items-center justify-between text-xs"> */}
+                        {/*   <span className="text-gray-500">Last Activity:</span> */}
+                        {/*   <span className="text-gray-700">{caseItem.lastActivity}</span> */}
+                        {/* </div> */}
+                        {/* <div className="flex items-center justify-between text-xs"> */}
+                        {/*   <span className="text-gray-500">Progress:</span> */}
+                        {/*   <span className="text-gray-700">{caseItem.progress}%</span> */}
+                        {/* </div> */}
+                        {/* <Progress value={caseItem.progress} className="h-1" /> */}
+                      </div>
+
+                      {/* {caseItem.urgentTasks > 0 && ( */}
+                      {/*   <div className="mt-3 flex items-center text-xs text-red-600"> */}
+                      {/*     <AlertCircle className="h-3 w-3 mr-1" /> */}
+                      {/*     {caseItem.urgentTasks} urgent task{caseItem.urgentTasks > 1 ? "s" : ""} */}
+                      {/*   </div> */}
+                      {/* )} */}
+                    </CardContent>
+                  </Card>
+                ))}
               </div>
-            </ScrollArea>
+            </div>
           </div>
+        </ResizablePanel>
 
-          {/* Case Details */}
-          {currentCase ? (
-            <div className="flex-1 p-0">
-              {/* Case Header */}
-              <div className="p-4 border-b-2 border-accent-violet/40 py-[12px]  bg-accent-violet/8">
-                <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-                  <div>
-                    <div className="flex items-center gap-2">
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className="md:hidden h-8 w-8 p-0"
-                        onClick={() => setSelectedCase(null)}
-                      >
-                        <ChevronDown className="h-4 w-4" />
-                      </Button>
-                      <h2 className="text-xl font-semibold text-gray-800 dark:text-white">
-                        {currentCase.title}
-                      </h2>
-                      <span
-                        className={cn(
-                          "px-2 py-0.5 rounded-full text-xs font-medium border",
-                          getStatusColor(currentCase.status)
-                        )}
-                      >
-                        {currentCase.status}
-                      </span>
-                    </div>
-                    <div className="flex items-center gap-2 mt-1">
-                      <span className="text-sm text-gray-600 dark:text-gray-300">
-                        <span className="font-medium">Client:</span>{" "}
-                        {currentCase.client}
-                      </span>
-                      <span className="text-sm text-gray-600 dark:text-gray-300">
-                        <span className="font-medium">Case #:</span>{" "}
-                        {currentCase.caseNumber}
-                      </span>
-                    </div>
+        <ResizableHandle withHandle />
+
+        {/* Main Content Area */}
+        <ResizablePanel defaultSize={70} minSize={60}>
+          <div className="h-full flex flex-col">
+            {/* Case Header */}
+            <div className="bg-white border-b border-gray-200 p-6">
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center space-x-4">
+                  <div className="h-12 w-12 bg-gradient-to-r from-blue-500 to-purple-500 rounded-lg flex items-center justify-center text-white">
+                    {getCaseTypeIcon(selectedCase.type)}
                   </div>
-
-                  <div className="flex gap-2">
-                    <Button variant="outline" className="gap-2">
-                      <Edit className="h-4 w-4" /> Edit Case
-                    </Button>
-                    <Button className="bg-accent-violet hover:bg-accent-violet gap-2">
-                      <MessageSquare className="h-4 w-4" /> Message Client
-                    </Button>
+                  <div>
+                    <h1 className="text-2xl font-bold text-gray-900">{selectedCase.title}</h1>
+                    <div className="flex items-center space-x-4 mt-1">
+                      <span className="text-gray-600">Lawyer: {selectedCase.lawyer}</span>
+                      <span className="text-gray-400">•</span>
+                      <span className="text-gray-600">Case #: {selectedCase.caseNumber}</span>
+                      <Badge className={`${getStatusColor(selectedCase.status)}`}>{selectedCase.status}</Badge>
+                    </div>
                   </div>
                 </div>
 
-                {/* Tabs */}
-                {/* <div className="flex mt-6 border-b border-white/20"> */}
-                {/*   <button */}
-                {/*     onClick={() => setActiveTab("overview")} */}
-                {/*     className={cn( */}
-                {/*       "px-4 py-2 font-medium transition-colors", */}
-                {/*       activeTab === "overview" */}
-                {/*         ? "text-accent-violet border-b-2 border-[#3b82f6-600" */}
-                {/*         : "text-gray-600 dark:text-gray-300 hover:text-[#3b82f6-600" */}
-                {/*     )} */}
-                {/*   > */}
-                {/*     Overview */}
-                {/*   </button> */}
-                {/*   <button */}
-                {/*     onClick={() => setActiveTab("documents")} */}
-                {/*     className={cn( */}
-                {/*       "px-4 py-2 font-medium transition-colors", */}
-                {/*       activeTab === "documents" */}
-                {/*         ? "text-accent-violet border-b-2 border-[#3b82f6-600" */}
-                {/*         : "text-gray-600 dark:text-gray-300 hover:text-[#3b82f6-600" */}
-                {/*     )} */}
-                {/*   > */}
-                {/*     Documents */}
-                {/*   </button> */}
-                {/*   <button */}
-                {/*     onClick={() => setActiveTab("notes")} */}
-                {/*     className={cn( */}
-                {/*       "px-4 py-2 font-medium transition-colors", */}
-                {/*       activeTab === "notes" */}
-                {/*         ? "text-accent-violet border-b-2 border-[#3b82f6-600" */}
-                {/*         : "text-gray-600 dark:text-gray-300 hover:text-[#3b82f6-600" */}
-                {/*     )} */}
-                {/*   > */}
-                {/*     Notes */}
-                {/*   </button> */}
-                {/*   <button */}
-                {/*     onClick={() => setActiveTab("tasks")} */}
-                {/*     className={cn( */}
-                {/*       "px-4 py-2 font-medium transition-colors", */}
-                {/*       activeTab === "tasks" */}
-                {/*         ? "text-accent-violet border-b-2 border-[#3b82f6-600" */}
-                {/*         : "text-gray-600 dark:text-gray-300 hover:text-[#3b82f6-600" */}
-                {/*     )} */}
-                {/*   > */}
-                {/*     Tasks */}
-                {/*   </button> */}
-                {/* </div> */}
+                <div className="flex items-center space-x-2">
+                  <Button size="sm" className="bg-blue-600 hover:bg-blue-700">
+                    <MessageCircle className="h-4 w-4 mr-2" />
+                    Message Lawyer
+                  </Button>
+                </div>
               </div>
 
-              {/* Tab Content */}
-              <ScrollArea className="h-[calc(100vh-16rem)]">
-                <div className="p-6">
-                  <div className="tab-content">
-                    {/* Overview Tab */}
-                    <div
-                      className={cn(
-                        "space-y-6 transition-opacity duration-300",
-                        activeTab === "overview"
-                          ? "opacity-100"
-                          : "opacity-0 hidden"
-                      )}
-                    >
-                      {/* Case Details */}
-                      <div className="bg-white/30 dark:bg-white/10 backdrop-blur-sm rounded-xl border border-white/20 p-6">
-                        <h3 className="text-lg font-medium text-gray-800 dark:text-white mb-4">
-                          Case Details
-                        </h3>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* Quick Stats */}
+              <div className="grid grid-cols-4 gap-4">
+                <Card>
+                  <CardContent className="p-4">
+                    <div className="flex items-center space-x-2">
+                      <TrendingUp className="h-5 w-5 text-green-600" />
+                      <div>
+                        <p className="text-sm font-medium text-gray-900">{selectedCase.progress}%</p>
+                        <p className="text-xs text-gray-500">Progress</p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+                <Card>
+                  <CardContent className="p-4">
+                    <div className="flex items-center space-x-2">
+                      <Clock className="h-5 w-5 text-blue-600" />
+                      <div>
+                        <p className="text-sm font-medium text-gray-900">{selectedCase.timeSpent}h</p>
+                        <p className="text-xs text-gray-500">Time Spent</p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+                <Card>
+                  <CardContent className="p-4">
+                    <div className="flex items-center space-x-2">
+                      <FileText className="h-5 w-5 text-purple-600" />
+                      <div>
+                        <p className="text-sm font-medium text-gray-900">{selectedCase.documents}</p>
+                        <p className="text-xs text-gray-500">Documents</p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+                <Card>
+                  <CardContent className="p-4">
+                    <div className="flex items-center space-x-2">
+                      <Activity className="h-5 w-5 text-orange-600" />
+                      <div>
+                        <p className="text-sm font-medium text-gray-900">{selectedCase.activities.length}</p>
+                        <p className="text-xs text-gray-500">Activities</p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+            </div>
+
+            {/* Case Content */}
+            <div className="flex-1 overflow-y-auto p-6">
+              <Tabs defaultValue="overview" className="w-full">
+                <TabsList className="grid w-full grid-cols-5">
+                  <TabsTrigger value="overview">Overview</TabsTrigger>
+                  <TabsTrigger value="activities">Activities</TabsTrigger>
+                  <TabsTrigger value="documents">Documents</TabsTrigger>
+                  <TabsTrigger value="timeline">Timeline</TabsTrigger>
+                  <TabsTrigger value="billing">Billing</TabsTrigger>
+                </TabsList>
+
+                <TabsContent value="overview" className="mt-6">
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    {/* Case Details */}
+                    <Card>
+                      <CardHeader>
+                        <CardTitle className="text-lg">Case Details</CardTitle>
+                      </CardHeader>
+                      <CardContent className="space-y-4">
+                        <div className="grid grid-cols-2 gap-4">
                           <div>
-                            <div className="space-y-3">
-                              <div>
-                                <p className="text-sm text-gray-600 dark:text-gray-400">
-                                  Case Type
-                                </p>
-                                <p className="font-medium text-gray-800 dark:text-white">
-                                  {currentCase.type}
-                                </p>
+                            <label className="text-sm font-medium text-gray-500">Case Type</label>
+                            <div className="flex items-center space-x-2 mt-1">
+                              {getCaseTypeIcon(selectedCase.type)}
+                              <span className="font-medium">{selectedCase.type}</span>
+                            </div>
+                          </div>
+                          <div>
+                            <label className="text-sm font-medium text-gray-500">Status</label>
+                            <div className="mt-1">
+                              <Badge className={`${getStatusColor(selectedCase.status)}`}>{selectedCase.status}</Badge>
+                            </div>
+                          </div>
+                          <div>
+                            <label className="text-sm font-medium text-gray-500">Priority</label>
+                            <div className="mt-1">
+                              <Badge className={`${getPriorityColor(selectedCase.priority)}`}>
+                                {selectedCase.priority}
+                              </Badge>
+                            </div>
+                          </div>
+                          <div>
+                            <label className="text-sm font-medium text-gray-500">Assigned To</label>
+                            <div className="flex items-center space-x-2 mt-1">
+                              <Avatar className="h-6 w-6">
+                                <AvatarImage src={selectedCase.assignedTo.avatar || "/placeholder.svg"} />
+                                <AvatarFallback className="text-xs">
+                                  {selectedCase.assignedTo.name
+                                    .split(" ")
+                                    .map((n) => n[0])
+                                    .join("")}
+                                </AvatarFallback>
+                              </Avatar>
+                              <span className="font-medium">{selectedCase.assignedTo.name}</span>
+                            </div>
+                          </div>
+                          <div>
+                            <label className="text-sm font-medium text-gray-500">Open Date</label>
+                            <p className="font-medium mt-1">{selectedCase.openDate}</p>
+                          </div>
+                          <div>
+                            <label className="text-sm font-medium text-gray-500">Last Activity</label>
+                            <p className="font-medium mt-1">{selectedCase.lastActivity}</p>
+                          </div>
+                        </div>
+
+                        <div>
+                          <label className="text-sm font-medium text-gray-500">Description</label>
+                          <p className="text-gray-700 mt-1 leading-relaxed">{selectedCase.description}</p>
+                        </div>
+                      </CardContent>
+                    </Card>
+
+                    {/* Recent Activities */}
+                    <Card>
+                      <CardHeader>
+                        <CardTitle className="text-lg">Recent Activities</CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        <div className="space-y-4">
+                          {selectedCase.activities.slice(0, 5).map((activity, index) => (
+                            <div key={index} className="flex items-start space-x-3">
+                              <div
+                                className={`h-8 w-8 rounded-full flex items-center justify-center ${activity.type === "completed"
+                                  ? "bg-green-100 text-green-600"
+                                  : activity.type === "pending"
+                                    ? "bg-yellow-100 text-yellow-600"
+                                    : "bg-blue-100 text-blue-600"
+                                  }`}
+                              >
+                                {activity.type === "completed" ? (
+                                  <CheckCircle className="h-4 w-4" />
+                                ) : activity.type === "pending" ? (
+                                  <Clock className="h-4 w-4" />
+                                ) : (
+                                  <FileText className="h-4 w-4" />
+                                )}
                               </div>
-                              <div>
-                                <p className="text-sm text-gray-600 dark:text-gray-400">
-                                  Status
-                                </p>
-                                <p className="font-medium text-gray-800 dark:text-white capitalize">
-                                  {currentCase.status}
-                                </p>
-                              </div>
-                              <div>
-                                <p className="text-sm text-gray-600 dark:text-gray-400">
-                                  Priority
-                                </p>
-                                <div className="flex items-center gap-2">
-                                  <span
-                                    className={cn(
-                                      "px-2 py-0.5 rounded-full text-xs font-medium border",
-                                      getPriorityColor(currentCase.priority)
-                                    )}
-                                  >
-                                    {currentCase.priority}
-                                  </span>
+                              <div className="flex-1">
+                                <p className="font-medium text-gray-900">{activity.title}</p>
+                                <p className="text-sm text-gray-600">{activity.description}</p>
+                                <div className="flex items-center space-x-4 mt-1">
+                                  <span className="text-xs text-gray-500">{activity.date}</span>
+                                  {activity.dueDate && (
+                                    <>
+                                      <span className="text-xs text-gray-400">•</span>
+                                      <span className="text-xs text-gray-500">Due: {activity.dueDate}</span>
+                                    </>
+                                  )}
                                 </div>
                               </div>
                             </div>
-                          </div>
+                          ))}
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </div>
+                </TabsContent>
 
+                <TabsContent value="activities" className="mt-6">
+                  <Card>
+                    <CardHeader>
+                      <div className="flex items-center justify-between">
+                        <CardTitle className="text-lg">All Activities</CardTitle>
+                        <Button size="sm">
+                          <Plus className="h-4 w-4 mr-2" />
+                          Add Activity
+                        </Button>
+                      </div>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="space-y-4">
+                        {selectedCase.activities.map((activity, index) => (
+                          <div
+                            key={index}
+                            className="flex items-start space-x-3 p-4 rounded-lg border border-gray-200 hover:bg-gray-50 transition-colors"
+                          >
+                            <div
+                              className={`h-10 w-10 rounded-full flex items-center justify-center ${activity.type === "completed"
+                                ? "bg-green-100 text-green-600"
+                                : activity.type === "pending"
+                                  ? "bg-yellow-100 text-yellow-600"
+                                  : "bg-blue-100 text-blue-600"
+                                }`}
+                            >
+                              {activity.type === "completed" ? (
+                                <CheckCircle className="h-5 w-5" />
+                              ) : activity.type === "pending" ? (
+                                <Clock className="h-5 w-5" />
+                              ) : (
+                                <FileText className="h-5 w-5" />
+                              )}
+                            </div>
+                            <div className="flex-1">
+                              <div className="flex items-center justify-between">
+                                <h4 className="font-semibold text-gray-900">{activity.title}</h4>
+                                <Badge
+                                  className={`text-xs ${activity.type === "completed"
+                                    ? "bg-green-100 text-green-800"
+                                    : activity.type === "pending"
+                                      ? "bg-yellow-100 text-yellow-800"
+                                      : "bg-blue-100 text-blue-800"
+                                    }`}
+                                >
+                                  {activity.type}
+                                </Badge>
+                              </div>
+                              <p className="text-gray-600 mt-1">{activity.description}</p>
+                              <div className="flex items-center space-x-4 mt-2">
+                                <span className="text-sm text-gray-500">{activity.date}</span>
+                                {activity.dueDate && (
+                                  <>
+                                    <span className="text-sm text-gray-400">•</span>
+                                    <span className="text-sm text-gray-500">Due: {activity.dueDate}</span>
+                                  </>
+                                )}
+                                <span className="text-sm text-gray-400">•</span>
+                                <span className="text-sm text-gray-500">By {activity.assignee}</span>
+                              </div>
+                            </div>
+                            <DropdownMenu>
+                              <DropdownMenuTrigger asChild>
+                                <Button variant="ghost" size="sm">
+                                  <MoreVertical className="h-4 w-4" />
+                                </Button>
+                              </DropdownMenuTrigger>
+                              <DropdownMenuContent align="end">
+                                <DropdownMenuItem>
+                                  <Edit className="h-4 w-4 mr-2" />
+                                  Edit
+                                </DropdownMenuItem>
+                                <DropdownMenuItem>
+                                  <Eye className="h-4 w-4 mr-2" />
+                                  View Details
+                                </DropdownMenuItem>
+                                <DropdownMenuItem className="text-red-600">
+                                  <Trash2 className="h-4 w-4 mr-2" />
+                                  Delete
+                                </DropdownMenuItem>
+                              </DropdownMenuContent>
+                            </DropdownMenu>
+                          </div>
+                        ))}
+                      </div>
+                    </CardContent>
+                  </Card>
+                </TabsContent>
+
+                <TabsContent value="documents" className="mt-6">
+                  <Card>
+                    <CardHeader>
+                      <div className="flex items-center justify-between">
+                        <CardTitle className="text-lg">Documents</CardTitle>
+                        <div className="flex space-x-2">
+                          <Button variant="outline" size="sm">
+                            <Upload className="h-4 w-4 mr-2" />
+                            Upload
+                          </Button>
+                          <Button size="sm">
+                            <Plus className="h-4 w-4 mr-2" />
+                            New Document
+                          </Button>
+                        </div>
+                      </div>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                        {selectedCase.documentList.map((doc, index) => (
+                          <Card key={index} className="hover:shadow-md transition-shadow">
+                            <CardContent className="p-4">
+                              <div className="flex items-start space-x-3">
+                                <div className="h-10 w-10 bg-blue-100 rounded-lg flex items-center justify-center text-blue-600">
+                                  <FileText className="h-5 w-5" />
+                                </div>
+                                <div className="flex-1 min-w-0">
+                                  <h4 className="font-medium text-gray-900 truncate">{doc.name}</h4>
+                                  <p className="text-sm text-gray-500">{doc.size}</p>
+                                  <p className="text-xs text-gray-400 mt-1">{doc.uploadDate}</p>
+                                </div>
+                                <DropdownMenu>
+                                  <DropdownMenuTrigger asChild>
+                                    <Button variant="ghost" size="sm">
+                                      <MoreVertical className="h-4 w-4" />
+                                    </Button>
+                                  </DropdownMenuTrigger>
+                                  <DropdownMenuContent align="end">
+                                    <DropdownMenuItem>
+                                      <Eye className="h-4 w-4 mr-2" />
+                                      View
+                                    </DropdownMenuItem>
+                                    <DropdownMenuItem>
+                                      <Download className="h-4 w-4 mr-2" />
+                                      Download
+                                    </DropdownMenuItem>
+                                    <DropdownMenuItem>
+                                      <Edit className="h-4 w-4 mr-2" />
+                                      Rename
+                                    </DropdownMenuItem>
+                                    <DropdownMenuItem className="text-red-600">
+                                      <Trash2 className="h-4 w-4 mr-2" />
+                                      Delete
+                                    </DropdownMenuItem>
+                                  </DropdownMenuContent>
+                                </DropdownMenu>
+                              </div>
+                            </CardContent>
+                          </Card>
+                        ))}
+                      </div>
+                    </CardContent>
+                  </Card>
+                </TabsContent>
+
+                <TabsContent value="timeline" className="mt-6">
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="text-lg">Case Timeline</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="space-y-6">
+                        {selectedCase.timeline.map((event, index) => (
+                          <div key={index} className="relative pl-8">
+                            {index !== selectedCase.timeline.length - 1 && (
+                              <div className="absolute left-3 top-8 h-full w-0.5 bg-gray-200"></div>
+                            )}
+                            <div
+                              className={`absolute left-0 top-1 h-6 w-6 rounded-full flex items-center justify-center ${event.type === "milestone"
+                                ? "bg-green-500 text-white"
+                                : event.type === "deadline"
+                                  ? "bg-red-500 text-white"
+                                  : "bg-blue-500 text-white"
+                                }`}
+                            >
+                              {event.type === "milestone" ? (
+                                <CheckCircle className="h-3 w-3" />
+                              ) : event.type === "deadline" ? (
+                                <AlertCircle className="h-3 w-3" />
+                              ) : (
+                                <Clock className="h-3 w-3" />
+                              )}
+                            </div>
+                            <div className="bg-white rounded-lg border border-gray-200 p-4">
+                              <div className="flex items-center justify-between mb-2">
+                                <h4 className="font-semibold text-gray-900">{event.title}</h4>
+                                <span className="text-sm text-gray-500">{event.date}</span>
+                              </div>
+                              <p className="text-gray-600">{event.description}</p>
+                              {event.assignee && (
+                                <p className="text-sm text-gray-500 mt-2">Assigned to: {event.assignee}</p>
+                              )}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </CardContent>
+                  </Card>
+                </TabsContent>
+
+                <TabsContent value="billing" className="mt-6">
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <Card>
+                      <CardHeader>
+                        <CardTitle className="text-lg">Billing Summary</CardTitle>
+                      </CardHeader>
+                      <CardContent className="space-y-4">
+                        <div className="grid grid-cols-2 gap-4">
                           <div>
-                            <div className="space-y-3">
-                              <div>
-                                <p className="text-sm text-gray-600 dark:text-gray-400">
-                                  Assigned To
-                                </p>
-                                <p className="font-medium text-gray-800 dark:text-white">
-                                  {currentCase.assignedTo}
-                                </p>
-                              </div>
-                              <div>
-                                <p className="text-sm text-gray-600 dark:text-gray-400">
-                                  Open Date
-                                </p>
-                                <p className="font-medium text-gray-800 dark:text-white">
-                                  {formatDate(currentCase.openDate)}
-                                </p>
-                              </div>
-                              <div>
-                                <p className="text-sm text-gray-600 dark:text-gray-400">
-                                  Last Activity
-                                </p>
-                                <p className="font-medium text-gray-800 dark:text-white">
-                                  {formatDate(currentCase.lastActivity)}
-                                </p>
-                              </div>
-                            </div>
+                            <label className="text-sm font-medium text-gray-500">Total Hours</label>
+                            <p className="text-2xl font-bold text-gray-900">{selectedCase.timeSpent}h</p>
                           </div>
-                        </div>
-
-                        <div className="mt-6">
-                          <p className="text-sm text-gray-600 dark:text-gray-400">
-                            Description
-                          </p>
-                          <p className="mt-1 text-gray-800 dark:text-white">
-                            {currentCase.description}
-                          </p>
-                        </div>
-
-                        {currentCase.nextHearing && (
-                          <div className="mt-6 p-4 bg-accent-violet0/50 dark:bg-accent-violet0/20 rounded-lg border border-accent-violet dark:border-[#3b82f6-800">
-                            <div className="flex items-center gap-2">
-                              <Calendar className="h-5 w-5 text-[#3b82f6-600" />
-                              <h4 className="font-medium text-gray-800 dark:text-white">
-                                Next Hearing
-                              </h4>
-                            </div>
-                            <p className="mt-1 text-gray-800 dark:text-white">
-                              {formatDate(currentCase.nextHearing)}
+                          <div>
+                            <label className="text-sm font-medium text-gray-500">Hourly Rate</label>
+                            <p className="text-2xl font-bold text-gray-900">${selectedCase.hourlyRate}</p>
+                          </div>
+                          <div>
+                            <label className="text-sm font-medium text-gray-500">Total Amount</label>
+                            <p className="text-2xl font-bold text-green-600">
+                              ${(selectedCase.timeSpent * selectedCase.hourlyRate).toLocaleString()}
                             </p>
                           </div>
-                        )}
-                      </div>
-
-                      {/* Recent Activity */}
-                      <div className="bg-white/30 dark:bg-white/10 backdrop-blur-sm rounded-xl border border-white/20 p-6">
-                        <h3 className="text-lg font-medium text-gray-800 dark:text-white mb-4">
-                          Recent Activity
-                        </h3>
-
-                        <div className="space-y-4">
-                          {/* Combine and sort notes and tasks by date */}
-                          {[...currentCase.notes, ...currentCase.tasks]
-                            .sort((a, b) => {
-                              const dateA =
-                                "createdAt" in a ? a.createdAt : a.dueDate;
-                              const dateB =
-                                "createdAt" in b ? b.createdAt : b.dueDate;
-                              return dateB.getTime() - dateA.getTime();
-                            })
-                            .slice(0, 5)
-                            .map((item) => {
-                              const isNote = "createdAt" in item;
-                              return (
-                                <div
-                                  key={item.id}
-                                  className="flex gap-3 p-3 bg-white/20 dark:bg-white/5 rounded-lg border border-white/10"
-                                >
-                                  <div className="w-8 h-8 bg-accent-violet dark:bg-accent-violet0/50 rounded-full flex items-center justify-center">
-                                    {isNote ? (
-                                      <MessageSquare className="h-4 w-4 text-[#3b82f6-600" />
-                                    ) : (
-                                      getTaskStatusIcon(item.status)
-                                    )}
-                                  </div>
-                                  <div className="flex-1">
-                                    {isNote ? (
-                                      <>
-                                        <p className="text-sm text-gray-800 dark:text-white">
-                                          {item.content}
-                                        </p>
-                                        <div className="flex items-center gap-2 mt-1 text-xs text-gray-600 dark:text-gray-400">
-                                          <span>{item.createdBy}</span>
-                                          <span>•</span>
-                                          <span>
-                                            {formatDateTime(item.createdAt)}
-                                          </span>
-                                        </div>
-                                      </>
-                                    ) : (
-                                      <>
-                                        <p className="text-sm text-gray-800 dark:text-white">
-                                          {item.title}
-                                        </p>
-                                        <div className="flex items-center gap-2 mt-1 text-xs text-gray-600 dark:text-gray-400">
-                                          <span
-                                            className={cn(
-                                              "px-2 py-0.5 rounded-full text-xs font-medium border",
-                                              getTaskStatusColor(item.status)
-                                            )}
-                                          >
-                                            {item.status}
-                                          </span>
-                                          <span>•</span>
-                                          <span>
-                                            Due: {formatDate(item.dueDate)}
-                                          </span>
-                                        </div>
-                                      </>
-                                    )}
-                                  </div>
-                                </div>
-                              );
-                            })}
+                          <div>
+                            <label className="text-sm font-medium text-gray-500">Amount Paid</label>
+                            <p className="text-2xl font-bold text-blue-600">
+                              ${selectedCase.amountPaid.toLocaleString()}
+                            </p>
+                          </div>
                         </div>
-                      </div>
+                      </CardContent>
+                    </Card>
 
-                      {/* Quick Actions */}
-                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        <Button
-                          variant="outline"
-                          className="p-6 h-auto flex flex-col items-center justify-center gap-2 bg-white/20 hover:bg-white/30"
-                        >
-                          <Upload className="h-6 w-6 text-[#3b82f6-600" />
-                          <span className="font-medium">Upload Document</span>
-                        </Button>
-                        <Button
-                          variant="outline"
-                          className="p-6 h-auto flex flex-col items-center justify-center gap-2 bg-white/20 hover:bg-white/30"
-                        >
-                          <Plus className="h-6 w-6 text-[#3b82f6-600" />
-                          <span className="font-medium">Add Task</span>
-                        </Button>
-                        <Button
-                          variant="outline"
-                          className="p-6 h-auto flex flex-col items-center justify-center gap-2 bg-white/20 hover:bg-white/30"
-                        >
-                          <Calendar className="h-6 w-6 text-[#3b82f6-600" />
-                          <span className="font-medium">Schedule Hearing</span>
-                        </Button>
-                      </div>
-                    </div>
-
-                    {/* Documents Tab */}
-                    <div
-                      className={cn(
-                        "space-y-6 transition-opacity duration-300",
-                        activeTab === "documents"
-                          ? "opacity-100"
-                          : "opacity-0 hidden"
-                      )}
-                    >
-                      <div className="flex justify-between items-center">
-                        <h3 className="text-lg font-medium text-gray-800 dark:text-white">
-                          Documents ({currentCase.documents.length})
-                        </h3>
-                        <Button
-                          className="bg-accent-violet hover:bg-accent-violet gap-2"
-                          onClick={handleUploadDocument}
-                        >
-                          <Upload className="h-4 w-4" /> Upload Document
-                        </Button>
-                      </div>
-
-                      <div className="bg-white/30 dark:bg-white/10 backdrop-blur-sm rounded-xl border border-white/20 overflow-hidden">
-                        <div className="grid grid-cols-5 gap-4 p-4 border-b border-white/20 bg-white/10 font-medium text-gray-700 dark:text-gray-300">
-                          <div className="col-span-2">Name</div>
-                          <div>Uploaded By</div>
-                          <div>Date</div>
-                          <div className="text-right">Actions</div>
-                        </div>
-
-                        {currentCase.documents.map((document) => (
-                          <div
-                            key={document.id}
-                            className="grid grid-cols-5 gap-4 p-4 border-b border-white/20 last:border-0 items-center"
-                          >
-                            <div className="col-span-2 flex items-center gap-3">
-                              {getFileIcon(document.type)}
+                    <Card>
+                      <CardHeader>
+                        <CardTitle className="text-lg">Recent Invoices</CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        <div className="space-y-3">
+                          {selectedCase.invoices.map((invoice, index) => (
+                            <div key={index} className="flex items-center justify-between p-3 border rounded-lg">
                               <div>
-                                <p className="font-medium text-gray-800 dark:text-white">
-                                  {document.name}
-                                </p>
-                                <p className="text-xs text-gray-600 dark:text-gray-400">
-                                  {document.size}
-                                </p>
+                                <p className="font-medium text-gray-900">Invoice #{invoice.number}</p>
+                                <p className="text-sm text-gray-500">{invoice.date}</p>
+                              </div>
+                              <div className="text-right">
+                                <p className="font-medium text-gray-900">${invoice.amount.toLocaleString()}</p>
+                                <Badge
+                                  className={`text-xs ${invoice.status === "paid"
+                                    ? "bg-green-100 text-green-800"
+                                    : invoice.status === "pending"
+                                      ? "bg-yellow-100 text-yellow-800"
+                                      : "bg-red-100 text-red-800"
+                                    }`}
+                                >
+                                  {invoice.status}
+                                </Badge>
                               </div>
                             </div>
-                            <div className="text-gray-800 dark:text-white">
-                              {document.uploadedBy}
-                            </div>
-                            <div className="text-gray-800 dark:text-white">
-                              {formatDate(document.uploadedAt)}
-                            </div>
-                            <div className="flex gap-2 justify-end">
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                className="h-8 w-8 p-0"
-                              >
-                                <Download className="h-4 w-4 text-gray-600 dark:text-gray-300" />
-                              </Button>
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                className="h-8 w-8 p-0"
-                              >
-                                <Trash2 className="h-4 w-4 text-red-600" />
-                              </Button>
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-
-                      {currentCase.documents.length === 0 && (
-                        <div className="text-center py-12 bg-white/20 backdrop-blur-sm rounded-xl border border-white/20">
-                          <Folder className="h-12 w-12 mx-auto text-gray-400 mb-4" />
-                          <h3 className="text-xl font-medium text-gray-800 dark:text-white mb-2">
-                            No documents yet
-                          </h3>
-                          <p className="text-gray-600 dark:text-gray-300">
-                            Upload documents related to this case to keep
-                            everything organized.
-                          </p>
-                          <Button
-                            className="mt-4 bg-accent-violet hover:bg-accent-violet gap-2"
-                            onClick={handleUploadDocument}
-                          >
-                            <Upload className="h-4 w-4" /> Upload Document
-                          </Button>
+                          ))}
                         </div>
-                      )}
-                    </div>
-
-                    {/* Notes Tab */}
-                    <div
-                      className={cn(
-                        "space-y-6 transition-opacity duration-300",
-                        activeTab === "notes"
-                          ? "opacity-100"
-                          : "opacity-0 hidden"
-                      )}
-                    >
-                      <div className="bg-white/30 dark:bg-white/10 backdrop-blur-sm rounded-xl border border-white/20 p-6">
-                        <h3 className="text-lg font-medium text-gray-800 dark:text-white mb-4">
-                          Add Note
-                        </h3>
-                        <div className="flex gap-4">
-                          <div className="flex-1">
-                            <Textarea
-                              placeholder="Add a note about this case..."
-                              value={newNote}
-                              onChange={(e) => setNewNote(e.target.value)}
-                              className="min-h-[100px] bg-white/20 focus-visible:ring-0 focus-visible:border-[#3b82f6-600"
-                            />
-                          </div>
-                          <Button
-                            className="bg-accent-violet hover:bg-accent-violet self-end gap-2"
-                            onClick={handleAddNote}
-                            disabled={!newNote.trim()}
-                          >
-                            <Send className="h-4 w-4" /> Add Note
-                          </Button>
-                        </div>
-                      </div>
-
-                      <div>
-                        <h3 className="text-lg font-medium text-gray-800 dark:text-white mb-4">
-                          Notes ({currentCase.notes.length})
-                        </h3>
-
-                        <div className="space-y-4">
-                          {currentCase.notes.length > 0 ? (
-                            currentCase.notes
-                              .sort(
-                                (a, b) =>
-                                  b.createdAt.getTime() - a.createdAt.getTime()
-                              )
-                              .map((note, index) => (
-                                <div
-                                  key={note.id}
-                                  className="bg-white/30 dark:bg-white/10 backdrop-blur-sm rounded-xl border border-white/20 p-4 opacity-0 transform translate-y-4 animate-fade-in"
-                                  style={{
-                                    animationDelay: `${index * 100}ms`,
-                                    animationFillMode: "forwards",
-                                  }}
-                                >
-                                  <div className="flex items-start gap-3">
-                                    <div className="w-10 h-10 bg-accent-violet dark:bg-accent-violet0/50 rounded-full flex items-center justify-center">
-                                      <User className="h-5 w-5 text-[#3b82f6-600" />
-                                    </div>
-                                    <div className="flex-1">
-                                      <div className="flex items-center justify-between">
-                                        <h4 className="font-medium text-gray-800 dark:text-white">
-                                          {note.createdBy}
-                                        </h4>
-                                        <div className="flex items-center gap-2">
-                                          <span className="text-sm text-gray-600 dark:text-gray-400">
-                                            {formatDateTime(note.createdAt)}
-                                          </span>
-                                          <Button
-                                            variant="ghost"
-                                            size="sm"
-                                            className="h-8 w-8 p-0"
-                                          >
-                                            <MoreHorizontal className="h-4 w-4" />
-                                          </Button>
-                                        </div>
-                                      </div>
-                                      <p className="mt-2 text-gray-800 dark:text-white whitespace-pre-line">
-                                        {note.content}
-                                      </p>
-                                    </div>
-                                  </div>
-                                </div>
-                              ))
-                          ) : (
-                            <div className="text-center py-12 bg-white/20 backdrop-blur-sm rounded-xl border border-white/20">
-                              <MessageSquare className="h-12 w-12 mx-auto text-gray-400 mb-4" />
-                              <h3 className="text-xl font-medium text-gray-800 dark:text-white mb-2">
-                                No notes yet
-                              </h3>
-                              <p className="text-gray-600 dark:text-gray-300">
-                                Add notes to keep track of important information
-                                about this case.
-                              </p>
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Tasks Tab */}
-                    <div
-                      className={cn(
-                        "space-y-6 transition-opacity duration-300",
-                        activeTab === "tasks"
-                          ? "opacity-100"
-                          : "opacity-0 hidden"
-                      )}
-                    >
-                      <div className="flex justify-between items-center">
-                        <h3 className="text-lg font-medium text-gray-800 dark:text-white">
-                          Tasks ({currentCase.tasks.length})
-                        </h3>
-                        <Button className="bg-accent-violet hover:bg-accent-violet gap-2">
-                          <Plus className="h-4 w-4" /> Add Task
-                        </Button>
-                      </div>
-
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        {/* Tasks by Status */}
-                        <div className="bg-white/30 dark:bg-white/10 backdrop-blur-sm rounded-xl border border-white/20 p-4">
-                          <h4 className="font-medium text-gray-800 dark:text-white mb-4">
-                            Tasks by Status
-                          </h4>
-
-                          <div className="space-y-2">
-                            {[
-                              "pending",
-                              "in-progress",
-                              "completed",
-                              "overdue",
-                            ].map((status) => {
-                              const count = currentCase.tasks.filter(
-                                (task) => task.status === status
-                              ).length;
-                              return (
-                                <div
-                                  key={status}
-                                  className="flex items-center justify-between p-2 bg-white/20 dark:bg-white/5 rounded-lg"
-                                >
-                                  <div className="flex items-center gap-2">
-                                    {getTaskStatusIcon(status)}
-                                    <span className="capitalize text-gray-800 dark:text-white">
-                                      {status}
-                                    </span>
-                                  </div>
-                                  <span
-                                    className={cn(
-                                      "px-2 py-0.5 rounded-full text-xs font-medium",
-                                      getTaskStatusColor(status)
-                                    )}
-                                  >
-                                    {count}
-                                  </span>
-                                </div>
-                              );
-                            })}
-                          </div>
-                        </div>
-
-                        {/* Upcoming Deadlines */}
-                        <div className="bg-white/30 dark:bg-white/10 backdrop-blur-sm rounded-xl border border-white/20 p-4">
-                          <h4 className="font-medium text-gray-800 dark:text-white mb-4">
-                            Upcoming Deadlines
-                          </h4>
-
-                          <div className="space-y-2">
-                            {currentCase.tasks
-                              .filter((task) => task.status !== "completed")
-                              .sort(
-                                (a, b) =>
-                                  a.dueDate.getTime() - b.dueDate.getTime()
-                              )
-                              .slice(0, 3)
-                              .map((task) => (
-                                <div
-                                  key={task.id}
-                                  className="flex items-center justify-between p-2 bg-white/20 dark:bg-white/5 rounded-lg"
-                                >
-                                  <div className="flex items-center gap-2">
-                                    <Calendar className="h-4 w-4 text-[#3b82f6-600" />
-                                    <span className="text-gray-800 dark:text-white">
-                                      {task.title}
-                                    </span>
-                                  </div>
-                                  <span className="text-sm text-gray-600 dark:text-gray-400">
-                                    {formatDate(task.dueDate)}
-                                  </span>
-                                </div>
-                              ))}
-
-                            {currentCase.tasks.filter(
-                              (task) => task.status !== "completed"
-                            ).length === 0 && (
-                                <div className="text-center py-4 text-gray-600 dark:text-gray-400">
-                                  No upcoming deadlines
-                                </div>
-                              )}
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* Task List */}
-                      <div className="bg-white/30 dark:bg-white/10 backdrop-blur-sm rounded-xl border border-white/20 overflow-hidden">
-                        <div className="grid grid-cols-6 gap-4 p-4 border-b border-white/20 bg-white/10 font-medium text-gray-700 dark:text-gray-300">
-                          <div className="col-span-2">Task</div>
-                          <div>Assigned To</div>
-                          <div>Due Date</div>
-                          <div>Status</div>
-                          <div className="text-right">Actions</div>
-                        </div>
-
-                        {currentCase.tasks.map((task) => (
-                          <div
-                            key={task.id}
-                            className="grid grid-cols-6 gap-4 p-4 border-b border-white/20 last:border-0 items-center"
-                          >
-                            <div className="col-span-2">
-                              <p className="font-medium text-gray-800 dark:text-white">
-                                {task.title}
-                              </p>
-                              <p className="text-xs text-gray-600 dark:text-gray-400">
-                                {task.description}
-                              </p>
-                            </div>
-                            <div className="text-gray-800 dark:text-white">
-                              {task.assignedTo}
-                            </div>
-                            <div className="text-gray-800 dark:text-white">
-                              {formatDate(task.dueDate)}
-                            </div>
-                            <div>
-                              <span
-                                className={cn(
-                                  "px-2 py-1 rounded-full text-xs font-medium border flex items-center gap-1 w-fit",
-                                  getTaskStatusColor(task.status)
-                                )}
-                              >
-                                {getTaskStatusIcon(task.status)}
-                                <span className="capitalize">
-                                  {task.status}
-                                </span>
-                              </span>
-                            </div>
-                            <div className="flex gap-2 justify-end">
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                className="h-8 w-8 p-0"
-                              >
-                                <Edit className="h-4 w-4 text-gray-600 dark:text-gray-300" />
-                              </Button>
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                className="h-8 w-8 p-0"
-                              >
-                                <Trash2 className="h-4 w-4 text-red-600" />
-                              </Button>
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-
-                      {currentCase.tasks.length === 0 && (
-                        <div className="text-center py-12 bg-white/20 backdrop-blur-sm rounded-xl border border-white/20">
-                          <Clock className="h-12 w-12 mx-auto text-gray-400 mb-4" />
-                          <h3 className="text-xl font-medium text-gray-800 dark:text-white mb-2">
-                            No tasks yet
-                          </h3>
-                          <p className="text-gray-600 dark:text-gray-300">
-                            Add tasks to keep track of deadlines and
-                            responsibilities for this case.
-                          </p>
-                          <Button className="mt-4 bg-accent-violet hover:bg-accent-violet gap-2">
-                            <Plus className="h-4 w-4" /> Add Task
-                          </Button>
-                        </div>
-                      )}
-                    </div>
+                      </CardContent>
+                    </Card>
                   </div>
-                </div>
-              </ScrollArea>
+                </TabsContent>
+              </Tabs>
             </div>
-          ) : (
-            <div className="flex-1 flex items-center justify-center">
-              <div className="text-center max-w-md px-4">
-                <User className="h-16 w-16 mx-auto text-accent-violet dark:text-white/60 mb-6" />
-                <h2 className="text-2xl font-bold text-accent-violet dark:text-white/90 mb-4">
-                  Case Updates
-                </h2>
-                <p className="dark:text-white/70 text-accent-violet mb-6">
-                  Select a case from the sidebar to get updates on its status
-                </p>
-              </div>
-            </div>
-          )}
-        </div>
-      </div>
+          </div>
+        </ResizablePanel>
+      </ResizablePanelGroup>
     </div>
-  );
+  )
 }
+
+// Mock Data
+const cases = [
+  {
+    id: 1,
+    title: "Chen Property Acquisition",
+    lawyer: "Michael Chen",
+    caseNumber: "RE-2023-0567",
+    type: "Real Estate",
+    status: "Active",
+    priority: "Medium",
+    progress: 75,
+    timeSpent: 45,
+    hourlyRate: 350,
+    amountPaid: 12500,
+    documents: 12,
+    urgentTasks: 1,
+    lastActivity: "2 hours ago",
+    openDate: "May 5, 2023",
+    description:
+      "Commercial property acquisition requiring due diligence, contract negotiation, and title review. lawyer is looking to purchase a 50,000 sq ft warehouse facility for their expanding logistics business.",
+    assignedTo: {
+      name: "Jane Smith",
+      avatar: "/placeholder.svg?height=32&width=32",
+    },
+    activities: [
+      {
+        title: "Prepare closing documents",
+        description: "Draft and review all necessary closing documentation",
+        type: "pending",
+        date: "Today, 2:30 PM",
+        dueDate: "Jul 1, 2023",
+        assignee: "Jane Smith",
+      },
+      {
+        title: "Title search completed",
+        description: "Comprehensive title search revealed no major issues",
+        type: "completed",
+        date: "Yesterday, 4:15 PM",
+        assignee: "John Doe",
+      },
+      {
+        title: "Contract negotiation",
+        description: "Negotiated favorable terms for the lawyer",
+        type: "completed",
+        date: "Jun 10, 2023",
+        assignee: "Jane Smith",
+      },
+      {
+        title: "Property inspection scheduled",
+        description: "Coordinated with inspection team for comprehensive review",
+        type: "completed",
+        date: "Jun 8, 2023",
+        assignee: "Jane Smith",
+      },
+    ],
+    documentList: [
+      { name: "Purchase Agreement.pdf", size: "2.4 MB", uploadDate: "Jun 12, 2023" },
+      { name: "Title Report.pdf", size: "1.8 MB", uploadDate: "Jun 10, 2023" },
+      { name: "Property Survey.pdf", size: "3.2 MB", uploadDate: "Jun 8, 2023" },
+      { name: "Inspection Report.pdf", size: "1.5 MB", uploadDate: "Jun 5, 2023" },
+    ],
+    timeline: [
+      {
+        title: "Case Opened",
+        description: "Initial consultation and case setup completed",
+        date: "May 5, 2023",
+        type: "milestone",
+        assignee: "Jane Smith",
+      },
+      {
+        title: "Due Diligence Phase",
+        description: "Comprehensive property research and analysis",
+        date: "May 15, 2023",
+        type: "milestone",
+        assignee: "John Doe",
+      },
+      {
+        title: "Contract Negotiation",
+        description: "Terms negotiated and agreed upon by both parties",
+        date: "Jun 1, 2023",
+        type: "milestone",
+        assignee: "Jane Smith",
+      },
+      {
+        title: "Closing Deadline",
+        description: "Final closing must be completed by this date",
+        date: "Jul 15, 2023",
+        type: "deadline",
+        assignee: "Jane Smith",
+      },
+    ],
+    invoices: [
+      { number: "INV-2023-001", amount: 5250, date: "Jun 1, 2023", status: "paid" },
+      { number: "INV-2023-002", amount: 3500, date: "Jun 15, 2023", status: "paid" },
+      { number: "INV-2023-003", amount: 2800, date: "Jul 1, 2023", status: "pending" },
+    ],
+  },
+  {
+    id: 2,
+    title: "Johnson Corporate Litigation",
+    lawyer: "Johnson Industries",
+    caseNumber: "CL-2023-0234",
+    type: "Corporate Litigation",
+    status: "Pending",
+    priority: "High",
+    progress: 45,
+    timeSpent: 32,
+    hourlyRate: 450,
+    amountPaid: 8500,
+    documents: 8,
+    urgentTasks: 2,
+    lastActivity: "1 day ago",
+    openDate: "Apr 20, 2023",
+    description: "Complex corporate litigation involving breach of contract and intellectual property disputes.",
+    assignedTo: {
+      name: "Robert Wilson",
+      avatar: "/placeholder.svg?height=32&width=32",
+    },
+    activities: [
+      {
+        title: "Discovery phase preparation",
+        description: "Preparing documents and evidence for discovery",
+        type: "pending",
+        date: "Today, 9:00 AM",
+        dueDate: "Jun 30, 2023",
+        assignee: "Robert Wilson",
+      },
+      {
+        title: "Deposition scheduled",
+        description: "Key witness deposition scheduled for next week",
+        type: "pending",
+        date: "Yesterday, 3:20 PM",
+        dueDate: "Jun 25, 2023",
+        assignee: "Sarah Johnson",
+      },
+    ],
+    documentList: [
+      { name: "Complaint.pdf", size: "1.2 MB", uploadDate: "Apr 20, 2023" },
+      { name: "Answer.pdf", size: "0.8 MB", uploadDate: "May 5, 2023" },
+    ],
+    timeline: [],
+    invoices: [],
+  },
+  {
+    id: 3,
+    title: "Rodriguez Family Custody",
+    lawyer: "Maria Rodriguez",
+    caseNumber: "FL-2023-0189",
+    type: "Family Law",
+    status: "Completed",
+    priority: "Low",
+    progress: 100,
+    timeSpent: 28,
+    hourlyRate: 300,
+    amountPaid: 8400,
+    documents: 15,
+    urgentTasks: 0,
+    lastActivity: "1 week ago",
+    openDate: "Mar 15, 2023",
+    description: "Child custody case involving modification of existing custody arrangement.",
+    assignedTo: {
+      name: "Emily Davis",
+      avatar: "/placeholder.svg?height=32&width=32",
+    },
+    activities: [
+      {
+        title: "Final custody order filed",
+        description: "Court approved the modified custody arrangement",
+        type: "completed",
+        date: "Jun 5, 2023",
+        assignee: "Emily Davis",
+      },
+    ],
+    documentList: [{ name: "Custody Agreement.pdf", size: "1.5 MB", uploadDate: "Jun 5, 2023" }],
+    timeline: [],
+    invoices: [],
+  },
+]

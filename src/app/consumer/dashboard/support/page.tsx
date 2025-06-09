@@ -249,7 +249,7 @@ export default function HelpSupport() {
       case "Account & Billing":
         return "bg-slate-50 text-slate-700 border-slate-200 dark:bg-slate-900/20 dark:text-slate-300";
       default:
-        return "bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-900/20 dark:text-amber-300";
+        return "bg-accent-violettext-accent-violet border-accent-violet dark:bg-accent-violet/20 dark:text-accent-violet";
     }
   };
 
@@ -262,20 +262,19 @@ export default function HelpSupport() {
     .slice(0, 4);
 
   return (
-    <div className="flex flex-col h-full relative border border-slate-200 dark:border-slate-800 rounded-xl shadow-sm bg-white dark:bg-slate-900 overflow-hidden max-w-7xl mx-auto">
+    <div className="flex flex-col h-full relative border border-slate-200 dark:border-slate-800 rounded-xl shadow-sm overflow-hidden max-w-7xl mx-auto">
       {/* Header */}
-      <div className="relative overflow-hidden bg-gradient-to-br from-amber-900 via-slate-950 to-amber-900">
-        <div className="absolute inset-0 bg-gradient-to-r from-amber-600/20 via-amber-600/20 to-amber-600/20"></div>
+      <div className="relative overflow-hidden bg-gradient-to-br from-white to-accent-violet/20">
         <div className="relative px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
           <div className="flex items-center gap-3">
             <div className="p-2 bg-white/10 backdrop-blur-sm rounded-xl">
-              <LifeBuoy className="h-5 w-5 sm:h-6 sm:w-6 text-white" />
+              <LifeBuoy className="h-5 w-5 sm:h-6 sm:w-6" />
             </div>
             <div>
-              <h1 className="text-lg sm:text-xl font-bold text-white tracking-tight">
+              <h1 className="text-lg sm:text-xl font-bold tracking-tight">
                 Help & Support
               </h1>
-              <p className="text-amber-100 text-sm font-medium">
+              <p className="text-indigo-800 text-sm font-medium">
                 Get help, find answers, and contact our support team
               </p>
             </div>
@@ -285,7 +284,7 @@ export default function HelpSupport() {
 
       {/* Tab Navigation */}
       <div className="px-4 sm:px-6 lg:px-8 pt-6 pb-2">
-        <div className="flex bg-slate-100 dark:bg-slate-800 rounded-lg p-1">
+        <div className="flex bg-accent-violet/10 dark:bg-slate-800 rounded-lg p-1">
           {[
             { id: "faq", label: "FAQs", icon: HelpCircle },
             { id: "articles", label: "Articles", icon: Book },
@@ -301,7 +300,7 @@ export default function HelpSupport() {
                 className={cn(
                   "flex-1 py-2 px-3 text-center font-medium cursor-pointer transition-all duration-200 rounded-md relative text-sm",
                   activeTab === tab.id
-                    ? "bg-white dark:bg-slate-700 text-amber-600 dark:text-amber-400 shadow-sm"
+                    ? "bg-white dark:bg-slate-700 text-accent-violet dark:text-accent-violet shadow-sm"
                     : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200"
                 )}
               >
@@ -343,7 +342,7 @@ export default function HelpSupport() {
                             onClick={() => toggleFAQ(faq.question)}
                           >
                             <div className="flex items-center gap-3 flex-1">
-                              <div className="p-1.5 bg-gradient-to-br from-amber-700 via-cyan-750 to-amber-700 text-white dark:bg-amber-900/30 rounded-4xl">
+                              <div className="p-1.5 bg-gradient-to-br from-accent-violet via-cyan-750 to-accent-violet text-white dark:bg-accent-violet/30 rounded-4xl">
                                 {getCategoryIcon(faq.category)}
                               </div>
                               <div className="mt-1 flex-1 flex justify-between">
@@ -404,7 +403,7 @@ export default function HelpSupport() {
                           initial={{ opacity: 0, y: 20 }}
                           animate={{ opacity: 1, y: 0 }}
                           transition={{ delay: index * 0.05 }}
-                          className="bg-white flex flex-col justify-between dark:bg-slate-800 rounded-xl p-5 border border-slate-200 dark:border-slate-700 hover:shadow-lg hover:border-amber-300 dark:hover:border-amber-600 transition-all duration-200"
+                          className="bg-white flex flex-col justify-between dark:bg-slate-800 rounded-xl p-5 border border-slate-200 dark:border-slate-700 hover:shadow-lg hover:border-accent-violet dark:hover:border-accent-violet transition-all duration-200"
                         >
                           <h3 className="text-sm font-medium text-slate-900 dark:text-white mb-2 line-clamp-2">
                             {article.title}
@@ -417,13 +416,13 @@ export default function HelpSupport() {
                               <Clock className="h-3 w-3" />
                               <span>{article.readTime}</span>
                               <div className="flex items-center gap-1">
-                                <Star className="h-3 w-3 text-amber-500" />
+                                <Star className="h-3 w-3 text-accent-violet" />
                                 <span>{article.popularity}%</span>
                               </div>
                             </div>
                             <Button
                               size="sm"
-                              className="h-6 py-4 bg-transparent text-amber-600 hover:text-amber-700 shadow-none hover:bg-amber-800/20"
+                              className="h-6 py-4 bg-transparent text-accent-violet hover:text-accent-violet shadow-none hover:bg-accent-violet/20"
                             >
                               Read <ExternalLink className="h-3 w-3 ml-1" />
                             </Button>
@@ -447,7 +446,7 @@ export default function HelpSupport() {
                     {/* Contact Form */}
                     <div className="bg-white dark:bg-slate-800 rounded-xl p-6 border border-slate-200 dark:border-slate-700">
                       <h3 className="text-base font-medium text-slate-900 dark:text-white mb-4 flex items-center gap-2">
-                        <MessageCircle className="h-4 w-4 text-amber-600" />
+                        <MessageCircle className="h-4 w-4 text-accent-violet" />
                         Send us a message
                       </h3>
 
@@ -473,7 +472,7 @@ export default function HelpSupport() {
                                 })
                               }
                               required
-                              className="bg-slate-50 dark:bg-slate-900 border-slate-200 dark:border-slate-700 focus-visible:ring-0 focus-visible:border-amber-500"
+                              className="bg-slate-50 dark:bg-slate-900 border-slate-200 dark:border-slate-700 focus-visible:ring-0 focus-visible:border-accent-violet"
                             />
                           </div>
                           <div>
@@ -494,7 +493,7 @@ export default function HelpSupport() {
                                 })
                               }
                               required
-                              className="bg-slate-50 dark:bg-slate-900 border-slate-200 dark:border-slate-700 focus-visible:ring-0 focus-visible:border-amber-500"
+                              className="bg-slate-50 dark:bg-slate-900 border-slate-200 dark:border-slate-700 focus-visible:ring-0 focus-visible:border-accent-violet"
                             />
                           </div>
                         </div>
@@ -516,7 +515,7 @@ export default function HelpSupport() {
                               })
                             }
                             required
-                            className="bg-slate-50 dark:bg-slate-900 border-slate-200 dark:border-slate-700 focus-visible:ring-0 focus-visible:border-amber-500"
+                            className="bg-slate-50 dark:bg-slate-900 border-slate-200 dark:border-slate-700 focus-visible:ring-0 focus-visible:border-accent-violet"
                           />
                         </div>
 
@@ -538,13 +537,13 @@ export default function HelpSupport() {
                             }
                             required
                             rows={4}
-                            className="bg-slate-50 dark:bg-slate-900 border-slate-200 dark:border-slate-700 focus-visible:ring-0 focus-visible:border-amber-500"
+                            className="bg-slate-50 dark:bg-slate-900 border-slate-200 dark:border-slate-700 focus-visible:ring-0 focus-visible:border-accent-violet"
                           />
                         </div>
 
                         <Button
                           type="submit"
-                          className="w-full bg-amber-600 hover:bg-amber-700 text-white font-medium"
+                          className="w-full bg-accent-violet hover:bg-accent-violet text-white font-medium"
                         >
                           <Send className="h-4 w-4 mr-2" />
                           Send Message

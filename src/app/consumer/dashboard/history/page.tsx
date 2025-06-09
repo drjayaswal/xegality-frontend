@@ -117,7 +117,7 @@ const History = () => {
               placeholder="Search history..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-10 w-[300px]"
+              className="pl-10 w-[300px] border-accent-violet"
             />
           </div>
         </div>
@@ -132,7 +132,7 @@ const History = () => {
         </TabsList>
 
         <TabsContent value={activeTab}>
-          <ScrollArea className="h-[calc(100vh-16rem)]">
+          <ScrollArea className="h-full">
             <div className="space-y-4">
               {filteredItems.map((item) => (
                 <Card key={item.id} className="hover:shadow-md transition-shadow">

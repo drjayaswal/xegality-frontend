@@ -6,7 +6,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   return (
     <SidebarProvider>
       <AppSidebar />
-      <main className="md:m-2 md:ml-0.5 w-full min-h-full md:max-h-[calc(100svh-16px)]  bg-gradient-to-br from-[#e9f0fd] to-[#b1cdfb] rounded-lg overflow-scroll shadow-md ">
+      <main className="md:m-2 md:ml-0.5 w-full min-h-full md:max-h-[calc(100svh-16px)]  bg-gradient-to-br from-white to-[#c0c4f7] rounded-lg overflow-scroll shadow-md border ">
         <SidebarToggleButton className="text-accent-violet hover:bg-accent-violet bg-accent-violet/8" />
         {children}
       </main>

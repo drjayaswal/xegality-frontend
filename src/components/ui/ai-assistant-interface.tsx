@@ -136,7 +136,7 @@ export default function AIAssistantForm({
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 flex flex-col items-center justify-center pointer-events-none"
+            className=" inset-0 z-50 flex flex-col items-center justify-center pointer-events-none"
           >
             <div className="relative flex items-center justify-center">
               {[...Array(7)].map((_, i) => (
@@ -232,21 +232,21 @@ export default function AIAssistantForm({
                   "w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center transition-all duration-200 active:scale-95 border-0 p-0",
                   inputValue.trim() && !isSubmitting
                     ? `bg-gradient-to-r ${getGradientClass(
-                        from,
-                        to
-                      )} text-white shadow-md hover:shadow-lg`
+                      from,
+                      to
+                    )} text-white shadow-md hover:shadow-lg`
                     : `bg-white/40 dark:bg-gray-700/40 border-2 ${getBorderColorClass(
-                        from,
-                        "40"
-                      )} dark:${getBorderColorClass(
-                        from,
-                        "40"
-                      )} ${getTextColorClass(from)}/60 dark:${getTextColorClass(
-                        from
-                      )}/60 hover:text-white hover:bg-gradient-to-r hover:${getGradientClass(
-                        from,
-                        to
-                      )}`
+                      from,
+                      "40"
+                    )} dark:${getBorderColorClass(
+                      from,
+                      "40"
+                    )} ${getTextColorClass(from)}/60 dark:${getTextColorClass(
+                      from
+                    )}/60 hover:text-white hover:bg-gradient-to-r hover:${getGradientClass(
+                      from,
+                      to
+                    )}`
                 )}
               >
                 {isSubmitting ? (
@@ -304,23 +304,23 @@ export default function AIAssistantForm({
                       "flex cursor-pointer items-center gap-1.5 px-3 py-1.5 rounded-full text-xs sm:text-sm font-medium transition-all duration-200 border-2 disabled:opacity-50 disabled:cursor-not-allowed",
                       state
                         ? `bg-gradient-to-r ${getGradientClass(
-                            from,
-                            to
-                          )} border-transparent text-white shadow-md`
+                          from,
+                          to
+                        )} border-transparent text-white shadow-md`
                         : `${getBgColorClass(
-                            from,
-                            "10"
-                          )} dark:${getBgColorClass(
-                            from,
-                            "10"
-                          )} ${getTextColorClass(
-                            from
-                          )} dark:${getTextColorClass(
-                            from
-                          )} border-transparent hover:${getBgColorClass(
-                            from,
-                            "20"
-                          )} dark:hover:${getBgColorClass(from, "20")}`
+                          from,
+                          "10"
+                        )} dark:${getBgColorClass(
+                          from,
+                          "10"
+                        )} ${getTextColorClass(
+                          from
+                        )} dark:${getTextColorClass(
+                          from
+                        )} border-transparent hover:${getBgColorClass(
+                          from,
+                          "20"
+                        )} dark:hover:${getBgColorClass(from, "20")}`
                     )}
                   >
                     <Icon className="w-3 h-3" />
@@ -352,9 +352,9 @@ export default function AIAssistantForm({
                 "flex flex-col cursor-pointer items-center gap-2 p-3 sm:p-4 rounded-xl sm:rounded-2xl border transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed",
                 activeCommandCategory === key
                   ? `bg-gradient-to-r ${getGradientClass(
-                      from,
-                      to
-                    )} text-white border-white/40 dark:border-gray-600/40 shadow-lg`
+                    from,
+                    to
+                  )} text-white border-white/40 dark:border-gray-600/40 shadow-lg`
                   : "bg-white/60 dark:bg-gray-800/40 dark:border-gray-700/60 text-gray-600 dark:text-gray-300 dark:hover:bg-gray-800/60 hover:text-gray-800 dark:hover:text-gray-100"
               )}
             >
