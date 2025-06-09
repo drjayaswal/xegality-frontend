@@ -193,7 +193,7 @@ export default function AboutUsPage() {
                   src="/imagedown.png"
                   alt="Xegality AI Office"
                   fill
-                  className="object-cover opacity-90 absolute"
+                  className="object-cover opacity-90 absolute invert"
                 />
 
                 {/* Upper image - moves on hover */}
