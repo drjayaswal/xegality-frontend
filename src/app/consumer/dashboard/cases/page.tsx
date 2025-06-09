@@ -134,7 +134,7 @@ export default function CaseUpdatesPage() {
                 {filteredCases.map((caseItem) => (
                   <Card
                     key={caseItem.id}
-                    className={`cursor-pointer transition-all duration-200 shadow-none scale-95 ${selectedCase.id === caseItem.id
+                    className={`py-5 cursor-pointer transition-all duration-200 shadow-none scale-95 ${selectedCase.id === caseItem.id
                       ? "ring-2 ring-accent-violet/40 shadow-md  bg-accent-violet/5 scale-100"
                       : "hover:shadow-sm border-gray-200"
                       }`}
