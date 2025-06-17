@@ -744,21 +744,21 @@ export default function Research() {
                           iconBg="bg-red-100 dark:bg-red-900/30"
                           className="text-sm p-4 sm:p-5 relative"
                         >
-                            <p className="text-[13px] text-slate-700 dark:text-slate-300 leading-snug mb-3">
-                              {
-                                mockPenalCodes[
-                                  selectedCode as keyof typeof mockPenalCodes
-                                ].punishment
-                              }
-                            </p>
-                            <div className="absolute top-4 right-4 p-2 bg-red-50 dark:bg-red-900/20 rounded-md border border-red-200 dark:border-red-800 text-[12px] font-medium text-red-800 dark:text-red-300">
-                              Maximum:{" "}
-                              {
-                                mockPenalCodes[
-                                  selectedCode as keyof typeof mockPenalCodes
-                                ].maxSentence
-                              }
-                            </div>
+                          <p className="text-[13px] text-slate-700 dark:text-slate-300 leading-snug mb-3">
+                            {
+                              mockPenalCodes[
+                                selectedCode as keyof typeof mockPenalCodes
+                              ].punishment
+                            }
+                          </p>
+                          <div className="absolute top-4 right-4 p-2 bg-red-50 dark:bg-red-900/20 rounded-md border border-red-200 dark:border-red-800 text-[12px] font-medium text-red-800 dark:text-red-300">
+                            Maximum:{" "}
+                            {
+                              mockPenalCodes[
+                                selectedCode as keyof typeof mockPenalCodes
+                              ].maxSentence
+                            }
+                          </div>
                         </SectionCard>
 
                         {/* Required Elements */}

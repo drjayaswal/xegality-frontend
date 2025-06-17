@@ -1,19 +1,44 @@
-import { SidebarProvider } from "@/components/ui/sidebar";
-import { AppSidebar } from "@/components/lawyer/dashboard/sidebar";
-import SidebarToggleButton from "@/components/shared/sidebartogglebutton";
+"use client";
 
-export default function DashboardLayout({
-  children,
+import { SidebarTrigger } from "@/components/ui/sidebar";
+import { cn } from "@/lib/utils";
+import clsx from "clsx";
+import { useEffect, useState } from "react";
+
+export default function SidebarToggleButton({
+  className,
 }: {
-  children: React.ReactNode;
+  className?: string;
 }) {
+  const [isOpen, setIsOpen] = useState(true);
+
+  useEffect(() => {
+    const storedState = localStorage.getItem("sidebarOpen");
+    if (storedState !== null) {
+      setIsOpen(storedState === "true");
+    }
+  }, []);
+
+  useEffect(() => {
+    localStorage.setItem("sidebarOpen", String(isOpen));
+  }, [isOpen]);
+
   return (
-    <SidebarProvider className="bg-amber-700/6">
-      <AppSidebar />
-      <main className="md:m-2 md:ml-0.5 w-full min-h-full md:max-h-[calc(100svh-16px)]  bg-[#f6f1ee] rounded-lg overflow-scroll shadow-md ">
-        <SidebarToggleButton className="text-amber-700 hover:bg-amber-700 bg-amber-700/20" />
-        {children}
-      </main>
-    </SidebarProvider>
+    <div
+      className={clsx(
+        "fixed top-[8px] z-50 transition-all duration-300 ",
+        isOpen ? "left-[220px]" : "left-[20px] top-[20px]"
+      )}
+    >
+      <SidebarTrigger
+        onClick={() => setIsOpen(!isOpen)}
+        className={cn(
+          isOpen
+            ? "text-sky-600 hover:bg-sky-600 bg-sky-600/20 stroke-2.5 hover:text-white  rounded-none rounded-bl-[12px] rounded-tr-[12px] shadow-none py-3 backdrop-blur-sm border-0"
+            : "text-white bg-sky-600 stroke-2.5 hover:bg-sky-600 hover:text-white  rounded-full shadow-none py-3 animate-spin",
+          className
+        )}
+      />
+    </div>
   );
 }

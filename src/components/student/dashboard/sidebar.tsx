@@ -1,5 +1,4 @@
 "use client";
-"use client";
 
 import {
   Briefcase,
@@ -45,9 +44,9 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
-
+import { useRouter } from "next/navigation";
+import Cookies from "js-cookie";
 import { usePathname } from "next/navigation";
-import clsx from "clsx";
 import Link from "next/link";
 
 // Menu items
@@ -142,7 +141,27 @@ const dropdown_menu_items = [
 
 export function AppSidebar() {
   const pathname = usePathname();
+  const router = useRouter();
+  const handle_logout = async () => {
+    try {
+      const res = await fetch("http://localhost:4000/api/auth/logout", {
+        method: "GET",
+        credentials: "include",
+      });
 
+      const data = await res.json();
+
+      if (res.ok) {
+        Cookies.remove("access_token");
+        Cookies.remove("refresh_token");
+        router.push("/login");
+      } else {
+        console.error("Logout failed:", data);
+      }
+    } catch (err) {
+      console.error("Logout error:", err);
+    }
+  };
   return (
     <Sidebar collapsible="icon" variant="floating" className="bg-transparent">
       <SidebarHeader className="w-full flex flex-col items-center bg-emerald-700/10 rounded-t-[9px]">
@@ -165,8 +184,9 @@ export function AppSidebar() {
                     <SidebarMenuButton
                       asChild
                       className={cn(
-                        "pl-4 hover:bg-emerald-700/15 hover:text-emerald-700 active:bg-emerald-700/80 active:text-white",
-                        isActive && "bg-emerald-700 hover:bg-emerald-700"
+                        "pl-4 hover:bg-emerald-700/15 hover:text-emerald-700 active:bg-emerald-700/15 active:text-emerald-700",
+                        isActive &&
+                          "bg-emerald-700 hover:bg-emerald-700 active:bg-emerald-700 active:text-white"
                       )}
                     >
                       <Link
@@ -199,8 +219,9 @@ export function AppSidebar() {
                     <SidebarMenuButton
                       asChild
                       className={cn(
-                        "pl-4 hover:bg-emerald-700/15 hover:text-emerald-700 active:bg-emerald-700/80 active:text-white",
-                        isActive && "bg-emerald-700 hover:bg-emerald-700"
+                        "pl-4 hover:bg-emerald-700/15 hover:text-emerald-700 active:bg-emerald-700/15 active:text-emerald-700",
+                        isActive &&
+                          "bg-emerald-700 hover:bg-emerald-700 active:bg-emerald-700 active:text-white"
                       )}
                     >
                       <Link
@@ -305,7 +326,10 @@ export function AppSidebar() {
                 <DropdownMenuSeparator />
 
                 <Link href={""} className="">
-                  <DropdownMenuItem className="cursor-pointer focus:bg-red-500/5 focus:text-red-600">
+                  <DropdownMenuItem
+                    className="cursor-pointer focus:bg-red-500/5 focus:text-red-600"
+                    onClick={handle_logout}
+                  >
                     <LogOut className="group-hover:text-red-600" /> Log out
                   </DropdownMenuItem>
                 </Link>

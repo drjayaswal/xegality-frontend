@@ -134,8 +134,9 @@ export function AppSidebar() {
                     <SidebarMenuButton
                       asChild
                       className={cn(
-                        "pl-4 hover:bg-amber-700/15 hover:text-amber-700 active:bg-amber-700/80 active:text-white",
-                        isActive && "bg-amber-700 hover:bg-amber-700"
+                        "pl-4 hover:bg-amber-700/15 hover:text-amber-700 active:bg-amber-700/15 active:text-amber-700",
+                        isActive &&
+                          "bg-amber-700 hover:bg-amber-700 active:bg-amber-700 active:text-white"
                       )}
                     >
                       <Link
@@ -168,8 +169,9 @@ export function AppSidebar() {
                     <SidebarMenuButton
                       asChild
                       className={cn(
-                        "pl-4 hover:bg-amber-700/15 hover:text-amber-700 active:bg-amber-700/80 active:text-white",
-                        isActive && "bg-amber-700 hover:bg-amber-700"
+                        "pl-4 hover:bg-amber-700/15 hover:text-amber-700 active:bg-amber-700/15 active:text-amber-700",
+                        isActive &&
+                          "bg-amber-700 hover:bg-amber-700 active:bg-amber-700 active:text-white"
                       )}
                     >
                       <Link

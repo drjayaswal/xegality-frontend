@@ -1,20 +1,13 @@
 "use client";
 
 import type React from "react";
-import { useState } from "react";
+
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Checkbox } from "@/components/ui/checkbox";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Card, CardContent } from "@/components/ui/card";
 import {
   Scale,
   GraduationCap,
@@ -25,1064 +18,1144 @@ import {
   Lock,
   User,
   Phone,
-  MapPin,
-  Building,
-  Calendar,
-  Shield,
-  CheckCircle,
   ArrowRight,
-  Sparkles,
+  CheckCircle,
+  ArrowLeft,
+  Loader2,
 } from "lucide-react";
-import { motion } from "framer-motion";
-import Link from "next/link";
+import { toast } from "sonner";;
+import {
+  apiClient,
+  isEmail,
+  isPhone,
+  formatPhoneNumber,
+  showSuccessToast,
+  showErrorToast,
+  showLoadingToast,
+} from "@/lib/api";
+import { OTPInput } from "@/components/shared/otp-input";
 
-type UserType = "lawyer" | "consumer" | "student";
+type UserType = "student" | "lawyer" | "consumer";
+type LoginMethod = "otp" | "password";
+type AuthStep = "initial" | "method-selection" | "form" | "otp-verification";
 
-// 🎨 CHANGE ALL COLORS FROM HERE - Single source of truth
-const THEME_COLORS = {
-  lawyer: {
-    name: "Legal Professional",
-    description: "Attorneys and advocates offering services",
-    primary: "bg-amber-600",
-    primaryHover: "hover:bg-amber-700",
-    background: "bg-amber-700/10",
-    border: "border-amber-600",
-    text: "text-amber-700",
-    icon: "text-amber-600",
-    gradient: "from-amber-600 to-amber-800",
-    checkboxChecked: "data-[state=checked]:bg-amber-600",
-  },
-  consumer: {
-    name: "Individual Litigant",
-    description: "People in need of legal help or legal advice",
-    primary: "bg-emerald-600",
-    primaryHover: "hover:bg-emerald-700",
-    background: "bg-emerald-700/10",
-    border: "border-emerald-600",
-    text: "text-emerald-700",
-    icon: "text-emerald-600",
-    gradient: "from-emerald-600 to-emerald-800",
-    checkboxChecked: "data-[state=checked]:bg-emerald-600",
-  },
-  student: {
-    name: "Law Student",
-    description: "Undergraduates pursuing legal education and careers",
-    primary: "bg-violet-600",
-    primaryHover: "hover:bg-violet-700",
-    background: "bg-violet-700/10",
-    border: "border-violet-600",
-    text: "text-violet-700",
-    icon: "text-violet-600",
-    gradient: "from-violet-600 to-violet-800",
-    checkboxChecked: "data-[state=checked]:bg-violet-600",
-  },
-};
-
-interface FormData {
-  email: string;
+interface LoginData {
+  emailOrPhone: string;
+  loginMethod: LoginMethod;
   password: string;
-  confirmPassword: string;
-  firstName: string;
-  lastName: string;
-  phone: string;
-  location: string;
-  userType: UserType | "";
-  firmName: string;
-  barNumber: string;
-  practiceAreas: string[];
-  yearsExperience: string;
-  jurisdiction: string;
-  university: string;
-  year: string;
-  expectedGraduation: string;
-  gpa: string;
-  lawSchoolType: string;
-  occupation: string;
-  legalNeeds: string[];
+  otp: string;
 }
 
-export default function AuthPageSingle() {
-  const [isLogin, setIsLogin] = useState(true);
-  const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-  const [selectedUserType, setSelectedUserType] = useState<UserType | "">("");
+interface SignupData {
+  name: string;
+  emailOrPhone: string;
+  password: string;
+  role: UserType;
+  otp: string;
+}
 
-  const [formData, setFormData] = useState<FormData>({
-    email: "",
+const USER_TYPES = [
+  {
+    type: "student" as UserType,
+    title: "Law Student",
+    description: "Pursuing legal education",
+    icon: GraduationCap,
+    color: "bg-violet-600 hover:bg-violet-700",
+    borderColor: "border-violet-600",
+    textColor: "text-violet-600",
+    bgLight: "bg-violet-50",
+  },
+  {
+    type: "lawyer" as UserType,
+    title: "Legal Professional",
+    description: "Practicing attorney or advocate",
+    icon: Scale,
+    color: "bg-amber-600 hover:bg-amber-700",
+    borderColor: "border-amber-600",
+    textColor: "text-amber-600",
+    bgLight: "bg-amber-50",
+  },
+  {
+    type: "consumer" as UserType,
+    title: "Individual Client",
+    description: "Seeking legal assistance",
+    icon: Users,
+    color: "bg-emerald-600 hover:bg-emerald-700",
+    borderColor: "border-emerald-600",
+    textColor: "text-emerald-600",
+    bgLight: "bg-emerald-50",
+  },
+];
+
+export default function EnhancedAuthPage() {
+  const router = useRouter();
+  const [isLogin, setIsLogin] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+
+  // Login states
+  const [loginStep, setLoginStep] = useState<AuthStep>("initial");
+  const [loginData, setLoginData] = useState<LoginData>({
+    emailOrPhone: "",
+    loginMethod: "password",
     password: "",
-    confirmPassword: "",
-    firstName: "",
-    lastName: "",
-    phone: "",
-    location: "",
-    userType: "",
-    firmName: "",
-    barNumber: "",
-    practiceAreas: [],
-    yearsExperience: "",
-    jurisdiction: "",
-    university: "",
-    year: "",
-    expectedGraduation: "",
-    gpa: "",
-    lawSchoolType: "",
-    occupation: "",
-    legalNeeds: [],
+    otp: "",
   });
 
-  const userTypes = [
-    {
-      type: "lawyer" as UserType,
-      title: THEME_COLORS.lawyer.name,
-      description: THEME_COLORS.lawyer.description,
-      icon: Scale,
-      features: [
-        "Streamline case management",
-        "Connect with clients",
-        "Post internships & jobs",
-        "Access AI-powered legal research",
-      ],
-    },
-    {
-      type: "consumer" as UserType,
-      title: THEME_COLORS.consumer.name,
-      description: THEME_COLORS.consumer.description,
-      icon: Users,
-      features: [
-        "Find trusted lawyers",
-        "Get personalized legal advice",
-        "Upload & review documents",
-        "Book legal consultations",
-      ],
-    },
-    {
-      type: "student" as UserType,
-      title: THEME_COLORS.student.name,
-      description: THEME_COLORS.student.description,
-      icon: GraduationCap,
-      features: [
-        "Discover internships & clerkships",
-        "Access legal databases & tools",
-        "Receive mentorship",
-        "Download case briefs & resources",
-      ],
-    },
-  ];
+  // Signup states
+  const [signupStep, setSignupStep] = useState<AuthStep>("initial");
+  const [selectedUserType, setSelectedUserType] = useState<UserType | null>(
+    null
+  );
+  const [signupData, setSignupData] = useState<SignupData>({
+    name: "",
+    emailOrPhone: "",
+    password: "",
+    role: "student",
+    otp: "",
+  });
 
-  const practiceAreaOptions = [
-    "Corporate Law",
-    "Criminal Law",
-    "Family Law",
-    "Personal Injury",
-    "Real Estate",
-    "Immigration",
-    "Employment Law",
-    "Intellectual Property",
-    "Tax Law",
-    "Environmental Law",
-    "Healthcare Law",
-    "Bankruptcy",
-  ];
+  // Check for existing authentication on mount
+  useEffect(() => {
+    const checkAuth = async () => {
+      try {
+        const response = await apiClient.refreshTokens();
+        if (response.success) {
+          console.log("🔐 User already authenticated, redirecting...");
+          router.push("/dashboard");
+        }
+      } catch (error) {
+        console.log("🔓 No existing authentication found");
+      }
+    };
 
-  const legalNeedsOptions = [
-    "Personal Injury",
-    "Family Law",
-    "Criminal Defense",
-    "Real Estate",
-    "Employment Issues",
-    "Business Law",
-    "Estate Planning",
-    "Immigration",
-    "Bankruptcy",
-    "Contract Review",
-    "Intellectual Property",
-    "Other",
-  ];
+    checkAuth();
+  }, [router]);
 
-  const currentTheme = selectedUserType ? THEME_COLORS[selectedUserType] : null;
+  // API Functions
+  const sendOTP = async (emailOrPhone: string, isSignup = false) => {
+    const loadingToast = showLoadingToast("Sending OTP...");
 
-  const handleInputChange = (field: keyof FormData, value: any) => {
-    setFormData((prev) => ({ ...prev, [field]: value }));
+    try {
+      setIsLoading(true);
+      const payload: { phone?: number; email?: string } = {};
+
+      if (isEmail(emailOrPhone)) {
+        payload.email = emailOrPhone;
+      } else if (isPhone(emailOrPhone)) {
+        payload.phone = formatPhoneNumber(emailOrPhone);
+      } else {
+        showErrorToast(
+          "Invalid Input",
+          "Please enter a valid email or phone number"
+        );
+        return false;
+      }
+
+      const response = await apiClient.generateOTP(payload);
+
+      if (response.success) {
+        showSuccessToast(
+          "OTP Sent Successfully",
+          `Verification code sent to ${emailOrPhone}`
+        );
+        return true;
+      } else {
+        showErrorToast(
+          "Failed to Send OTP",
+          response.message || "Please try again"
+        );
+        return false;
+      }
+    } catch (error) {
+      console.error("Error sending OTP:", error);
+      showErrorToast(
+        "Network Error",
+        "Failed to send OTP. Please check your connection."
+      );
+      return false;
+    } finally {
+      setIsLoading(false);
+      toast.dismiss(loadingToast);
+    }
   };
 
-  const toggleArrayItem = (field: keyof FormData, item: string) => {
-    const currentArray = formData[field] as string[];
-    if (currentArray.includes(item)) {
-      setFormData((prev) => ({
-        ...prev,
-        [field]: currentArray.filter((i) => i !== item),
-      }));
+  const loginWithPassword = async (emailOrPhone: string, password: string) => {
+    const loadingToast = showLoadingToast("Logging in...");
+
+    try {
+      setIsLoading(true);
+      const payload: { phone?: number; email?: string; password: string } = {
+        password: password,
+      };
+
+      if (isEmail(emailOrPhone)) {
+        payload.email = emailOrPhone;
+      } else if (isPhone(emailOrPhone)) {
+        payload.phone = formatPhoneNumber(emailOrPhone);
+      } else {
+        showErrorToast(
+          "Invalid Input",
+          "Please enter a valid email or phone number"
+        );
+        return false;
+      }
+
+      const response = await apiClient.login(payload);
+
+      if (response.success) {
+        showSuccessToast("Login Successful", "Welcome back!");
+        setTimeout(() => router.push(`/${response.data?.user.role}/dashboard`), 1000);
+        return true;
+      } else {
+        showErrorToast(
+          "Login Failed",
+          response.message || "Invalid credentials"
+        );
+        return false;
+      }
+    } catch (error) {
+      console.error("Error logging in:", error);
+      showErrorToast(
+        "Login Error",
+        "Please check your credentials and try again."
+      );
+      return false;
+    } finally {
+      setIsLoading(false);
+      toast.dismiss(loadingToast);
+    }
+  };
+
+  const loginWithOTP = async (emailOrPhone: string, otp: string) => {
+    const loadingToast = showLoadingToast("Verifying OTP...");
+
+    try {
+      setIsLoading(true);
+      const payload: {
+        phone?: number;
+        email?: string;
+        otp: number;
+        name: string;
+        role: string;
+      } = {
+        name: "",
+        role: "",
+        otp: Number(otp),
+      };
+
+      if (isEmail(emailOrPhone)) {
+        payload.email = emailOrPhone;
+      } else if (isPhone(emailOrPhone)) {
+        payload.phone = formatPhoneNumber(emailOrPhone);
+      } else {
+        showErrorToast(
+          "Invalid Input",
+          "Please enter a valid email or phone number"
+        );
+        return false;
+      }
+
+      const response = await apiClient.verifyUser(payload);
+
+      if (response.success) {
+        showSuccessToast("Login Successful", "Welcome back!");
+        setTimeout(() => router.push("/dashboard"), 1000);
+        return true;
+      } else {
+        showErrorToast(
+          "Verification Failed",
+          response.message || "Invalid OTP"
+        );
+        return false;
+      }
+    } catch (error) {
+      console.error("Error verifying OTP:", error);
+      showErrorToast(
+        "Verification Error",
+        "Please check your OTP and try again."
+      );
+      return false;
+    } finally {
+      setIsLoading(false);
+      toast.dismiss(loadingToast);
+    }
+  };
+
+  const completeSignup = async (completeData: SignupData) => {
+    const loadingToast = showLoadingToast("Creating account...");
+
+    try {
+      setIsLoading(true);
+      const payload: {
+        phone?: number;
+        email?: string;
+        otp: number;
+        name: string;
+        role: string;
+        password: string;
+      } = {
+        name: completeData.name,
+        role: completeData.role,
+        password: completeData.password,
+        otp: Number(completeData.otp),
+      };
+
+      if (isEmail(completeData.emailOrPhone)) {
+        payload.email = completeData.emailOrPhone;
+      } else if (isPhone(completeData.emailOrPhone)) {
+        payload.phone = formatPhoneNumber(completeData.emailOrPhone);
+      } else {
+        showErrorToast(
+          "Invalid Input",
+          "Please enter a valid email or phone number"
+        );
+        return false;
+      }
+
+      const response = await apiClient.verifyUser(payload);
+
+      if (response.success) {
+        showSuccessToast("Account Created", "Welcome to Xegality!");
+        setTimeout(() => router.push("/dashboard"), 1000);
+        return true;
+      } else {
+        showErrorToast(
+          "Signup Failed",
+          response.message || "Failed to create account"
+        );
+        return false;
+      }
+    } catch (error) {
+      console.error("Error completing signup:", error);
+      showErrorToast(
+        "Signup Error",
+        "Account creation failed. Please try again."
+      );
+      return false;
+    } finally {
+      setIsLoading(false);
+      toast.dismiss(loadingToast);
+    }
+  };
+
+  const handleGoogleLogin = async () => {
+    const loadingToast = showLoadingToast("Redirecting to Google...");
+
+    try {
+      setIsLoading(true);
+      const role = selectedUserType || "consumer";
+      const response = await apiClient.googleLogin(role);
+
+      if (response.data?.link) {
+        window.location.href = response.data.link;
+      } else {
+        showErrorToast("Google Login Error", "Failed to get Google login URL");
+      }
+    } catch (error) {
+      console.error("Error with Google login:", error);
+      showErrorToast("Google Login Failed", "Please try again later.");
+    } finally {
+      setIsLoading(false);
+      toast.dismiss(loadingToast);
+    }
+  };
+
+  // Event Handlers
+  const handleLoginInitial = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!loginData.emailOrPhone.trim()) {
+      showErrorToast(
+        "Required Field",
+        "Please enter your email or phone number"
+      );
+      return;
+    }
+    setLoginStep("method-selection");
+  };
+
+  const handleLoginMethodSelect = async (method: LoginMethod) => {
+    setLoginData((prev) => ({ ...prev, loginMethod: method }));
+
+    if (method === "otp") {
+      const success = await sendOTP(loginData.emailOrPhone);
+      if (success) {
+        setLoginStep("otp-verification");
+      }
     } else {
-      setFormData((prev) => ({
-        ...prev,
-        [field]: [...currentArray, item],
-      }));
+      setLoginStep("form");
+    }
+  };
+
+  const handleLoginComplete = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (loginData.loginMethod === "password") {
+      if (!loginData.password.trim()) {
+        showErrorToast("Required Field", "Please enter your password");
+        return;
+      }
+      await loginWithPassword(loginData.emailOrPhone, loginData.password);
+    } else {
+      if (!loginData.otp.trim() || loginData.otp.length !== 6) {
+        showErrorToast("Invalid OTP", "Please enter a valid 6-digit OTP");
+        return;
+      }
+      await loginWithOTP(loginData.emailOrPhone, loginData.otp);
     }
   };
 
   const handleUserTypeSelect = (userType: UserType) => {
     setSelectedUserType(userType);
-    handleInputChange("userType", userType);
+    setSignupData((prev) => ({ ...prev, role: userType }));
+    setSignupStep("form");
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSignupSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsLoading(true);
-    await new Promise((resolve) => setTimeout(resolve, 2000));
-    setIsLoading(false);
 
-    if (formData.userType === "lawyer") {
-      window.location.href = "/lawyer/dashboard";
-    } else if (formData.userType === "student") {
-      window.location.href = "/student/dashboard";
-    } else {
-      window.location.href = "/consumer/dashboard";
+    if (!signupData.name.trim()) {
+      showErrorToast("Required Field", "Please enter your full name");
+      return;
     }
-  };
-
-  const ThemedButton = ({
-    variant = "primary",
-    children,
-    className = "",
-    ...props
-  }: any) => {
-    if (!currentTheme) {
-      return (
-        <Button className={className} {...props}>
-          {children}
-        </Button>
+    if (!signupData.emailOrPhone.trim()) {
+      showErrorToast(
+        "Required Field",
+        "Please enter your email or phone number"
       );
+      return;
+    }
+    if (!signupData.password.trim() || signupData.password.length < 6) {
+      showErrorToast(
+        "Invalid Password",
+        "Password must be at least 6 characters long"
+      );
+      return;
     }
 
-    const variantClasses: any = {
-      primary: `${currentTheme.primary} ${currentTheme.primaryHover} text-white`,
-      secondary: `border-2 ${currentTheme.border} ${currentTheme.text} bg-transparent hover:${currentTheme.primary} hover:text-white`,
-      ghost: `${currentTheme.text} hover:${currentTheme.background}`,
-    };
-
-    return (
-      <Button className={`${variantClasses[variant]} ${className}`} {...props}>
-        {children}
-      </Button>
-    );
+    const success = await sendOTP(signupData.emailOrPhone, true);
+    if (success) {
+      setSignupStep("otp-verification");
+    }
   };
 
-  const ThemedCheckbox = ({ ...props }) => {
-    const checkboxClass = currentTheme
-      ? `border-gray-300 focus-visible:ring-0 ${currentTheme.checkboxChecked} data-[state=checked]:border-0`
-      : "border-gray-300 focus-visible:ring-0 data-[state=checked]:bg-blue-600 data-[state=checked]:border-0";
+  const handleOtpVerification = async (e: React.FormEvent) => {
+    e.preventDefault();
 
-    return <Checkbox className={checkboxClass} {...props} />;
+    if (!signupData.otp.trim() || signupData.otp.length !== 6) {
+      showErrorToast("Invalid OTP", "Please enter a valid 6-digit OTP");
+      return;
+    }
+
+    await completeSignup(signupData);
   };
 
-  const renderUserTypeSelection = () => (
-    <div className="space-y-6">
-      <div className="text-center">
-        <h3 className="text-3xl font-semibold text-gray-900 mb-2">
-          Choose Your Account Type
-        </h3>
-        <p className="text-gray-600 text-lg">
-          Select the option that best describes you
-        </p>
-      </div>
+  const resetStates = () => {
+    setLoginStep("initial");
+    setSignupStep("initial");
+    setSelectedUserType(null);
+    setLoginData({
+      emailOrPhone: "",
+      loginMethod: "password",
+      password: "",
+      otp: "",
+    });
+    setSignupData({
+      name: "",
+      emailOrPhone: "",
+      password: "",
+      role: "student",
+      otp: "",
+    });
+  };
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        {userTypes.map((userType, index) => {
-          const theme = THEME_COLORS[userType.type];
-          const isSelected = selectedUserType === userType.type;
-
-          return (
-            <motion.div
-              key={userType.type}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.3, delay: index * 0.1 }}
-              className={`p-6 rounded-3xl border-2 cursor-pointer transition-all transform-gpu duration-300 ease-out ${
-                isSelected
-                  ? `${theme.border} ${theme.background} shadow-lg scale-105 -translate-y-2`
-                  : `${theme.border} hover:shadow-md hover:scale-105 hover:-translate-y-2 hover:${theme.background}`
-              }`}
-              onClick={() => handleUserTypeSelect(userType.type)}
-            >
-              <div className="text-center">
-                <div
-                  className={`w-16 h-16 mx-auto mb-4 rounded-full border-2 ${
-                    theme.border
-                  } ${
-                    isSelected ? theme.primary : theme.background
-                  } flex items-center justify-center`}
-                >
-                  <userType.icon
-                    className={`${isSelected ? "text-white" : theme.icon}`}
-                  />
-                </div>
-                <h4 className="font-semibold text-gray-900 mb-2">
-                  {userType.title}
-                </h4>
-                <p className="text-sm text-gray-600 mb-4">
-                  {userType.description}
-                </p>
-                <ul className="space-y-1">
-                  {userType.features.map((feature) => (
-                    <li
-                      key={feature}
-                      className="text-xs text-gray-500 flex items-center gap-1"
-                    >
-                      <CheckCircle className={`h-3 w-3 ${theme.icon}`} />
-                      {feature}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            </motion.div>
-          );
-        })}
-      </div>
-    </div>
-  );
-
-  const renderBasicFields = () => (
-    <div className="space-y-4">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div>
-          <Label htmlFor="firstName">First Name *</Label>
-          <Input
-            id="firstName"
-            value={formData.firstName}
-            onChange={(e) => handleInputChange("firstName", e.target.value)}
-            placeholder="John"
-            className="mt-1 focus-visible:ring-0 border-gray-300"
-            required
-          />
-        </div>
-        <div>
-          <Label htmlFor="lastName">Last Name *</Label>
-          <Input
-            id="lastName"
-            value={formData.lastName}
-            onChange={(e) => handleInputChange("lastName", e.target.value)}
-            placeholder="Doe"
-            className="mt-1 focus-visible:ring-0 border-gray-300"
-            required
-          />
-        </div>
-      </div>
-
-      <div>
-        <Label htmlFor="email">Email Address *</Label>
-        <div className="relative mt-1">
-          <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
-          <Input
-            id="email"
-            type="email"
-            value={formData.email}
-            onChange={(e) => handleInputChange("email", e.target.value)}
-            placeholder="john@example.com"
-            className="pl-10 focus-visible:ring-0 border-gray-300"
-            required
-          />
-        </div>
-      </div>
-
-      <div>
-        <Label htmlFor="password">Password *</Label>
-        <div className="relative mt-1">
-          <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
-          <Input
-            id="password"
-            type={showPassword ? "text" : "password"}
-            value={formData.password}
-            onChange={(e) => handleInputChange("password", e.target.value)}
-            placeholder="••••••••"
-            className="pl-10 pr-10 focus-visible:ring-0 border-gray-300"
-            required
-          />
-          <button
-            type="button"
-            onClick={() => setShowPassword(!showPassword)}
-            className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 cursor-pointer"
-          >
-            {showPassword ? (
-              <EyeOff className="h-4 w-4" />
-            ) : (
-              <Eye className="h-4 w-4" />
-            )}
-          </button>
-        </div>
-      </div>
-
-      {!isLogin && (
-        <div>
-          <Label htmlFor="confirmPassword">Confirm Password *</Label>
-          <div className="relative mt-1">
-            <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
-            <Input
-              id="confirmPassword"
-              type={showConfirmPassword ? "text" : "password"}
-              value={formData.confirmPassword}
-              onChange={(e) =>
-                handleInputChange("confirmPassword", e.target.value)
-              }
-              placeholder="••••••••"
-              className="pl-10 pr-10 focus-visible:ring-0 border-gray-300"
-              required
-            />
-            <button
-              type="button"
-              onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-              className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 cursor-pointer"
-            >
-              {showConfirmPassword ? (
-                <EyeOff className="h-4 w-4" />
-              ) : (
-                <Eye className="h-4 w-4" />
-              )}
-            </button>
-          </div>
-        </div>
-      )}
-
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div>
-          <Label htmlFor="phone">Phone Number</Label>
-          <div className="relative mt-1">
-            <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
-            <Input
-              id="phone"
-              value={formData.phone}
-              onChange={(e) => handleInputChange("phone", e.target.value)}
-              placeholder="+1 (555) 123-4567"
-              className="pl-10 focus-visible:ring-0 border-gray-300"
-            />
-          </div>
-        </div>
-        <div>
-          <Label htmlFor="location">Location</Label>
-          <div className="relative mt-1">
-            <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
-            <Input
-              id="location"
-              value={formData.location}
-              onChange={(e) => handleInputChange("location", e.target.value)}
-              placeholder="New York, NY"
-              className="pl-10 focus-visible:ring-0 border-gray-300"
-            />
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-
-  const renderLawyerFields = () => (
-    <div className="space-y-4">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div>
-          <Label htmlFor="firmName">Law Firm/Organization *</Label>
-          <div className="relative mt-1">
-            <Building className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
-            <Input
-              id="firmName"
-              value={formData.firmName}
-              onChange={(e) => handleInputChange("firmName", e.target.value)}
-              placeholder="Smith & Associates"
-              className="pl-10 focus-visible:ring-0 border-gray-300"
-              required
-            />
-          </div>
-        </div>
-        <div>
-          <Label htmlFor="barNumber">Bar Number *</Label>
-          <Input
-            id="barNumber"
-            value={formData.barNumber}
-            onChange={(e) => handleInputChange("barNumber", e.target.value)}
-            placeholder="123456"
-            className="focus-visible:ring-0 border-gray-300 mt-1"
-            required
-          />
-        </div>
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div>
-          <Label htmlFor="yearsExperience">Years of Experience *</Label>
-          <Select
-            value={formData.yearsExperience}
-            onValueChange={(value) =>
-              handleInputChange("yearsExperience", value)
-            }
-          >
-            <SelectTrigger className="mt-1">
-              <SelectValue placeholder="Select experience" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="0-2">0-2 years</SelectItem>
-              <SelectItem value="3-5">3-5 years</SelectItem>
-              <SelectItem value="6-10">6-10 years</SelectItem>
-              <SelectItem value="11-15">11-15 years</SelectItem>
-              <SelectItem value="16-20">16-20 years</SelectItem>
-              <SelectItem value="20+">20+ years</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-        <div>
-          <Label htmlFor="jurisdiction">Primary Jurisdiction *</Label>
-          <Select
-            value={formData.jurisdiction}
-            onValueChange={(value) => handleInputChange("jurisdiction", value)}
-          >
-            <SelectTrigger className="mt-1">
-              <SelectValue placeholder="Select jurisdiction" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="federal">Federal</SelectItem>
-              <SelectItem value="ny">New York</SelectItem>
-              <SelectItem value="ca">California</SelectItem>
-              <SelectItem value="tx">Texas</SelectItem>
-              <SelectItem value="fl">Florida</SelectItem>
-              <SelectItem value="il">Illinois</SelectItem>
-              <SelectItem value="other">Other</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-      </div>
-
-      <div>
-        <Label>Practice Areas *</Label>
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-2 mt-2">
-          {practiceAreaOptions.map((area) => (
-            <div key={area} className="flex items-center space-x-2">
-              <ThemedCheckbox
-                id={area}
-                checked={formData.practiceAreas.includes(area)}
-                onCheckedChange={() => toggleArrayItem("practiceAreas", area)}
-              />
-              <Label htmlFor={area} className="text-sm">
-                {area}
-              </Label>
-            </div>
-          ))}
-        </div>
-      </div>
-    </div>
-  );
-
-  const renderStudentFields = () => (
-    <div className="space-y-4">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div>
-          <Label htmlFor="university">Law School *</Label>
-          <div className="relative mt-1">
-            <GraduationCap className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
-            <Input
-              id="university"
-              value={formData.university}
-              onChange={(e) => handleInputChange("university", e.target.value)}
-              placeholder="Harvard Law School"
-              className="pl-10 focus-visible:ring-0 border-gray-300"
-              required
-            />
-          </div>
-        </div>
-        <div>
-          <Label htmlFor="year">Current Year *</Label>
-          <Select
-            value={formData.year}
-            onValueChange={(value) => handleInputChange("year", value)}
-          >
-            <SelectTrigger className="mt-1">
-              <SelectValue placeholder="Select year" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="1L">1L (First Year)</SelectItem>
-              <SelectItem value="2L">2L (Second Year)</SelectItem>
-              <SelectItem value="3L">3L (Third Year)</SelectItem>
-              <SelectItem value="LLM">LLM Student</SelectItem>
-              <SelectItem value="JSD">JSD Student</SelectItem>
-              <SelectItem value="graduate">Recent Graduate</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div>
-          <Label htmlFor="expectedGraduation">Expected Graduation *</Label>
-          <div className="relative mt-1">
-            <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
-            <Input
-              id="expectedGraduation"
-              value={formData.expectedGraduation}
-              onChange={(e) =>
-                handleInputChange("expectedGraduation", e.target.value)
-              }
-              placeholder="May 2025"
-              className="pl-10 focus-visible:ring-0 border-gray-300"
-              required
-            />
-          </div>
-        </div>
-        <div>
-          <Label htmlFor="gpa">Current GPA</Label>
-          <Input
-            id="gpa"
-            value={formData.gpa}
-            onChange={(e) => handleInputChange("gpa", e.target.value)}
-            placeholder="3.5"
-            className="mt-1 focus-visible:ring-0 border-gray-300"
-          />
-        </div>
-      </div>
-
-      <div>
-        <Label htmlFor="lawSchoolType">Law School Type *</Label>
-        <Select
-          value={formData.lawSchoolType}
-          onValueChange={(value) => handleInputChange("lawSchoolType", value)}
-        >
-          <SelectTrigger className="mt-1">
-            <SelectValue placeholder="Select type" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="aba-accredited">ABA Accredited</SelectItem>
-            <SelectItem value="state-accredited">State Accredited</SelectItem>
-            <SelectItem value="international">International</SelectItem>
-            <SelectItem value="online">Online Program</SelectItem>
-          </SelectContent>
-        </Select>
-      </div>
-    </div>
-  );
-
-  const renderConsumerFields = () => (
-    <div className="space-y-4">
-      <div>
-        <Label htmlFor="occupation">Occupation</Label>
-        <div className="relative mt-1">
-          <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
-          <Input
-            id="occupation"
-            value={formData.occupation}
-            onChange={(e) => handleInputChange("occupation", e.target.value)}
-            placeholder="Software Engineer"
-            className="pl-10 focus-visible:ring-0 border-gray-300"
-          />
-        </div>
-      </div>
-
-      <div>
-        <Label>Legal Needs (Select all that apply)</Label>
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-2 mt-2">
-          {legalNeedsOptions.map((need) => (
-            <div key={need} className="flex items-center space-x-2">
-              <ThemedCheckbox
-                id={need}
-                checked={formData.legalNeeds.includes(need)}
-                onCheckedChange={() => toggleArrayItem("legalNeeds", need)}
-              />
-              <Label htmlFor={need} className="text-sm">
-                {need}
-              </Label>
-            </div>
-          ))}
-        </div>
-      </div>
-    </div>
-  );
+  const goBack = () => {
+    if (isLogin) {
+      if (loginStep === "method-selection" || loginStep === "form") {
+        setLoginStep("initial");
+      } else if (loginStep === "otp-verification") {
+        setLoginStep("method-selection");
+      }
+    } else {
+      if (signupStep === "form") {
+        setSignupStep("initial");
+        setSelectedUserType(null);
+      } else if (signupStep === "otp-verification") {
+        setSignupStep("form");
+      }
+    }
+  };
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4">
-      {/* Dynamic background overlay based on theme */}
-      {currentTheme && (
-        <div
-          className={`fixed inset-0 ${currentTheme.background} opacity-30 pointer-events-none`}
-        />
-      )}
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 flex items-center justify-center p-4 relative overflow-hidden">
+      {/* Background decorative elements */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute -top-40 -right-40 w-80 h-80 bg-gradient-to-br from-blue-400/20 to-purple-600/20 rounded-full blur-3xl animate-pulse"></div>
+        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-gradient-to-tr from-indigo-400/20 to-pink-600/20 rounded-full blur-3xl animate-pulse delay-1000"></div>
+        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-gradient-to-r from-cyan-400/10 to-blue-600/10 rounded-full blur-3xl animate-pulse delay-500"></div>
+      </div>
 
-      <div className="w-full max-w-4xl relative z-10">
+      <div className="w-full max-w-md relative z-10">
         {/* Header */}
-        <motion.div
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-          className="text-center mb-8"
-        >
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">
-            {isLogin ? (
-              <>
-                Welcome to{" "}
-                <span
-                  className={`text-4xl font-bold bg-gradient-to-r ${
-                    currentTheme ? currentTheme.gradient : "from-black to-black"
-                  } bg-clip-text text-transparent`}
-                >
-                  Xegality
-                </span>
-                <p className="text-sm text-gray-600 mt-1">
-                  Your trusted legal assistant, ready to help.
-                </p>
-              </>
-            ) : (
-              <>
-                <span
-                  className={`text-4xl font-bold bg-gradient-to-r ${
-                    currentTheme ? currentTheme.gradient : "from-black to-black"
-                  } bg-clip-text text-transparent`}
-                >
-                  Xegality
-                </span>
-                <p className="text-sm text-gray-600 mt-1">
-                  Empowering your legal journey with AI precision.
-                </p>
-              </>
-            )}
+        <div className="text-center mb-8 animate-fade-in-up">
+          <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl mb-4 shadow-lg shadow-blue-500/25">
+            <Scale className="w-8 h-8 text-white" />
+          </div>
+          <h1 className="text-4xl font-bold mb-2">
+            <span className="bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 bg-clip-text text-transparent">
+              Xegality
+            </span>
           </h1>
-        </motion.div>
+          <p className="text-slate-600 text-lg">Your trusted legal assistant</p>
+        </div>
 
-        {/* Auth Card */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.2 }}
-        >
-          <Card className="shadow-2xl bg-gray-50/90 rounded-4xl border-0">
-            <CardHeader>
-              <Tabs value={isLogin ? "login" : "signup"} className="w-full">
-                <TabsList className="grid w-full grid-cols-2 mb-6 h-11 bg-gray-100 shadow-inner rounded-3xl">
-                  <TabsTrigger
-                    value="login"
-                    onClick={() => setIsLogin(true)}
-                    className="rounded-full cursor-pointer"
-                  >
-                    Sign In
-                  </TabsTrigger>
-                  <TabsTrigger
-                    value="signup"
-                    onClick={() => setIsLogin(false)}
-                    className="rounded-full cursor-pointer"
-                  >
-                    Sign Up
-                  </TabsTrigger>
-                </TabsList>
-              </Tabs>
-            </CardHeader>
-            <CardContent>
-              <form onSubmit={handleSubmit} className="space-y-6">
-                {/* User Type Selection (Signup Only) */}
-                {!isLogin && !selectedUserType && renderUserTypeSelection()}
-
-                {/* Login Form */}
-                {isLogin && (
-                  <div className="space-y-4">
-                    <div>
-                      <Label htmlFor="loginEmail">Email Address</Label>
-                      <div className="relative mt-1">
-                        <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
-                        <Input
-                          id="loginEmail"
-                          type="email"
-                          value={formData.email}
-                          onChange={(e) =>
-                            handleInputChange("email", e.target.value)
-                          }
-                          placeholder="john@example.com"
-                          className="pl-10 focus-visible:ring-0 border-gray-300"
-                          required
-                        />
-                      </div>
-                    </div>
-
-                    <div>
-                      <Label htmlFor="loginPassword">Password</Label>
-                      <div className="relative mt-1">
-                        <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
-                        <Input
-                          id="loginPassword"
-                          type={showPassword ? "text" : "password"}
-                          value={formData.password}
-                          onChange={(e) =>
-                            handleInputChange("password", e.target.value)
-                          }
-                          placeholder="••••••••"
-                          className="pl-10 pr-10 focus-visible:ring-0 border-gray-300"
-                          required
-                        />
-                        <button
-                          type="button"
-                          onClick={() => setShowPassword(!showPassword)}
-                          className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 cursor-pointer"
-                        >
-                          {showPassword ? (
-                            <EyeOff className="h-4 w-4" />
-                          ) : (
-                            <Eye className="h-4 w-4" />
-                          )}
-                        </button>
-                      </div>
-                    </div>
-
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center space-x-2">
-                        <ThemedCheckbox id="remember" />
-                        <Label htmlFor="remember" className="text-sm">
-                          Remember me
-                        </Label>
-                      </div>
-                      <Button
-                        className="bg-transparent text-blue-600 shadow-none hover:bg-transparent hover:text-blue-700 cursor-pointer"
-                        asChild
-                      >
-                        <Link href="/auth/forgot-password" className="text-sm">
-                          Forgot password?
-                        </Link>
-                      </Button>
-                    </div>
-                  </div>
-                )}
-
-                {/* Signup Form */}
-                {!isLogin && selectedUserType && (
-                  <div className="space-y-6">
-                    {/* User Type Display */}
-                    <div
-                      className={`flex items-center justify-between p-4 ${currentTheme?.background} rounded-lg`}
-                    >
-                      <div className="flex items-center gap-3">
-                        {selectedUserType === "lawyer" && (
-                          <Scale className={`h-5 w-5 ${currentTheme?.icon}`} />
-                        )}
-                        {selectedUserType === "consumer" && (
-                          <Users className={`h-5 w-5 ${currentTheme?.icon}`} />
-                        )}
-                        {selectedUserType === "student" && (
-                          <GraduationCap
-                            className={`h-5 w-5 ${currentTheme?.icon}`}
-                          />
-                        )}
-                        <span className="font-medium">
-                          {currentTheme?.name}
-                        </span>
-                      </div>
-                      <ThemedButton
-                        type="button"
-                        variant="ghost"
-                        onClick={() => {
-                          setSelectedUserType("");
-                          handleInputChange("userType", "");
-                        }}
-                        className={`${currentTheme?.background} cursor-pointer shadow-none ${currentTheme?.primaryHover} hover:text-white rounded-xl`}
-                      >
-                        Change
-                      </ThemedButton>
-                    </div>
-
-                    {/* Basic Fields */}
-                    {renderBasicFields()}
-
-                    {/* User Type Specific Fields */}
-                    {selectedUserType === "lawyer" && renderLawyerFields()}
-                    {selectedUserType === "student" && renderStudentFields()}
-                    {selectedUserType === "consumer" && renderConsumerFields()}
-
-                    {/* Terms and Conditions */}
-                    <div className="flex items-start space-x-2">
-                      <ThemedCheckbox id="terms" required />
-                      <Label
-                        htmlFor="terms"
-                        className="text-sm leading-relaxed"
-                      >
-                        I agree to the{" "}
-                        <Link
-                          href="/terms"
-                          className={`${
-                            currentTheme?.text || "text-blue-600"
-                          } hover:underline`}
-                        >
-                          Terms of Service
-                        </Link>{" "}
-                        and{" "}
-                        <Link
-                          href="/privacy"
-                          className={`${
-                            currentTheme?.text || "text-blue-600"
-                          } hover:underline`}
-                        >
-                          Privacy Policy
-                        </Link>
-                      </Label>
-                    </div>
-                  </div>
-                )}
-
-                {/* Submit Button */}
-                {(isLogin || (!isLogin && selectedUserType)) && (
-                  <ThemedButton
-                    type="submit"
-                    disabled={isLoading}
-                    className="w-full font-medium py-3 text-lg cursor-pointer"
-                  >
-                    {isLoading ? (
-                      <div className="flex items-center gap-2">
-                        <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                        {isLogin ? "Signing In..." : "Creating Account..."}
-                      </div>
-                    ) : (
-                      <div className="flex items-center gap-2">
-                        {isLogin ? "Sign In" : "Create Account"}
-                        <ArrowRight className="h-4 w-4" />
-                      </div>
-                    )}
-                  </ThemedButton>
-                )}
-
-                {/* Social Login */}
-                {isLogin && (
-                  <div className="space-y-4">
-                    <div className="relative">
-                      <div className="absolute inset-0 flex items-center">
-                        <div className="w-full border-t border-gray-300" />
-                      </div>
-                      <div className="relative flex justify-center text-sm">
-                        <span className="px-2 bg-gray-50 text-gray-500">
-                          or
-                        </span>
-                      </div>
-                    </div>
-                    <div className="flex gap-4">
-                      <div className="flex-1 rounded-md p-[1.5px] bg-gradient-to-r from-[#4285F4] via-[#FBBC05] to-[#EA4335]">
-                        <div className="rounded-md bg-white">
-                          <button
-                            type="button"
-                            className="w-full flex items-center justify-center gap-3 rounded-md border border-gray-200 bg-white py-2.5 px-4 shadow-sm transition duration-200 hover:shadow-md hover:bg-gray-50"
-                          >
-                            <svg
-                              className="w-5 h-5"
-                              viewBox="0 0 24 24"
-                              aria-hidden="true"
-                              focusable="false"
-                            >
-                              <path
-                                fill="#EA4335"
-                                d="M12 11.6v2.8h5.64c-.24 1.44-1.08 2.66-2.28 3.48v2.88h3.68c2.16-2 3.36-4.96 3.36-8.48 0-.56-.04-1.12-.12-1.68H12z"
-                              />
-                              <path
-                                fill="#34A853"
-                                d="M5.84 14.16a6.9 6.9 0 0 1 0-4.32v-2.8H2.12a11.96 11.96 0 0 0 0 9.92z"
-                              />
-                              <path
-                                fill="#4285F4"
-                                d="M12 5.2a6.84 6.84 0 0 1 4.8 1.84l3.44-3.44C17.8 1.44 15.04.4 12 .4c-4.3 0-8 2.48-9.88 6.08l3.72 2.88C7.72 6.88 9.68 5.2 12 5.2z"
-                              />
-                              <path
-                                fill="#FBBC05"
-                                d="M2.12 7.28a11.96 11.96 0 0 0 0 9.92l3.72-2.88a6.91 6.91 0 0 1 0-4.32z"
-                              />
-                            </svg>
-                            <span className="text-sm font-medium text-gray-700 select-none">
-                              Continue with Google
-                            </span>
-                          </button>
-                        </div>
-                      </div>
-
-                      <div className="flex-1 rounded-md p-[1.5px] bg-gradient-to-r from-[#1877F2] via-[#3b5998] to-[#4267B2]">
-                        <div className="rounded-md bg-white">
-                          <button
-                            type="button"
-                            className="w-full flex items-center justify-center gap-3 rounded-md border border-gray-200 bg-white py-2.5 px-4 shadow-sm transition duration-200 hover:shadow-md hover:bg-gray-50"
-                          >
-                            <svg
-                              className="w-5 h-5"
-                              viewBox="0 0 24 24"
-                              fill="#1877F2"
-                              xmlns="http://www.w3.org/2000/svg"
-                              aria-hidden="true"
-                              focusable="false"
-                            >
-                              <path d="M22.675 0H1.325C.593 0 0 .593 0 1.325v21.351C0 23.407.593 24 1.325 24H12.82v-9.294H9.692v-3.622h3.128V8.413c0-3.1 1.893-4.788 4.659-4.788 1.325 0 2.463.099 2.795.143v3.24l-1.918.001c-1.504 0-1.796.715-1.796 1.763v2.313h3.59l-.467 3.622h-3.123V24h6.116c.73 0 1.324-.593 1.324-1.324V1.325C24 .593 23.407 0 22.675 0z" />
-                            </svg>
-                            <span className="text-sm font-medium text-gray-700 select-none">
-                              Continue with Facebook
-                            </span>
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                )}
-
-                {/* Switch Auth Mode */}
-                <div className="text-center">
-                  <p className="text-gray-600">
-                    <Button
-                      type="button"
-                      onClick={() => {
-                        setIsLogin(!isLogin);
-                        setSelectedUserType("");
-                        setFormData({
-                          email: "",
-                          password: "",
-                          confirmPassword: "",
-                          firstName: "",
-                          lastName: "",
-                          phone: "",
-                          location: "",
-                          userType: "",
-                          firmName: "",
-                          barNumber: "",
-                          practiceAreas: [],
-                          yearsExperience: "",
-                          jurisdiction: "",
-                          university: "",
-                          year: "",
-                          expectedGraduation: "",
-                          gpa: "",
-                          lawSchoolType: "",
-                          occupation: "",
-                          legalNeeds: [],
-                        });
-                      }}
-                      className={`bg-transparent text-gray-700 shadow-none hover:bg-transparent ${
-                        currentTheme
-                          ? `hover:${currentTheme.text}`
-                          : "hover:text-blue-600"
-                      } cursor-pointer`}
-                    >
-                      {isLogin
-                        ? "Don't have an account ?"
-                        : "Already have an account ?"}
-                    </Button>
-                  </p>
-                </div>
-              </form>
-            </CardContent>
-          </Card>
-        </motion.div>
-
-        {/* Features */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.4 }}
-          className="mt-12 text-center"
-        >
-          <div className="flex items-center justify-center gap-8 text-sm text-gray-600">
-            <div className="flex items-center gap-2">
-              <Shield className="h-4 w-4 text-green-500" />
-              <span>Secure & Encrypted</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <Sparkles className="h-4 w-4 text-blue-500" />
-              <span>AI-Powered</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <CheckCircle className="h-4 w-4 text-purple-500" />
-              <span>Trusted by 10,000+ Users</span>
+        {/* Main Card */}
+        <Card className="bg-white/80 backdrop-blur-xl shadow-2xl shadow-slate-200/50 border border-white/20 overflow-hidden animate-fade-in-up delay-200">
+          {/* Tabs Header */}
+          <div className="p-6 pb-0">
+            <div className="bg-slate-100/80 rounded-2xl p-1.5 backdrop-blur-sm">
+              <div className="grid grid-cols-2 gap-1">
+                <button
+                  onClick={() => {
+                    setIsLogin(true);
+                    resetStates();
+                  }}
+                  className={`px-4 py-3 rounded-xl font-medium transition-all duration-300 text-sm sm:text-base ${
+                    isLogin
+                      ? "bg-white text-slate-900 shadow-lg shadow-slate-200/50 transform scale-[1.02]"
+                      : "text-slate-600 hover:text-slate-900 hover:bg-white/50"
+                  }`}
+                >
+                  Login
+                </button>
+                <button
+                  onClick={() => {
+                    setIsLogin(false);
+                    resetStates();
+                  }}
+                  className={`px-4 py-3 rounded-xl font-medium transition-all duration-300 text-sm sm:text-base ${
+                    !isLogin
+                      ? "bg-white text-slate-900 shadow-lg shadow-slate-200/50 transform scale-[1.02]"
+                      : "text-slate-600 hover:text-slate-900 hover:bg-white/50"
+                  }`}
+                >
+                  Sign Up
+                </button>
+              </div>
             </div>
           </div>
-        </motion.div>
+
+          {/* Content */}
+          <CardContent className="p-6 pt-4">
+            {isLogin ? (
+              // LOGIN FLOW
+              <div className="space-y-6">
+                {loginStep === "initial" && (
+                  <div className="space-y-6 animate-slide-in-right">
+                    <div className="text-center">
+                      <h2 className="text-2xl font-bold text-slate-900 mb-2">
+                        Welcome Back
+                      </h2>
+                      <p className="text-slate-600">Sign in to your account</p>
+                    </div>
+
+                    <form onSubmit={handleLoginInitial} className="space-y-4">
+                      <div className="space-y-2">
+                        <Label
+                          htmlFor="emailOrPhone"
+                          className="text-slate-700 font-medium"
+                        >
+                          Email or Phone Number
+                        </Label>
+                        <div className="relative group">
+                          <Mail className="absolute left-4 top-1/2 transform -translate-y-1/2 text-slate-400 h-5 w-5 group-focus-within:text-blue-500 transition-colors" />
+                          <Input
+                            id="emailOrPhone"
+                            value={loginData.emailOrPhone}
+                            onChange={(e) =>
+                              setLoginData((prev) => ({
+                                ...prev,
+                                emailOrPhone: e.target.value,
+                              }))
+                            }
+                            placeholder="Enter email or phone"
+                            className="pl-12 h-12 bg-slate-50/50 border-slate-200 rounded-xl focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all duration-200"
+                            required
+                          />
+                        </div>
+                      </div>
+
+                      <Button
+                        type="submit"
+                        className="w-full h-12 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold rounded-xl shadow-lg shadow-blue-500/25 hover:shadow-xl hover:shadow-blue-500/30 transform hover:scale-[1.02] transition-all duration-200"
+                      >
+                        Continue
+                        <ArrowRight className="ml-2 h-4 w-4" />
+                      </Button>
+                    </form>
+                  </div>
+                )}
+
+                {loginStep === "method-selection" && (
+                  <div className="space-y-6 animate-slide-in-left">
+                    <div className="text-center">
+                      <h2 className="text-xl font-bold text-slate-900 mb-2">
+                        Choose Login Method
+                      </h2>
+                      <div className="inline-flex items-center px-3 py-1 bg-slate-100 rounded-full">
+                        <span className="text-sm font-medium text-slate-900 truncate max-w-[200px]">
+                          {loginData.emailOrPhone}
+                        </span>
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      <button
+                        type="button"
+                        onClick={() => handleLoginMethodSelect("otp")}
+                        disabled={isLoading}
+                        className="flex items-center justify-center gap-2 p-4 border-2 border-slate-200 rounded-xl hover:border-blue-500 hover:bg-blue-50 transition-all duration-200 group disabled:opacity-50 disabled:cursor-not-allowed"
+                      >
+                        <Phone className="h-5 w-5 text-slate-600 group-hover:text-blue-600" />
+                        <span className="font-medium text-slate-700 group-hover:text-blue-700">
+                          Login with OTP
+                        </span>
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => handleLoginMethodSelect("password")}
+                        disabled={isLoading}
+                        className="flex items-center justify-center gap-2 p-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl shadow-lg shadow-blue-500/25 hover:shadow-xl hover:shadow-blue-500/30 transform hover:scale-[1.02] transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+                      >
+                        <Lock className="h-5 w-5" />
+                        <span className="font-medium">Login with Password</span>
+                      </button>
+                    </div>
+
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      onClick={goBack}
+                      className="w-full h-12 text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-xl transition-all duration-200"
+                    >
+                      <ArrowLeft className="mr-2 h-4 w-4" />
+                      Back
+                    </Button>
+                  </div>
+                )}
+
+                {loginStep === "form" && (
+                  <div className="space-y-6 animate-slide-in-right">
+                    <div className="text-center">
+                      <h2 className="text-xl font-bold text-slate-900 mb-2">
+                        Enter Password
+                      </h2>
+                      <div className="inline-flex items-center px-3 py-1 bg-slate-100 rounded-full">
+                        <span className="text-sm font-medium text-slate-900 truncate max-w-[200px]">
+                          {loginData.emailOrPhone}
+                        </span>
+                      </div>
+                    </div>
+
+                    <form onSubmit={handleLoginComplete} className="space-y-4">
+                      <div className="space-y-2">
+                        <Label
+                          htmlFor="password"
+                          className="text-slate-700 font-medium"
+                        >
+                          Password
+                        </Label>
+                        <div className="relative group">
+                          <Lock className="absolute left-4 top-1/2 transform -translate-y-1/2 text-slate-400 h-5 w-5 group-focus-within:text-blue-500 transition-colors" />
+                          <Input
+                            id="password"
+                            type={showPassword ? "text" : "password"}
+                            value={loginData.password}
+                            onChange={(e) =>
+                              setLoginData((prev) => ({
+                                ...prev,
+                                password: e.target.value,
+                              }))
+                            }
+                            placeholder="Enter your password"
+                            className="pl-12 pr-12 h-12 bg-slate-50/50 border-slate-200 rounded-xl focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all duration-200"
+                            required
+                          />
+                          <button
+                            type="button"
+                            onClick={() => setShowPassword(!showPassword)}
+                            className="absolute right-4 top-1/2 transform -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors"
+                          >
+                            {showPassword ? (
+                              <EyeOff className="h-5 w-5" />
+                            ) : (
+                              <Eye className="h-5 w-5" />
+                            )}
+                          </button>
+                        </div>
+                      </div>
+
+                      <Button
+                        type="submit"
+                        disabled={isLoading}
+                        className="w-full h-12 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 disabled:from-slate-400 disabled:to-slate-500 text-white font-semibold rounded-xl shadow-lg shadow-blue-500/25 hover:shadow-xl hover:shadow-blue-500/30 transform hover:scale-[1.02] transition-all duration-200 disabled:transform-none disabled:shadow-none"
+                      >
+                        {isLoading ? (
+                          <div className="flex items-center gap-2">
+                            <Loader2 className="w-5 h-5 animate-spin" />
+                            Logging in...
+                          </div>
+                        ) : (
+                          "Login"
+                        )}
+                      </Button>
+
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        onClick={goBack}
+                        className="w-full h-12 text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-xl transition-all duration-200"
+                      >
+                        <ArrowLeft className="mr-2 h-4 w-4" />
+                        Back
+                      </Button>
+                    </form>
+                  </div>
+                )}
+
+                {loginStep === "otp-verification" && (
+                  <div className="space-y-6 animate-slide-in-left">
+                    <div className="text-center">
+                      <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-green-500 to-emerald-600 rounded-2xl mb-4 shadow-lg shadow-green-500/25">
+                        <CheckCircle className="w-8 h-8 text-white" />
+                      </div>
+                      <h2 className="text-xl font-bold text-slate-900 mb-2">
+                        Enter Verification Code
+                      </h2>
+                      <div className="inline-flex items-center px-3 py-1 bg-slate-100 rounded-full">
+                        <span className="text-sm text-slate-600">
+                          OTP sent to:{" "}
+                        </span>
+                        <span className="ml-1 font-medium text-slate-900 truncate max-w-[150px]">
+                          {loginData.emailOrPhone}
+                        </span>
+                      </div>
+                    </div>
+
+                    <form onSubmit={handleLoginComplete} className="space-y-6">
+                      <div className="space-y-4">
+                        <Label className="text-slate-700 font-medium text-center block">
+                          Enter 6-digit OTP
+                        </Label>
+                        <OTPInput
+                          value={loginData.otp}
+                          onChange={(value) =>
+                            setLoginData((prev) => ({ ...prev, otp: value }))
+                          }
+                          disabled={isLoading}
+                        />
+                      </div>
+
+                      <Button
+                        type="submit"
+                        disabled={isLoading || loginData.otp.length !== 6}
+                        className="w-full h-12 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 disabled:from-slate-400 disabled:to-slate-500 text-white font-semibold rounded-xl shadow-lg shadow-blue-500/25 hover:shadow-xl hover:shadow-blue-500/30 transform hover:scale-[1.02] transition-all duration-200 disabled:transform-none disabled:shadow-none"
+                      >
+                        {isLoading ? (
+                          <div className="flex items-center gap-2">
+                            <Loader2 className="w-5 h-5 animate-spin" />
+                            Verifying...
+                          </div>
+                        ) : (
+                          "Verify & Login"
+                        )}
+                      </Button>
+
+                      <div className="flex flex-col sm:flex-row gap-2">
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          onClick={goBack}
+                          className="flex-1 h-12 text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-xl transition-all duration-200"
+                        >
+                          <ArrowLeft className="mr-2 h-4 w-4" />
+                          Back
+                        </Button>
+                        <Button
+                          type="button"
+                          variant="outline"
+                          onClick={() => sendOTP(loginData.emailOrPhone)}
+                          disabled={isLoading}
+                          className="flex-1 h-12 border-slate-200 hover:border-slate-300 hover:bg-slate-50 rounded-xl transition-all duration-200"
+                        >
+                          Resend OTP
+                        </Button>
+                      </div>
+                    </form>
+                  </div>
+                )}
+              </div>
+            ) : (
+              // SIGNUP FLOW
+              <div className="space-y-6">
+                {signupStep === "initial" && (
+                  <div className="space-y-6 animate-slide-in-right">
+                    <div className="text-center">
+                      <h2 className="text-2xl font-bold text-slate-900 mb-2">
+                        Choose Your Role
+                      </h2>
+                      <p className="text-slate-600">
+                        Select what best describes you
+                      </p>
+                    </div>
+
+                    <div className="space-y-3">
+                      {USER_TYPES.map((userType, index) => (
+                        <button
+                          key={userType.type}
+                          type="button"
+                          onClick={() => handleUserTypeSelect(userType.type)}
+                          className="w-full p-4 rounded-2xl border-2 border-slate-200 hover:border-slate-300 transition-all duration-300 hover:scale-[1.02] hover:shadow-lg group animate-fade-in-up bg-white/50 hover:bg-white"
+                          style={{ animationDelay: `${index * 100}ms` }}
+                        >
+                          <div className="flex items-center gap-4">
+                            <div
+                              className={`w-12 h-12 rounded-xl ${userType.color} flex items-center justify-center group-hover:scale-110 transition-transform duration-200 shadow-lg`}
+                            >
+                              <userType.icon className="h-6 w-6 text-white" />
+                            </div>
+                            <div className="text-left flex-1">
+                              <div className="font-semibold text-slate-900 text-lg">
+                                {userType.title}
+                              </div>
+                              <div className="text-slate-600 text-sm">
+                                {userType.description}
+                              </div>
+                            </div>
+                            <ArrowRight className="h-5 w-5 text-slate-400 group-hover:text-slate-600 group-hover:translate-x-1 transition-all duration-200" />
+                          </div>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {signupStep === "form" && (
+                  <div className="space-y-6 animate-slide-in-left">
+                    <div className="text-center">
+                      <h2 className="text-2xl font-bold text-slate-900 mb-2">
+                        Create Account
+                      </h2>
+                      <div className="inline-flex items-center px-3 py-1 bg-slate-100 rounded-full">
+                        <span className="text-sm text-slate-600">
+                          Signing up as:{" "}
+                        </span>
+                        <span className="ml-1 font-semibold text-slate-900">
+                          {
+                            USER_TYPES.find((t) => t.type === selectedUserType)
+                              ?.title
+                          }
+                        </span>
+                      </div>
+                    </div>
+
+                    <form onSubmit={handleSignupSubmit} className="space-y-4">
+                      <div className="space-y-2">
+                        <Label
+                          htmlFor="name"
+                          className="text-slate-700 font-medium"
+                        >
+                          Full Name
+                        </Label>
+                        <div className="relative group">
+                          <User className="absolute left-4 top-1/2 transform -translate-y-1/2 text-slate-400 h-5 w-5 group-focus-within:text-blue-500 transition-colors" />
+                          <Input
+                            id="name"
+                            value={signupData.name}
+                            onChange={(e) =>
+                              setSignupData((prev) => ({
+                                ...prev,
+                                name: e.target.value,
+                              }))
+                            }
+                            placeholder="Enter your full name"
+                            className="pl-12 h-12 bg-slate-50/50 border-slate-200 rounded-xl focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all duration-200"
+                            required
+                          />
+                        </div>
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label
+                          htmlFor="signupEmailOrPhone"
+                          className="text-slate-700 font-medium"
+                        >
+                          Email or Phone Number
+                        </Label>
+                        <div className="relative group">
+                          <Mail className="absolute left-4 top-1/2 transform -translate-y-1/2 text-slate-400 h-5 w-5 group-focus-within:text-blue-500 transition-colors" />
+                          <Input
+                            id="signupEmailOrPhone"
+                            value={signupData.emailOrPhone}
+                            onChange={(e) =>
+                              setSignupData((prev) => ({
+                                ...prev,
+                                emailOrPhone: e.target.value,
+                              }))
+                            }
+                            placeholder="Enter email or phone"
+                            className="pl-12 h-12 bg-slate-50/50 border-slate-200 rounded-xl focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all duration-200"
+                            required
+                          />
+                        </div>
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label
+                          htmlFor="signupPassword"
+                          className="text-slate-700 font-medium"
+                        >
+                          Password
+                        </Label>
+                        <div className="relative group">
+                          <Lock className="absolute left-4 top-1/2 transform -translate-y-1/2 text-slate-400 h-5 w-5 group-focus-within:text-blue-500 transition-colors" />
+                          <Input
+                            id="signupPassword"
+                            type={showPassword ? "text" : "password"}
+                            value={signupData.password}
+                            onChange={(e) =>
+                              setSignupData((prev) => ({
+                                ...prev,
+                                password: e.target.value,
+                              }))
+                            }
+                            placeholder="Create a password (min. 6 characters)"
+                            className="pl-12 pr-12 h-12 bg-slate-50/50 border-slate-200 rounded-xl focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all duration-200"
+                            required
+                            minLength={6}
+                          />
+                          <button
+                            type="button"
+                            onClick={() => setShowPassword(!showPassword)}
+                            className="absolute right-4 top-1/2 transform -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors"
+                          >
+                            {showPassword ? (
+                              <EyeOff className="h-5 w-5" />
+                            ) : (
+                              <Eye className="h-5 w-5" />
+                            )}
+                          </button>
+                        </div>
+                      </div>
+
+                      <div className="space-y-4 pt-2">
+                        <Button
+                          type="submit"
+                          disabled={isLoading}
+                          className="w-full h-12 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 disabled:from-slate-400 disabled:to-slate-500 text-white font-semibold rounded-xl shadow-lg shadow-blue-500/25 hover:shadow-xl hover:shadow-blue-500/30 transform hover:scale-[1.02] transition-all duration-200 disabled:transform-none disabled:shadow-none"
+                        >
+                          {isLoading ? (
+                            <div className="flex items-center gap-2">
+                              <Loader2 className="w-5 h-5 animate-spin" />
+                              Sending OTP...
+                            </div>
+                          ) : (
+                            <>
+                              Continue
+                              <ArrowRight className="ml-2 h-4 w-4" />
+                            </>
+                          )}
+                        </Button>
+
+                        <div className="relative">
+                          <div className="absolute inset-0 flex items-center">
+                            <div className="w-full border-t border-slate-200" />
+                          </div>
+                          <div className="relative flex justify-center text-sm">
+                            <span className="px-4 bg-white text-slate-500 font-medium">
+                              or
+                            </span>
+                          </div>
+                        </div>
+
+                        <Button
+                          type="button"
+                          variant="outline"
+                          onClick={handleGoogleLogin}
+                          disabled={isLoading}
+                          className="w-full h-12 border-2 border-slate-200 hover:border-slate-300 hover:bg-slate-50 rounded-xl transition-all duration-200 hover:scale-[1.02] disabled:transform-none"
+                        >
+                          <svg className="w-5 h-5 mr-3" viewBox="0 0 24 24">
+                            <path
+                              fill="#4285F4"
+                              d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
+                            />
+                            <path
+                              fill="#34A853"
+                              d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
+                            />
+                            <path
+                              fill="#FBBC05"
+                              d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"
+                            />
+                            <path
+                              fill="#EA4335"
+                              d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
+                            />
+                          </svg>
+                          <span className="font-medium">
+                            Continue with Google
+                          </span>
+                        </Button>
+                      </div>
+
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        onClick={goBack}
+                        className="w-full h-12 text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-xl transition-all duration-200"
+                      >
+                        <ArrowLeft className="mr-2 h-4 w-4" />
+                        Back
+                      </Button>
+                    </form>
+                  </div>
+                )}
+
+                {signupStep === "otp-verification" && (
+                  <div className="space-y-6 animate-slide-in-right">
+                    <div className="text-center">
+                      <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-green-500 to-emerald-600 rounded-2xl mb-4 shadow-lg shadow-green-500/25">
+                        <CheckCircle className="w-8 h-8 text-white" />
+                      </div>
+                      <h2 className="text-xl font-bold text-slate-900 mb-2">
+                        Verify Your Account
+                      </h2>
+                      <div className="inline-flex items-center px-3 py-1 bg-slate-100 rounded-full">
+                        <span className="text-sm text-slate-600">
+                          OTP sent to:{" "}
+                        </span>
+                        <span className="ml-1 font-medium text-slate-900 truncate max-w-[150px]">
+                          {signupData.emailOrPhone}
+                        </span>
+                      </div>
+                    </div>
+
+                    <form
+                      onSubmit={handleOtpVerification}
+                      className="space-y-6"
+                    >
+                      <div className="space-y-4">
+                        <Label className="text-slate-700 font-medium text-center block">
+                          Enter 6-digit OTP
+                        </Label>
+                        <OTPInput
+                          value={signupData.otp}
+                          onChange={(value) =>
+                            setSignupData((prev) => ({ ...prev, otp: value }))
+                          }
+                          disabled={isLoading}
+                        />
+                      </div>
+
+                      <Button
+                        type="submit"
+                        disabled={isLoading || signupData.otp.length !== 6}
+                        className="w-full h-12 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 disabled:from-slate-400 disabled:to-slate-500 text-white font-semibold rounded-xl shadow-lg shadow-blue-500/25 hover:shadow-xl hover:shadow-blue-500/30 transform hover:scale-[1.02] transition-all duration-200 disabled:transform-none disabled:shadow-none"
+                      >
+                        {isLoading ? (
+                          <div className="flex items-center gap-2">
+                            <Loader2 className="w-5 h-5 animate-spin" />
+                            Creating Account...
+                          </div>
+                        ) : (
+                          "Verify & Create Account"
+                        )}
+                      </Button>
+
+                      <div className="flex flex-col sm:flex-row gap-2">
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          onClick={goBack}
+                          className="flex-1 h-12 text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-xl transition-all duration-200"
+                        >
+                          <ArrowLeft className="mr-2 h-4 w-4" />
+                          Back
+                        </Button>
+                        <Button
+                          type="button"
+                          variant="outline"
+                          onClick={() => sendOTP(signupData.emailOrPhone, true)}
+                          disabled={isLoading}
+                          className="flex-1 h-12 border-slate-200 hover:border-slate-300 hover:bg-slate-50 rounded-xl transition-all duration-200"
+                        >
+                          Resend OTP
+                        </Button>
+                      </div>
+                    </form>
+                  </div>
+                )}
+              </div>
+            )}
+          </CardContent>
+        </Card>
+
+        {/* Footer */}
+        <div className="text-center mt-8 animate-fade-in-up delay-500">
+          <p className="text-slate-500 text-sm">
+            🔒 Secure • 🔐 Encrypted • ✅ Trusted by 10,000+ users
+          </p>
+        </div>
       </div>
+
+      {/* Custom CSS for animations */}
+      <style jsx>{`
+        @keyframes fade-in-up {
+          from {
+            opacity: 0;
+            transform: translateY(20px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+
+        @keyframes slide-in-right {
+          from {
+            opacity: 0;
+            transform: translateX(20px);
+          }
+          to {
+            opacity: 1;
+            transform: translateX(0);
+          }
+        }
+
+        @keyframes slide-in-left {
+          from {
+            opacity: 0;
+            transform: translateX(-20px);
+          }
+          to {
+            opacity: 1;
+            transform: translateX(0);
+          }
+        }
+
+        .animate-fade-in-up {
+          animation: fade-in-up 0.6s ease-out;
+        }
+
+        .animate-slide-in-right {
+          animation: slide-in-right 0.4s ease-out;
+        }
+
+        .animate-slide-in-left {
+          animation: slide-in-left 0.4s ease-out;
+        }
+      `}</style>
     </div>
   );
 }

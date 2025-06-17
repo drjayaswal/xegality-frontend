@@ -2,7 +2,7 @@
 
 import type React from "react";
 
-import { useState, useRef } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   ChevronRight,
@@ -51,6 +51,7 @@ interface TestimonialCardProps {
 }
 
 export default function StudentHome() {
+
   const [inputValue, setInputValue] = useState("");
   const [inputFocused, setInputFocused] = useState(false);
   const [isGlobalLoading, setIsGlobalLoading] = useState(false);

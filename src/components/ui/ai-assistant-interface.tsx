@@ -139,7 +139,7 @@ export default function AIAssistantForm({
             className="fixed inset-0 z-50 flex flex-col items-center justify-center pointer-events-none"
           >
             <div className="relative flex items-center justify-center">
-              {[...Array(7)].map((_, i) => (
+              {[...Array(3)].map((_, i) => (
                 <motion.div
                   key={i}
                   className={`absolute w-20 h-20 sm:w-24 sm:h-24 rounded-full bg-gradient-to-r ${getGradientClass(

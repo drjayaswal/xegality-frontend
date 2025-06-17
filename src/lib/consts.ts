@@ -10,10 +10,14 @@ export const CONSUMER_NAVLINKS = [
 export const UNPROTECTED_ROUTES = [
   "/",
   "/login",
-  "/terms-and-conditions",
-  "/privacy-policy",
+  "/tnc",
+  "/pnp",
   "/about",
   "/contact",
+  "/archives",
+  "/lawyer",
+  "/student",
+  "/consumer",
 ];
 
 export const LAWYER_NAVLINKS = [
