@@ -1,7 +1,31 @@
+"use client";
+
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 export default function LandingPage() {
+  const router = useRouter();
+
+  const handle_logout = async () => {
+    try {
+      const res = await fetch("http://localhost:4000/api/auth/logout", {
+        method: "GET",
+        credentials: "include",
+      });
+
+      const data = await res.json();
+
+      if (res.ok) {
+        // The server should handle cookie deletion
+        router.push("/login");
+      } else {
+        console.error("Logout failed:", data);
+      }
+    } catch (err) {
+      console.error("Logout error:", err);
+    }
+  };
   return (
     <>
       <div className="container mt-20">
@@ -28,6 +52,11 @@ export default function LandingPage() {
         <Link href="/student/dashboard">
           <Button>Visit Student dashboard</Button>
         </Link>
+      </div>
+      <div className="flex gap-2 mt-4">
+        <Button onClick={handle_logout}>
+          LOGOUT
+        </Button>
       </div>
     </>
   )
