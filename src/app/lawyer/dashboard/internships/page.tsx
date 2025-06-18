@@ -1,12 +1,12 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   Select,
   SelectContent,
@@ -16,197 +16,196 @@ import {
 } from "@/components/ui/select";
 import {
   Search,
-  MapPin,
-  DollarSign,
-  Calendar,
-  Clock,
   GraduationCap,
-  Heart,
   Filter,
   Star,
-  Users,
   ChevronRight,
-  Eye,
-  Mail,
-  Plus,
-  Check,
-  Info,
   X,
   CheckCircle2,
-  Briefcase,
-  Building,
-  TrendingUp,
-  Pen,
   PenTool,
   Globe,
   Home,
+  Loader2,
+  Plus,
+  RefreshCcw,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
-import internshipsDataRaw from "./internship_opportunities_2025.json";
+import {
+  showSuccessToast,
+  showErrorToast,
+  getCompensationColor,
+  getDaysUntilDeadline,
+} from "@/lib/helper";
+import { apiClient } from "@/lib/api";
+import type { InternshipData, InternshipFilters } from "@/types/shared.types";
 
-interface InternshipOpportunity {
-  id: string;
-  title: string;
-  firmName: string;
-  location: string;
-  department: string;
-  positionType: string;
-  duration: string;
-  compensationType: string;
-  salaryAmount?: string;
-  startDate: string;
-  applicationDeadline: string;
-  description: string;
-  requirements: string[];
-  benefits: string[];
-  isRemote: boolean;
-  acceptsInternational: boolean;
-  providesHousing: boolean;
-  contactPerson: string;
-  contactEmail: string;
-  postedDate: string;
-  applicants: number;
-  views: number;
-  rating: number;
-  isInterested: boolean;
+interface InternshipSkeletonCardProps {
+  index?: number;
 }
 
-export default function HireAnInternPage() {
+function InternshipSkeletonCard({ index = 0 }: InternshipSkeletonCardProps) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.25, delay: index * 0.04 }}
+      className="rounded-xl border border-gray-100 dark:border-slate-700 bg-white dark:bg-slate-800 p-4 flex items-center justify-between"
+    >
+      {/* Left Side */}
+      <div className="flex flex-col gap-2 flex-1">
+        {/* Title and Company */}
+        <div className="space-y-1">
+          <Skeleton className="h-4 w-64" />
+          <Skeleton className="h-3 w-48" />
+        </div>
+
+        {/* Badges Row */}
+        <div className="flex flex-wrap items-center gap-2">
+          <Skeleton className="h-5 w-16 rounded-full" />
+          <Skeleton className="h-5 w-20 rounded-full" />
+          <Skeleton className="h-5 w-14 rounded-full" />
+          <Skeleton className="h-5 w-12 rounded-full" />
+          <Skeleton className="h-5 w-18 rounded-full" />
+          <Skeleton className="h-5 w-16 rounded-full" />
+          <Skeleton className="h-5 w-24 rounded-full" />
+          <Skeleton className="h-5 w-20 rounded-full" />
+        </div>
+      </div>
+
+      {/* Right Side */}
+      <div className="flex items-center gap-2 ml-4">
+        <Skeleton className="h-4 w-12" />
+        <Skeleton className="h-7 w-20 rounded-lg" />
+        <Skeleton className="h-7 w-16 rounded-lg" />
+      </div>
+    </motion.div>
+  );
+}
+
+export default function HireAnInternPageUpdated() {
   const [searchQuery, setSearchQuery] = useState("");
   const [locationFilter, setLocationFilter] = useState("all");
   const [departmentFilter, setDepartmentFilter] = useState("all");
   const [compensationFilter, setCompensationFilter] = useState("all");
   const [remoteFilter, setRemoteFilter] = useState("all");
-  const [sortBy, setSortBy] = useState("newest");
+  const [sortBy, setSortBy] = useState<InternshipFilters["sort_by"]>("newest");
   const [showFilters, setShowFilters] = useState(false);
   const [isSearchFocused, setIsSearchFocused] = useState(false);
   const [showInterestedSuccess, setShowInterestedSuccess] = useState(false);
   const searchInputRef = useRef<HTMLInputElement>(null);
 
-  // Mock data for internship opportunities
-  const [internships, setInternships] =
-    useState<InternshipOpportunity[]>(internshipsDataRaw);
+  const [internships, setInternships] = useState<InternshipData[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [refreshing, setRefreshing] = useState(false);
 
-  const handleInterested = (internshipId: string) => {
-    setInternships((prev) =>
-      prev.map((internship) =>
-        internship.id === internshipId
-          ? { ...internship, isInterested: !internship.isInterested }
-          : internship
-      )
-    );
+  const fetchInternships = async (isRefresh = false) => {
+    try {
+      if (isRefresh) {
+        setRefreshing(true);
+      } else {
+        setLoading(true);
+      }
+      setError(null);
 
-    setShowInterestedSuccess(true);
-    setTimeout(() => setShowInterestedSuccess(false), 2000);
+      // Build filters object
+      const filters: InternshipFilters = {
+        search: searchQuery || undefined,
+        location: locationFilter !== "all" ? locationFilter : undefined,
+        department: departmentFilter !== "all" ? departmentFilter : undefined,
+        compensation_type:
+          compensationFilter !== "all" ? compensationFilter : undefined,
+        is_remote:
+          remoteFilter === "remote"
+            ? true
+            : remoteFilter === "onsite"
+            ? false
+            : undefined,
+        sort_by: sortBy,
+      };
+
+      const response = await apiClient.fetchInternships(filters);
+
+      if (response.success) {
+        setInternships(response.data || []);
+      } else {
+        throw new Error(response.message || "Failed to fetch internships");
+      }
+    } catch (err) {
+      const errorMessage =
+        err instanceof Error ? err.message : "An unexpected error occurred";
+      setError(errorMessage);
+      showErrorToast("Failed to load internships", errorMessage);
+      console.error("Error fetching internships:", err);
+    } finally {
+      setLoading(false);
+      setRefreshing(false);
+    }
   };
 
-  const filteredInternships = internships.filter((internship) => {
-    const matchesSearch =
-      internship.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      internship.firmName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      internship.department.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      internship.description.toLowerCase().includes(searchQuery.toLowerCase());
-
-    const matchesLocation =
-      locationFilter === "all" || internship.location.includes(locationFilter);
-    const matchesDepartment =
-      departmentFilter === "all" || internship.department === departmentFilter;
-    const matchesCompensation =
-      compensationFilter === "all" ||
-      internship.compensationType === compensationFilter;
-    const matchesRemote =
-      remoteFilter === "all" ||
-      (remoteFilter === "remote" && internship.isRemote) ||
-      (remoteFilter === "onsite" && !internship.isRemote);
-
-    return (
-      matchesSearch &&
-      matchesLocation &&
-      matchesDepartment &&
-      matchesCompensation &&
-      matchesRemote
-    );
-  });
-
-  const sortedInternships = [...filteredInternships].sort((a, b) => {
-    switch (sortBy) {
-      case "newest":
-        return (
-          new Date(b.postedDate).getTime() - new Date(a.postedDate).getTime()
+  const handleInterested = async (internshipId: string) => {
+    try {
+      const response = await apiClient.markInternshipAsInterested(internshipId);
+      if (response.success) {
+        setShowInterestedSuccess(true);
+        showSuccessToast(
+          "Interest marked!",
+          "Internship saved to your collection"
         );
-      case "deadline":
-        return (
-          new Date(a.applicationDeadline).getTime() -
-          new Date(b.applicationDeadline).getTime()
-        );
-      case "salary":
-        const aSalary = a.salaryAmount
-          ? Number.parseFloat(a.salaryAmount.replace(/[^0-9.]/g, ""))
-          : 0;
-        const bSalary = b.salaryAmount
-          ? Number.parseFloat(b.salaryAmount.replace(/[^0-9.]/g, ""))
-          : 0;
-        return bSalary - aSalary;
-      case "rating":
-        return b.rating - a.rating;
-      case "applicants":
-        return a.applicants - b.applicants;
-      default:
-        return 0;
-    }
-  });
-
-  const getCompensationColor = (type: string) => {
-    switch (type) {
-      case "Paid":
-        return "bg-green-50 text-green-700 border-green-200 dark:bg-green-900/20 dark:text-green-300 dark:border-green-800";
-      case "Stipend":
-        return "bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-900/20 dark:text-blue-300 dark:border-blue-800";
-      case "Academic Credit":
-        return "bg-purple-50 text-purple-700 border-purple-200 dark:bg-purple-900/20 dark:text-purple-300 dark:border-purple-800";
-      case "Unpaid":
-        return "bg-gray-50 text-gray-700 border-gray-200 dark:bg-gray-900/20 dark:text-gray-300 dark:border-gray-800";
-      default:
-        return "bg-gray-50 text-gray-700 border-gray-200 dark:bg-gray-900/20 dark:text-gray-300 dark:border-gray-800";
+        setTimeout(() => setShowInterestedSuccess(false), 2000);
+      }
+    } catch (error) {
+      showErrorToast("Failed to mark interest", "Please try again later");
     }
   };
 
-  const getDepartmentColor = (department: string) => {
-    switch (department) {
-      case "Corporate Law":
-        return "bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-900/10 dark:text-amber-400 dark:border-amber-800";
-      case "Litigation":
-        return "bg-red-50 text-red-700 border-red-200 dark:bg-red-900/10 dark:text-red-400 dark:border-red-800";
-      case "Intellectual Property":
-        return "bg-purple-50 text-purple-700 border-purple-200 dark:bg-purple-900/10 dark:text-purple-400 dark:border-purple-800";
-      case "Criminal Law":
-        return "bg-orange-50 text-orange-700 border-orange-200 dark:bg-orange-900/10 dark:text-orange-400 dark:border-orange-800";
-      case "Environmental Law":
-        return "bg-green-50 text-green-700 border-green-200 dark:bg-green-900/10 dark:text-green-400 dark:border-green-800";
-      case "Immigration Law":
-        return "bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-900/10 dark:text-blue-400 dark:border-blue-800";
-      default:
-        return "bg-slate-50 text-slate-700 border-slate-200 dark:bg-slate-900/10 dark:text-slate-400 dark:border-slate-800";
+  const handleSearch = async () => {
+    try {
+      const response = await apiClient.searchInternships(searchQuery);
+      console.log(response);
+      if (response.success) {
+        setInternships(response.data || []);
+      } else {
+        throw new Error(response.message || "Failed to fetch internships");
+      }
+    } catch (err) {
+      const errorMessage =
+        err instanceof Error ? err.message : "An unexpected error occurred";
+      setError(errorMessage);
+      showErrorToast("Failed to load internships", errorMessage);
+      console.error("Error fetching internships:", err);
+    } finally {
+      setLoading(false);
+      setRefreshing(false);
     }
   };
 
-  const getDaysUntilDeadline = (deadline: string) => {
-    const today = new Date();
-    const deadlineDate = new Date(deadline);
-    const diffTime = deadlineDate.getTime() - today.getTime();
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-    return diffDays;
+  const handleApply = async (internshipId: string) => {
+    try {
+      await apiClient.incrementInternshipViews(internshipId);
+    } catch (error) {
+      console.error("Failed to increment views:", error);
+    }
   };
 
-  // Get featured internships for trending section
-  const featuredInternships = internships
-    .sort((a, b) => b.rating - a.rating)
-    .slice(0, 3);
+  useEffect(() => {
+    fetchInternships();
+  }, []);
+
+  const handleRefresh = () => {
+    setLoading(true);
+    setTimeout(() => {
+      fetchInternships(true);
+    }, 5000);
+  };
+
+  // Generate skeleton items for loading state
+  const skeletonItems = Array.from({ length: 6 }, (_, i) => i);
 
   return (
-    <div className=" flex flex-col relative border border-slate-200 dark:border-slate-800 rounded-xl shadow-sm bg-white dark:bg-slate-900 overflow-hidden max-w-7xl mx-auto">
-      {/* Compact Header */}
+    <div className="flex flex-col relative border border-slate-200 dark:border-slate-800 rounded-xl shadow-sm bg-white dark:bg-slate-900 overflow-hidden max-w-7xl mx-auto">
+      {/* Header */}
       <div
         className={cn(
           "relative overflow-hidden bg-gradient-to-br from-amber-900 via-amber-950 to-amber-900 transition-all duration-300",
@@ -216,7 +215,6 @@ export default function HireAnInternPage() {
         <div className="absolute inset-0 bg-gradient-to-r from-amber-600/20 via-slate-900/20 to-amber-600/20"></div>
         <div className="relative px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
           <div className="flex items-center justify-between gap-4">
-            {/* Left: Icon + Text */}
             <div className="flex items-center gap-3">
               <div className="p-2 bg-white/10 backdrop-blur-sm rounded-xl">
                 <GraduationCap className="h-5 w-5 sm:h-6 sm:w-6 text-white" />
@@ -230,22 +228,33 @@ export default function HireAnInternPage() {
                 </p>
               </div>
             </div>
+            <div className="flex gap-3">
+              <Button
+                asChild
+                className="flex justify-between text-white bg-transparent border-white border hover:bg-white hover:text-amber-950 transition"
+              >
+                <Link href="/lawyer/dashboard/add-internships">
+                  <Plus className="stroke-3" />
+                  Add Internship
+                </Link>
+              </Button>
 
-            {/* Right: Add Internship Button */}
-            <Button
-              asChild
-              className="flex justify-between text-white bg-transparent border-white border hover:bg-white hover:text-amber-950 transition"
-            >
-              <Link href="/lawyer/dashboard/add-internships">
-                <Plus className="stroke-3" />
-                Add Internship
-              </Link>
-            </Button>
+              <Button
+                className="flex justify-between text-white bg-transparent border-0 hover:bg-white hover:text-amber-950 transition"
+                onClick={handleRefresh}
+                disabled={refreshing}
+              >
+                <RefreshCcw
+                  className={cn("stroke-3", refreshing && "animate-spin")}
+                />
+                Refresh
+              </Button>
+            </div>
           </div>
         </div>
       </div>
 
-      {/* Compact Search Section */}
+      {/* Search and Filters */}
       <div className="px-4 sm:px-6 lg:px-8 -mt-4 relative z-10">
         <div
           className={cn(
@@ -256,75 +265,100 @@ export default function HireAnInternPage() {
           )}
         >
           <div className="space-y-4">
-            {/* Search Input */}
             <div className="relative">
-              <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none">
-                <Search className="h-4 w-4 text-slate-400" />
-              </div>
-              <Input
-                ref={searchInputRef}
-                placeholder="Search internships by title, firm, department, or description..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                onFocus={() => setIsSearchFocused(true)}
-                onBlur={() => setIsSearchFocused(false)}
-                className="pl-10 pr-10 py-2.5 text-sm bg-transparent border-amber-700/20 dark:border-slate-700 rounded-lg focus-visible:ring-0 focus-visible:border-amber-500 border-2 transition-all duration-200"
-              />
-              {searchQuery && (
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => setSearchQuery("")}
-                  className="absolute right-1 top-1/2 -translate-y-1/2 h-6 w-6 p-0 rounded-full hover:bg-slate-100 dark:hover:bg-slate-700"
-                >
-                  <X className="h-3 w-3" />
-                </Button>
-              )}
-            </div>
-
-            {/* Filter Toggle and Sort */}
-            <div className="flex items-center justify-between">
-              <Button
-                variant="outline"
-                onClick={() => setShowFilters(!showFilters)}
-                className={cn(
-                  "flex items-center gap-2 rounded-full border transition-colors duration-200 text-xs px-3 py-1.5 h-auto",
-                  showFilters
-                    ? "bg-amber-600 hover:bg-amber-700 hover:text-white text-white shadow-md border-amber-600"
-                    : "border-slate-300 dark:border-slate-600 hover:bg-transparent hover:border-amber-400 hover:text-amber-600"
-                )}
-              >
-                <Filter className="h-4 w-4" />
-                Filters
-                <ChevronRight
-                  className={`h-4 w-4 transition-transform ${
-                    showFilters ? "rotate-90" : ""
-                  }`}
+              <div className="relative w-full">
+                {/* Search Icon */}
+                <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none">
+                  <Search className="h-4 w-4 text-slate-400" />
+                </div>
+                {/* Input Field */}
+                <Input
+                  ref={searchInputRef}
+                  placeholder="Search internships by title, firm, department, or description..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  onFocus={() => setIsSearchFocused(true)}
+                  onBlur={() => setIsSearchFocused(false)}
+                  className="pl-10 pr-20 py-2.5 text-sm bg-transparent border-amber-500 dark:border-slate-700 rounded-lg focus-visible:ring-0 focus-visible:border-amber-700 border-2 transition-all duration-200"
                 />
-              </Button>
-
-              <div className="flex items-center gap-4">
-                <span className="text-sm text-slate-600 dark:text-slate-400">
-                  {filteredInternships.length} opportunities found
-                </span>
-                <Select value={sortBy} onValueChange={setSortBy}>
-                  <SelectTrigger className="w-40 bg-transparent border border-slate-300 dark:border-slate-600 rounded-lg text-xs">
-                    <SelectValue placeholder="Sort by" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="newest">Newest First</SelectItem>
-                    <SelectItem value="deadline">Deadline Soon</SelectItem>
-                    <SelectItem value="salary">Highest Pay</SelectItem>
-                    <SelectItem value="rating">Highest Rated</SelectItem>
-                    <SelectItem value="applicants">
-                      Fewest Applicants
-                    </SelectItem>
-                  </SelectContent>
-                </Select>
+                {searchQuery && (
+                  <div className="absolute right-2 top-1/2 -translate-y-1/2 flex rounded-md shadow-sm overflow-hidden">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => {
+                        alert("Searching...");
+                        handleSearch();
+                      }}
+                      className="h-6 px-2 py-0 text-xs font-medium text-amber-800 bg-white hover:bg-amber-800 hover:text-white dark:bg-transparent dark:hover:bg-slate-700 rounded-none rounded-l-md"
+                    >
+                      Search
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => setSearchQuery("")}
+                      className="h-6 w-6 p-0 bg-white text-amber-800 hover:bg-red-100 dark:bg-transparent dark:hover:bg-slate-700 rounded-none rounded-r-md"
+                    >
+                      <X className="h-3 w-3" />
+                    </Button>
+                  </div>
+                )}{" "}
               </div>
-            </div>
+            </div>{" "}
+            {loading ? (
+              <div className="flex items-center justify-between">
+                <Skeleton className="h-9 w-32" />
+                <div className="flex items-center gap-4">
+                  <Skeleton className="h-9 w-32" />
 
-            {/* Filters */}
+                  <Skeleton className="h-9 w-32" />
+                </div>
+              </div>
+            ) : (
+              <div className="flex items-center justify-between">
+                <Button
+                  variant="outline"
+                  onClick={() => setShowFilters(!showFilters)}
+                  className={cn(
+                    "flex items-center gap-2 rounded-full border transition-colors duration-200 text-xs px-3 py-1.5 h-auto",
+                    showFilters
+                      ? "bg-amber-600 hover:bg-amber-700 hover:text-white text-white shadow-md border-amber-600"
+                      : "border-slate-300 dark:border-slate-600 hover:bg-transparent hover:border-amber-400 hover:text-amber-600"
+                  )}
+                >
+                  <Filter className="h-4 w-4" />
+                  Filters
+                  <ChevronRight
+                    className={`h-4 w-4 transition-transform ${
+                      showFilters ? "rotate-90" : ""
+                    }`}
+                  />
+                </Button>
+
+                <div className="flex items-center gap-4">
+                  <Select
+                    value={sortBy}
+                    onValueChange={(value) =>
+                      setSortBy(value as InternshipFilters["sort_by"])
+                    }
+                  >
+                    <SelectTrigger className="w-40 bg-transparent border border-slate-300 dark:border-slate-600 rounded-lg text-xs">
+                      <SelectValue placeholder="Sort by" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="newest">Newest First</SelectItem>
+                      <SelectItem value="deadline">Deadline Soon</SelectItem>
+                      <SelectItem value="salary">Highest Pay</SelectItem>
+                      <SelectItem value="rating">Highest Rated</SelectItem>
+                      <SelectItem value="applicants">
+                        Fewest Applicants
+                      </SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+            )}
             <AnimatePresence>
               {showFilters && (
                 <motion.div
@@ -421,18 +455,41 @@ export default function HireAnInternPage() {
         <ScrollArea className="min-h-[580px]">
           <div className="px-4 sm:px-6 lg:px-8 pb-6">
             <div className="space-y-6">
-              {/* Header */}
               <div className="mt-6 flex items-center justify-between">
-                <h2 className="text-lg font-semibold text-slate-900 dark:text-white">
-                  {searchQuery ? "Search Results" : "All Internships"} (
-                  {sortedInternships.length})
+                <h2 className="text-lg flex items-center justify-center gap-1 font-semibold text-slate-900 dark:text-white">
+                  {loading ? (
+                    <span>Searching Internships...</span>
+                  ) : (
+                    <span>
+                      {searchQuery ? "Search Results" : "All Internships"}(
+                      {internships.length})
+                    </span>
+                  )}
                 </h2>
               </div>
 
-              {/* Internship List */}
-              {sortedInternships.length > 0 ? (
-                <div className="grid grid-cols-1 gap-4">
-                  {sortedInternships.map((internship, index) => (
+              {/* Internship List or Skeleton */}
+              <div className="grid grid-cols-1 gap-4">
+                {loading ? (
+                  // Show skeleton cards while loading
+                  skeletonItems.map((_, index) => (
+                    <InternshipSkeletonCard key={index} index={index} />
+                  ))
+                ) : error ? (
+                  // Show error state
+                  <div className="text-center py-12">
+                    <div className="text-center">
+                      <p className="text-red-600 dark:text-red-400 mb-4">
+                        {error}
+                      </p>
+                      <Button onClick={handleRefresh} variant="outline">
+                        Try Again
+                      </Button>
+                    </div>
+                  </div>
+                ) : internships.length > 0 ? (
+                  // Show actual internship data
+                  internships.map((internship, index) => (
                     <motion.div
                       key={internship.id}
                       initial={{ opacity: 0, y: 10 }}
@@ -440,24 +497,21 @@ export default function HireAnInternPage() {
                       transition={{ duration: 0.25, delay: index * 0.04 }}
                       className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:shadow-md transition-shadow p-4 flex items-center justify-between"
                     >
-                      {/* Left */}
                       <div className="flex flex-col gap-1">
                         <h3 className="text-sm font-medium text-slate-900 dark:text-white line-clamp-1">
                           {internship.title}
                         </h3>
                         <p className="text-xs text-slate-600 dark:text-slate-400">
-                          {internship.firmName} • {internship.location}
+                          {internship.firm_name} • {internship.location}
                         </p>
 
                         <div className="flex flex-wrap items-center gap-2 mt-1">
-                          {/* Remote badge */}
-                          {internship.isRemote && (
+                          {internship.is_remote && (
                             <Badge className="text-[10px] bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400">
                               Remote
                             </Badge>
                           )}
 
-                          {/* Department */}
                           <Badge
                             variant="outline"
                             className="text-[10px] font-medium"
@@ -465,89 +519,81 @@ export default function HireAnInternPage() {
                             {internship.department}
                           </Badge>
 
-                          {/* Position Type */}
                           <Badge className="text-[10px] bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400">
-                            {internship.positionType}
+                            {internship.position_type}
                           </Badge>
 
-                          {/* Compensation Type */}
                           <Badge
-                            className={`text-[10px] font-medium ${
-                              internship.compensationType === "Paid"
-                                ? "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400"
-                                : internship.compensationType === "Unpaid"
-                                ? "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400"
-                                : "bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400"
-                            }`}
+                            className={`text-[10px] font-medium ${getCompensationColor(
+                              internship.compensation_type
+                            )}`}
                           >
-                            {internship.compensationType}
+                            {internship.compensation_type}
                           </Badge>
 
-                          {/* Salary */}
-                          {internship.salaryAmount !== "N/A" && (
+                          {internship.salary_amount !== "N/A" && (
                             <Badge className="text-[10px] bg-slate-100 text-slate-700 dark:bg-slate-900/30 dark:text-slate-400">
-                              {internship.salaryAmount}
+                              {internship.salary_amount}
                             </Badge>
                           )}
 
-                          {/* Duration */}
                           <Badge className="text-[10px] bg-indigo-100 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-400">
                             {internship.duration}
                           </Badge>
 
-                          {/* Accepts International - show only if true */}
-                          {internship.acceptsInternational && (
+                          {internship.accepts_international && (
                             <Badge className="text-[10px] font-medium flex items-center gap-1 bg-cyan-100 text-cyan-700 dark:bg-cyan-900/30 dark:text-cyan-400">
                               <Globe size={10} />
                               Intl Accepted
                             </Badge>
                           )}
 
-                          {/* Provides Housing */}
-                          {internship.providesHousing && (
-                            <Badge
-                              className={`text-[10px] font-medium flex items-center gap-1 ${
-                                internship.providesHousing
-                                  ? "bg-pink-100 text-pink-700 dark:bg-pink-900/30 dark:text-pink-400"
-                                  : "bg-gray-200 text-gray-500 dark:bg-gray-700/30 dark:text-gray-400"
-                              }`}
-                            >
+                          {internship.provides_housing && (
+                            <Badge className="text-[10px] font-medium flex items-center gap-1 bg-pink-100 text-pink-700 dark:bg-pink-900/30 dark:text-pink-400">
                               <Home size={10} />
-                              {internship.providesHousing
-                                ? "Housing"
-                                : "No Housing"}
+                              Housing
                             </Badge>
                           )}
-                          {/* Rating */}
-                          <Badge className="text-[10px] bg-yellow-200 text-yellow-800 dark:bg-yellow-900/50 dark:text-yellow-400 flex items-center gap-1">
-                            <Star size={10} />
-                            {internship.rating.toFixed(1)}
-                          </Badge>
 
-                          {/* Applicants count (optional) */}
+                          {internship.rating && (
+                            <Badge className="text-[10px] bg-yellow-200 text-yellow-800 dark:bg-yellow-900/50 dark:text-yellow-400 flex items-center gap-1">
+                              <Star size={10} />
+                              {internship.rating.toFixed(1)}
+                            </Badge>
+                          )}
+
                           <Badge className="text-[10px] bg-gray-100 text-gray-700 dark:bg-gray-800/30 dark:text-gray-400">
-                            {internship.applicants} Applicants
+                            {internship.applicants_till_now || 0} Applicants
                           </Badge>
                         </div>
                       </div>
 
-                      {/* Right */}
                       <div className="flex items-center gap-2">
                         <span
                           className={cn(
                             "text-xs font-medium",
                             getDaysUntilDeadline(
-                              internship.applicationDeadline
+                              internship.application_deadline
                             ) <= 7
                               ? "text-red-600"
                               : "text-slate-500"
                           )}
                         >
-                          {getDaysUntilDeadline(internship.applicationDeadline)}
+                          {getDaysUntilDeadline(
+                            internship.application_deadline
+                          )}
                           d left
                         </span>
                         <Button
                           size="sm"
+                          onClick={() => handleInterested(internship.id)}
+                          className="mr-2 hover:bg-amber-100 bg-amber-50 hover:text-amber-800 text-amber-700 px-2 py-1 text-xs rounded-lg"
+                        >
+                          ⭐ Interested
+                        </Button>
+                        <Button
+                          size="sm"
+                          onClick={() => handleApply(internship.id)}
                           className="flex justify-between hover:bg-amber-700 bg-amber-600/30 hover:text-white text-amber-800 px-3 py-1 text-xs rounded-lg"
                         >
                           <PenTool className="rotate-270" />
@@ -559,32 +605,33 @@ export default function HireAnInternPage() {
                         </Button>
                       </div>
                     </motion.div>
-                  ))}
-                </div>
-              ) : (
-                <div className="text-center py-12 h-120">
-                  <GraduationCap className="h-10 w-10 text-slate-400 mx-auto mb-4" />
-                  <h3 className="text-base font-medium text-slate-900 dark:text-white mb-1">
-                    No internships found
-                  </h3>
-                  <p className="text-sm text-slate-600 dark:text-slate-400 mb-4">
-                    Try different filters or check back soon.
-                  </p>
-                  <Button
-                    variant="outline"
-                    onClick={() => {
-                      setSearchQuery("");
-                      setLocationFilter("all");
-                      setDepartmentFilter("all");
-                      setCompensationFilter("all");
-                      setRemoteFilter("all");
-                    }}
-                    className="text-amber-600 border-amber-300 hover:bg-amber-50 dark:hover:bg-amber-900/10"
-                  >
-                    Reset Filters
-                  </Button>
-                </div>
-              )}
+                  ))
+                ) : (
+                  // Show empty state
+                  <div className="text-center py-12">
+                    <GraduationCap className="h-10 w-10 text-slate-400 mx-auto mb-4" />
+                    <h3 className="text-base font-medium text-slate-900 dark:text-white mb-1">
+                      No internships found
+                    </h3>
+                    <p className="text-sm text-slate-600 dark:text-slate-400 mb-4">
+                      Try different filters or check back soon.
+                    </p>
+                    <Button
+                      variant="outline"
+                      onClick={() => {
+                        setSearchQuery("");
+                        setLocationFilter("all");
+                        setDepartmentFilter("all");
+                        setCompensationFilter("all");
+                        setRemoteFilter("all");
+                      }}
+                      className="text-amber-600 border-amber-300 hover:bg-amber-50 dark:hover:bg-amber-900/10"
+                    >
+                      Reset Filters
+                    </Button>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         </ScrollArea>

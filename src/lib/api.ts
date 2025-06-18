@@ -1,15 +1,14 @@
 "use client";
 
+import {
+  ApiResponse,
+  InternshipApplication,
+  InternshipData,
+  InternshipFilters,
+} from "@/types/shared.types";
 import { toast } from "sonner";
 
 const API_BASE_URL = "http://localhost:4000/api";
-
-interface ApiResponse<T = any> {
-  success: boolean;
-  message?: string;
-  data?: T;
-  code?: number;
-}
 
 class ApiClient {
   private async makeRequest<T>(
@@ -73,6 +72,7 @@ class ApiClient {
     }
   }
 
+  // Auth methods
   async generateOTP(payload: { phone?: number; email?: string }) {
     return this.makeRequest<any>("/auth/generate-otp", {
       method: "POST",
@@ -132,34 +132,211 @@ class ApiClient {
       method: "GET",
     });
   }
+
+  // Internship methods
+  async fetchInternships(filters?: InternshipFilters) {
+    const queryParams = new URLSearchParams();
+
+    if (filters) {
+      Object.entries(filters).forEach(([key, value]) => {
+        if (value !== undefined && value !== null && value !== "") {
+          queryParams.append(key, value.toString());
+        }
+      });
+    }
+
+    const endpoint = `/app/get-internships${
+      queryParams.toString() ? `?${queryParams.toString()}` : ""
+    }`;
+
+    return this.makeRequest<InternshipData[]>(endpoint, {
+      method: "GET",
+    });
+  }
+
+  async getInternshipById(internshipId: string) {
+    return this.makeRequest<InternshipData>(
+      `/app/internships/${internshipId}`,
+      {
+        method: "GET",
+      }
+    );
+  }
+
+  async createInternship(
+    payload: Omit<
+      InternshipData,
+      "id" | "posted_date" | "applicants_till_now" | "views" | "rating"
+    >
+  ) {
+    return this.makeRequest<InternshipData>("/app/internships", {
+      method: "POST",
+      body: JSON.stringify(payload),
+    });
+  }
+
+  async updateInternship(
+    internshipId: string,
+    payload: Partial<InternshipData>
+  ) {
+    return this.makeRequest<InternshipData>(
+      `/app/internships/${internshipId}`,
+      {
+        method: "PUT",
+        body: JSON.stringify(payload),
+      }
+    );
+  }
+
+  async deleteInternship(internshipId: string) {
+    return this.makeRequest<{ message: string }>(
+      `/app/internships/${internshipId}`,
+      {
+        method: "DELETE",
+      }
+    );
+  }
+
+  // Internship application methods
+  async applyToInternship(payload: InternshipApplication) {
+    return this.makeRequest<{ application_id: string; message: string }>(
+      "/app/internship-applications",
+      {
+        method: "POST",
+        body: JSON.stringify(payload),
+      }
+    );
+  }
+
+  async getMyApplications() {
+    return this.makeRequest<any[]>("/app/my-applications", {
+      method: "GET",
+    });
+  }
+
+  async getApplicationById(applicationId: string) {
+    return this.makeRequest<any>(`/app/applications/${applicationId}`, {
+      method: "GET",
+    });
+  }
+
+  async withdrawApplication(applicationId: string) {
+    return this.makeRequest<{ message: string }>(
+      `/app/applications/${applicationId}/withdraw`,
+      {
+        method: "POST",
+      }
+    );
+  }
+
+  // Internship interaction methods
+  async markInternshipAsInterested(internshipId: string) {
+    return this.makeRequest<{ message: string }>(
+      `/app/internships/${internshipId}/interested`,
+      {
+        method: "POST",
+      }
+    );
+  }
+
+  async removeInternshipInterest(internshipId: string) {
+    return this.makeRequest<{ message: string }>(
+      `/app/internships/${internshipId}/interested`,
+      {
+        method: "DELETE",
+      }
+    );
+  }
+
+  async getInterestedInternships() {
+    return this.makeRequest<InternshipData[]>("/app/interested-internships", {
+      method: "GET",
+    });
+  }
+
+  async incrementInternshipViews(internshipId: string) {
+    return this.makeRequest<{ message: string }>(
+      `/app/internships/${internshipId}/view`,
+      {
+        method: "POST",
+      }
+    );
+  }
+
+  // Employer-specific methods (for lawyers posting internships)
+  async getMyPostedInternships() {
+    return this.makeRequest<InternshipData[]>("/app/my-internships", {
+      method: "GET",
+    });
+  }
+
+  async getInternshipApplications(internshipId: string) {
+    return this.makeRequest<any[]>(
+      `/app/internships/${internshipId}/applications`,
+      {
+        method: "GET",
+      }
+    );
+  }
+
+  async updateApplicationStatus(
+    applicationId: string,
+    status: "pending" | "accepted" | "rejected"
+  ) {
+    return this.makeRequest<{ message: string }>(
+      `/app/applications/${applicationId}/status`,
+      {
+        method: "PUT",
+        body: JSON.stringify({ status }),
+      }
+    );
+  }
+
+  // Analytics methods
+  async getInternshipAnalytics(internshipId: string) {
+    return this.makeRequest<{
+      views: number;
+      applications: number;
+      interested_count: number;
+      conversion_rate: number;
+    }>(`/app/internships/${internshipId}/analytics`, {
+      method: "GET",
+    });
+  }
+
+  async getDashboardStats() {
+    return this.makeRequest<{
+      total_internships: number;
+      total_applications: number;
+      pending_applications: number;
+      accepted_applications: number;
+      rejected_applications: number;
+    }>("/app/dashboard-stats", {
+      method: "GET",
+    });
+  }
+
+  // Search and filter helper methods
+  async getInternshipFilters() {
+    return this.makeRequest<{
+      departments: string[];
+      locations: string[];
+      compensation_types: string[];
+      position_types: string[];
+    }>("/app/internship-filters", {
+      method: "GET",
+    });
+  }
+
+  async searchInternships(query: string) {
+    return this.makeRequest<any[]>(`/app/search-internships`, {
+      method: "POST",
+      body: JSON.stringify({ query }),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+  }
 }
 
 export const apiClient = new ApiClient();
-
-// Helper functions
-export const isEmail = (input: string): boolean =>
-  /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(input);
-
-export const isPhone = (input: string): boolean =>
-  /^\+?[0-9]{10,15}$/.test(input);
-
-export const formatPhoneNumber = (phone: string): number =>
-  Number(phone.replace(/\D/g, ""));
-
-export const showSuccessToast = (message: string, description?: string) => {
-  toast.success(message, {
-    description,
-    duration: 4000,
-  });
-};
-
-export const showErrorToast = (message: string, description?: string) => {
-  toast.error(message, {
-    description,
-    duration: 5000,
-  });
-};
-
-export const showLoadingToast = (message: string) => {
-  return toast.loading(message);
-};

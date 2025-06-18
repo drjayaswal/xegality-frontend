@@ -23,16 +23,16 @@ import {
   ArrowLeft,
   Loader2,
 } from "lucide-react";
-import { toast } from "sonner";;
+import { toast } from "sonner";
 import {
-  apiClient,
   isEmail,
   isPhone,
   formatPhoneNumber,
   showSuccessToast,
   showErrorToast,
   showLoadingToast,
-} from "@/lib/api";
+} from "@/lib/helper";
+import { apiClient } from "@/lib/api";
 import { OTPInput } from "@/components/shared/otp-input";
 
 type UserType = "student" | "lawyer" | "consumer";
@@ -205,7 +205,10 @@ export default function EnhancedAuthPage() {
 
       if (response.success) {
         showSuccessToast("Login Successful", "Welcome back!");
-        setTimeout(() => router.push(`/${response.data?.user.role}/dashboard`), 1000);
+        setTimeout(
+          () => router.push(`/${response.data?.user.role}/dashboard`),
+          1000
+        );
         return true;
       } else {
         showErrorToast(
@@ -260,7 +263,10 @@ export default function EnhancedAuthPage() {
 
       if (response.success) {
         showSuccessToast("Login Successful", "Welcome back!");
-        setTimeout(() => router.push(`/${response.data?.user.role}/dashboard`), 1000);
+        setTimeout(
+          () => router.push(`/${response.data?.user.role}/dashboard`),
+          1000
+        );
         return true;
       } else {
         showErrorToast(
@@ -317,7 +323,10 @@ export default function EnhancedAuthPage() {
 
       if (response.success) {
         showSuccessToast("Account Created", "Welcome to Xegality!");
-        setTimeout(() => router.push(`/${response.data?.user.role}/dashboard`), 1000);
+        setTimeout(
+          () => router.push(`/${response.data?.user.role}/dashboard`),
+          1000
+        );
         return true;
       } else {
         showErrorToast(
@@ -345,8 +354,10 @@ export default function EnhancedAuthPage() {
     try {
       setIsLoading(true);
       const role = selectedUserType || "consumer";
-      const response = await fetch("http:localhost:4000/auth/google-login?role=" + role)
-      console.log("response", response.body)
+      const response = await fetch(
+        "http:localhost:4000/auth/google-login?role=" + role
+      );
+      console.log("response", response.body);
 
       // if (response.data?.link) {
       //   window.location.href = response.data.link;
@@ -521,10 +532,11 @@ export default function EnhancedAuthPage() {
                     setIsLogin(true);
                     resetStates();
                   }}
-                  className={`px-4 py-3 rounded-xl font-medium transition-all duration-300 text-sm sm:text-base ${isLogin
-                    ? "bg-white text-slate-900 shadow-lg shadow-slate-200/50 transform scale-[1.02]"
-                    : "text-slate-600 hover:text-slate-900 hover:bg-white/50"
-                    }`}
+                  className={`px-4 py-3 rounded-xl font-medium transition-all duration-300 text-sm sm:text-base ${
+                    isLogin
+                      ? "bg-white text-slate-900 shadow-lg shadow-slate-200/50 transform scale-[1.02]"
+                      : "text-slate-600 hover:text-slate-900 hover:bg-white/50"
+                  }`}
                 >
                   Login
                 </button>
@@ -533,10 +545,11 @@ export default function EnhancedAuthPage() {
                     setIsLogin(false);
                     resetStates();
                   }}
-                  className={`px-4 py-3 rounded-xl font-medium transition-all duration-300 text-sm sm:text-base ${!isLogin
-                    ? "bg-white text-slate-900 shadow-lg shadow-slate-200/50 transform scale-[1.02]"
-                    : "text-slate-600 hover:text-slate-900 hover:bg-white/50"
-                    }`}
+                  className={`px-4 py-3 rounded-xl font-medium transition-all duration-300 text-sm sm:text-base ${
+                    !isLogin
+                      ? "bg-white text-slate-900 shadow-lg shadow-slate-200/50 transform scale-[1.02]"
+                      : "text-slate-600 hover:text-slate-900 hover:bg-white/50"
+                  }`}
                 >
                   Sign Up
                 </button>
@@ -818,9 +831,7 @@ export default function EnhancedAuthPage() {
                       d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
                     />
                   </svg>
-                  <span className="font-medium">
-                    Continue with Google
-                  </span>
+                  <span className="font-medium">Continue with Google</span>
                 </Button>
               </div>
             ) : (
