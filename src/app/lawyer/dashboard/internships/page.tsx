@@ -170,6 +170,7 @@ export default function HireAnInternPageUpdated() {
         throw new Error(response.message || "Failed to fetch internships");
       }
     } catch (err) {
+      
       const errorMessage =
         err instanceof Error ? err.message : "An unexpected error occurred";
       setError(errorMessage);
