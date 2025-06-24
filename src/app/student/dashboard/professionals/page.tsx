@@ -516,7 +516,7 @@ export default function Clients() {
   }, [inputValue]);
 
   return (
-    <div className="w-full border-[1.5px] h-[815px] dark:bg-black bg-gray-50 rounded-lg">
+    <div className=" border-[1.5px] h-screen dark:bg-black bg-gray-50 rounded-lg">
       <div className="w-full h-full rounded-lg overflow-hidden flex relative">
         <input
           ref={fileInputRef}

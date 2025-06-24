@@ -45,9 +45,9 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
 import { useRouter } from "next/navigation";
-import Cookies from "js-cookie";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
+import { Button } from "@/components/ui/button";
 
 // Menu items
 const items = [
@@ -152,8 +152,7 @@ export function AppSidebar() {
       const data = await res.json();
 
       if (res.ok) {
-        Cookies.remove("access_token");
-        Cookies.remove("refresh_token");
+        // The server should handle cookie deletion
         router.push("/login");
       } else {
         console.error("Logout failed:", data);
@@ -325,14 +324,19 @@ export function AppSidebar() {
                 ))}
                 <DropdownMenuSeparator />
 
-                <Link href={""} className="">
+                <Button
+                  onClick={() => {
+                    handle_logout();
+                  }}
+                  
+                >
                   <DropdownMenuItem
                     className="cursor-pointer focus:bg-red-500/5 focus:text-red-600"
                     onClick={handle_logout}
                   >
                     <LogOut className="group-hover:text-red-600" /> Log out
                   </DropdownMenuItem>
-                </Link>
+                </Button>
               </DropdownMenuContent>
             </DropdownMenu>
           </SidebarMenuItem>

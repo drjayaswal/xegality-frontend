@@ -19,18 +19,16 @@ import {
   Phone,
   Clock,
   Send,
-  ArrowRight,
   ExternalLink,
   CheckCircle2,
   X,
-  LifeBuoy,
   Users,
-  Zap,
   Shield,
   Star,
   MessageCircle,
   FileText,
   Settings,
+  HelpingHand,
 } from "lucide-react";
 
 interface FAQ {
@@ -51,9 +49,18 @@ interface Article {
 }
 
 export default function HelpSupport() {
+  const tabs = [
+    { id: "faq", label: "FAQs", icon: HelpCircle },
+    { id: "articles", label: "Articles", icon: Book },
+    { id: "contact", label: "Contact Support", icon: MessageSquare },
+  ];
+
   const [activeTab, setActiveTab] = useState<"faq" | "articles" | "contact">(
-    "contact"
+    "faq"
   );
+  const activeIndex = tabs.findIndex((tab) => tab.id === activeTab);
+  const tabCount = tabs.length;
+  const indicatorWidth = 100 / tabCount;
   const [expandedFAQ, setExpandedFAQ] = useState<string | null>(null);
   const [showSuccessMessage, setShowSuccessMessage] = useState(false);
   const [contactForm, setContactForm] = useState({
@@ -199,6 +206,63 @@ export default function HelpSupport() {
     },
   ];
 
+  const cards = [
+    {
+      icon: <Mail className="h-4 w-4 text-blue-600" />,
+      title: "Email Support",
+      description: "Get help via email. We typically respond within 24 hours.",
+      details: (
+        <div className="text-sm font-medium text-slate-900 dark:text-white">
+          support@xegality.com
+        </div>
+      ),
+    },
+    {
+      icon: <Phone className="h-4 w-4 text-green-600" />,
+      title: "Phone Support",
+      description: "Speak with our support team directly.",
+      details: (
+        <>
+          <div className="text-sm font-medium text-slate-900 dark:text-white mb-1">
+            +1 (555) 123-4567
+          </div>
+          <div className="text-xs text-slate-500">
+            Mon–Fri: 9:00 AM – 6:00 PM EST
+          </div>
+        </>
+      ),
+    },
+    {
+      icon: <Clock className="h-4 w-4 text-purple-600" />,
+      title: "Response Times",
+      description: null,
+      details: (
+        <div className="space-y-2 text-sm">
+          <div className="flex justify-between">
+            <span className="text-slate-600 dark:text-slate-400">Email:</span>
+            <span className="font-medium text-slate-900 dark:text-white">
+              Within 24 hours
+            </span>
+          </div>
+          <div className="flex justify-between">
+            <span className="text-slate-600 dark:text-slate-400">Phone:</span>
+            <span className="font-medium text-slate-900 dark:text-white">
+              Immediate
+            </span>
+          </div>
+          <div className="flex justify-between">
+            <span className="text-slate-600 dark:text-slate-400">
+              Live Chat:
+            </span>
+            <span className="font-medium text-slate-900 dark:text-white">
+              Within 5 minutes
+            </span>
+          </div>
+        </div>
+      ),
+    },
+  ];
+
   const handleContactSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setShowSuccessMessage(true);
@@ -262,52 +326,69 @@ export default function HelpSupport() {
     .slice(0, 4);
 
   return (
-    <div className="flex flex-col h-full relative border border-slate-200 dark:border-slate-800 rounded-xl shadow-sm bg-white dark:bg-slate-900 overflow-hidden max-w-7xl mx-auto">
+    <div className="flex flex-col h-full relative border border-slate-200 dark:border-slate-800 rounded-xl shadow-sm bg-white dark:bg-slate-900 overflow-hidden">
       {/* Header */}
-      <div className="relative overflow-hidden bg-gradient-to-br from-amber-900 via-slate-950 to-amber-900">
-        <div className="absolute inset-0 bg-gradient-to-r from-amber-600/20 via-amber-600/20 to-amber-600/20"></div>
+      <div
+        className={cn(
+          "relative overflow-hidden bg-gradient-to-br from-amber-900 via-amber-950 to-amber-900 transition-all duration-300"
+        )}
+      >
+        <div className="absolute inset-0 bg-gradient-to-r from-amber-600/20 via-slate-900/20 to-amber-600/20"></div>
         <div className="relative px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
-          <div className="flex items-center gap-3">
-            <div className="p-2 bg-white/10 backdrop-blur-sm rounded-xl">
-              <LifeBuoy className="h-5 w-5 sm:h-6 sm:w-6 text-white" />
-            </div>
-            <div>
-              <h1 className="text-lg sm:text-xl font-bold text-white tracking-tight">
-                Help & Support
-              </h1>
-              <p className="text-amber-100 text-sm font-medium">
-                Get help, find answers, and contact our support team
-              </p>
+          <div className="flex items-center justify-between gap-4">
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-white/10 backdrop-blur-sm rounded-xl">
+                <HelpingHand className="h-5 w-5 sm:h-6 sm:w-6 text-white" />
+              </div>
+              <div>
+                <h1 className="text-lg sm:text-xl font-bold text-white tracking-tight">
+                  Help & Support
+                </h1>
+                <p className="text-amber-100 text-sm font-medium">
+                  Get help, find answers, and contact our support team
+                </p>
+              </div>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Tab Navigation */}
-      <div className="px-4 sm:px-6 lg:px-8 pt-6 pb-2">
-        <div className="flex bg-slate-100 dark:bg-slate-800 rounded-lg p-1">
-          {[
-            { id: "faq", label: "FAQs", icon: HelpCircle },
-            { id: "articles", label: "Articles", icon: Book },
-            { id: "contact", label: "Contact Support", icon: MessageSquare },
-          ].map((tab) => {
+      <div className="relative px-4 sm:px-6 lg:px-8 pt-6 pb-2">
+        <div className="relative flex  rounded-lg p-1 overflow-hidden">
+          {/* Sliding indicator - Fixed calculation */}
+          <motion.div
+            className="absolute top-1 bottom-1 bg-amber-800 dark:bg-slate-700 rounded-md shadow-sm"
+            style={{
+              width: `calc(${indicatorWidth}% - 8px)`,
+              left: "4px",
+            }}
+            animate={{
+              x: `calc(${activeIndex * 100}% + ${activeIndex * 4}px)`,
+            }}
+            transition={{
+              type: "spring",
+              stiffness: 300,
+              damping: 30,
+            }}
+          />
+
+          {tabs.map((tab) => {
             const Icon = tab.icon;
+            const isActive = activeTab === tab.id;
             return (
               <button
                 key={tab.id}
-                onClick={() =>
-                  setActiveTab(tab.id as "faq" | "articles" | "contact")
-                }
+                onClick={() => setActiveTab(tab.id as typeof activeTab)}
                 className={cn(
-                  "flex-1 py-2 px-3 text-center font-medium cursor-pointer transition-all duration-200 rounded-md relative text-sm",
-                  activeTab === tab.id
-                    ? "bg-white dark:bg-slate-700 text-amber-600 dark:text-amber-400 shadow-sm"
-                    : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200"
+                  "flex-1 relative z-10 py-2 px-3 text-center text-sm font-medium transition-colors duration-200 rounded-md",
+                  isActive
+                    ? " text-white"
+                    : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
                 )}
               >
                 <div className="flex items-center justify-center gap-2">
                   <Icon className="h-4 w-4" />
-                  <span className="font-semibold">{tab.label}</span>
+                  <span>{tab.label}</span>
                 </div>
               </button>
             );
@@ -326,6 +407,7 @@ export default function HelpSupport() {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -20 }}
+                  transition={{ duration: 0.3 }}
                   className="space-y-6"
                 >
                   <div className="pt-5">
@@ -336,29 +418,28 @@ export default function HelpSupport() {
                           initial={{ opacity: 0, y: 20 }}
                           animate={{ opacity: 1, y: 0 }}
                           transition={{ delay: index * 0.05 }}
-                          className="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 overflow-hidden"
+                          className="bg-white dark:bg-slate-800 rounded-xl overflow-hidden"
                         >
                           <div
                             className="p-4 flex justify-between items-center cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors"
                             onClick={() => toggleFAQ(faq.question)}
                           >
                             <div className="flex items-center gap-3 flex-1">
-                              <div className="p-1.5 bg-gradient-to-br from-amber-700 via-cyan-750 to-amber-700 text-white dark:bg-amber-900/30 rounded-4xl">
+                              <div className="p-1.5 bg-gradient-to-br from-amber-700 to-amber-800 text-white rounded-lg">
                                 {getCategoryIcon(faq.category)}
                               </div>
-                              <div className="mt-1 flex-1 flex justify-between">
+                              <div className="flex-1">
                                 <h3 className="text-sm font-medium text-slate-900 dark:text-white mb-1">
                                   {faq.question}
                                 </h3>
-                                <div className="flex items-center gap-2"></div>
-                                <div className="ml-4">
-                                  {expandedFAQ === faq.question ? (
-                                    <ChevronDown className="h-4 w-4 text-slate-400" />
-                                  ) : (
-                                    <ChevronRight className="h-4 w-4 text-slate-400" />
-                                  )}
-                                </div>
                               </div>
+                            </div>
+                            <div className="ml-4">
+                              {expandedFAQ === faq.question ? (
+                                <ChevronDown className="h-4 w-4 text-slate-400" />
+                              ) : (
+                                <ChevronRight className="h-4 w-4 text-slate-400" />
+                              )}
                             </div>
                           </div>
 
@@ -394,6 +475,7 @@ export default function HelpSupport() {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -20 }}
+                  transition={{ duration: 0.3 }}
                   className="space-y-6"
                 >
                   <div className="pt-5">
@@ -404,14 +486,23 @@ export default function HelpSupport() {
                           initial={{ opacity: 0, y: 20 }}
                           animate={{ opacity: 1, y: 0 }}
                           transition={{ delay: index * 0.05 }}
-                          className="bg-white flex flex-col justify-between dark:bg-slate-800 rounded-xl p-5 border border-slate-200 dark:border-slate-700 hover:shadow-lg hover:border-amber-300 dark:hover:border-amber-600 transition-all duration-200"
+                          className="bg-white dark:bg-slate-800 rounded-xl p-5 hover:shadow-lg hover:border-amber-300 dark:hover:border-amber-600 transition-all duration-200 flex flex-col justify-between"
                         >
-                          <h3 className="text-sm font-medium text-slate-900 dark:text-white mb-2 line-clamp-2">
-                            {article.title}
-                          </h3>
-                          <p className="text-xs text-slate-600 dark:text-slate-400 line-clamp-3 mb-4">
-                            {article.excerpt}
-                          </p>
+                          <div>
+                            <div className="flex items-center justify-between mb-2"></div>
+                            <h3 className="flex justify-between text-sm font-medium text-slate-900 dark:text-white mb-2 line-clamp-2">
+                              {article.title}
+                              {article.isNew && (
+                                <Badge className="text-xs bg-green-100 text-green-700 border-green-200 dark:bg-green-900/20 dark:text-green-300">
+                                  New
+                                </Badge>
+                              )}
+                            </h3>
+
+                            <p className="text-xs text-slate-600 dark:text-slate-400 line-clamp-3 mb-4">
+                              {article.excerpt}
+                            </p>
+                          </div>
                           <div className="flex items-center justify-between">
                             <div className="flex items-center gap-2 text-xs text-slate-500">
                               <Clock className="h-3 w-3" />
@@ -421,9 +512,11 @@ export default function HelpSupport() {
                                 <span>{article.popularity}%</span>
                               </div>
                             </div>
+
                             <Button
                               size="sm"
-                              className="h-6 py-4 bg-transparent text-amber-600 hover:text-amber-700 shadow-none hover:bg-amber-800/20"
+                              variant="ghost"
+                              className="h-8 px-2 text-amber-600 hover:text-amber-700 hover:bg-amber-50 dark:hover:bg-amber-900/20"
                             >
                               Read <ExternalLink className="h-3 w-3 ml-1" />
                             </Button>
@@ -441,11 +534,12 @@ export default function HelpSupport() {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -20 }}
+                  transition={{ duration: 0.3 }}
                   className="space-y-6"
                 >
-                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 pt-5">
+                  <div className="grid grid-cols-2 gap-6 pt-5">
                     {/* Contact Form */}
-                    <div className="bg-white dark:bg-slate-800 rounded-xl p-6 border border-slate-200 dark:border-slate-700">
+                    <div className="bg-white dark:bg-slate-800 rounded-xl p-6">
                       <h3 className="text-base font-medium text-slate-900 dark:text-white mb-4 flex items-center gap-2">
                         <MessageCircle className="h-4 w-4 text-amber-600" />
                         Send us a message
@@ -453,7 +547,7 @@ export default function HelpSupport() {
 
                       <form
                         onSubmit={handleContactSubmit}
-                        className="space-y-4"
+                        className="space-y-8"
                       >
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                           <div>
@@ -544,7 +638,22 @@ export default function HelpSupport() {
 
                         <Button
                           type="submit"
-                          className="w-full bg-amber-600 hover:bg-amber-700 text-white font-medium"
+                          className={`w-full ${
+                            contactForm.email != "" ||
+                            contactForm.message != "" ||
+                            contactForm.name != "" ||
+                            contactForm.subject != ""
+                              ? "bg-amber-800"
+                              : "bg-amber-800/50"
+                          } hover:bg-amber-700 text-white font-medium`}
+                          disabled={
+                            contactForm.email != "" ||
+                            contactForm.message != "" ||
+                            contactForm.name != "" ||
+                            contactForm.subject != ""
+                              ? false
+                              : true
+                          }
                         >
                           <Send className="h-4 w-4 mr-2" />
                           Send Message
@@ -552,70 +661,28 @@ export default function HelpSupport() {
                       </form>
                     </div>
 
-                    {/* Contact Information */}
+                    {/* Contact Information Cards */}
                     <div className="space-y-4">
-                      <div className="bg-white dark:bg-slate-800 rounded-xl p-6 border border-slate-200 dark:border-slate-700">
-                        <h3 className="text-base font-medium text-slate-900 dark:text-white mb-4 flex items-center gap-2">
-                          <Mail className="h-4 w-4 text-blue-600" />
-                          Email Support
-                        </h3>
-                        <p className="text-sm text-slate-600 dark:text-slate-400 mb-3">
-                          Get help via email. We typically respond within 24
-                          hours.
-                        </p>
-                        <div className="text-sm font-medium text-slate-900 dark:text-white">
-                          support@xegality.com
-                        </div>
-                      </div>
-
-                      <div className="bg-white dark:bg-slate-800 rounded-xl p-6 border border-slate-200 dark:border-slate-700">
-                        <h3 className="text-base font-medium text-slate-900 dark:text-white mb-4 flex items-center gap-2">
-                          <Phone className="h-4 w-4 text-green-600" />
-                          Phone Support
-                        </h3>
-                        <p className="text-sm text-slate-600 dark:text-slate-400 mb-3">
-                          Speak with our support team directly.
-                        </p>
-                        <div className="text-sm font-medium text-slate-900 dark:text-white mb-2">
-                          +1 (555) 123-4567
-                        </div>
-                        <div className="text-xs text-slate-500">
-                          Mon-Fri: 9:00 AM - 6:00 PM EST
-                        </div>
-                      </div>
-
-                      <div className="bg-white dark:bg-slate-800 rounded-xl p-6 border border-slate-200 dark:border-slate-700">
-                        <h3 className="text-base font-medium text-slate-900 dark:text-white mb-4 flex items-center gap-2">
-                          <Clock className="h-4 w-4 text-purple-600" />
-                          Response Times
-                        </h3>
-                        <div className="space-y-2 text-sm">
-                          <div className="flex justify-between">
-                            <span className="text-slate-600 dark:text-slate-400">
-                              Email:
-                            </span>
-                            <span className="font-medium text-slate-900 dark:text-white">
-                              Within 24 hours
-                            </span>
-                          </div>
-                          <div className="flex justify-between">
-                            <span className="text-slate-600 dark:text-slate-400">
-                              Phone:
-                            </span>
-                            <span className="font-medium text-slate-900 dark:text-white">
-                              Immediate
-                            </span>
-                          </div>
-                          <div className="flex justify-between">
-                            <span className="text-slate-600 dark:text-slate-400">
-                              Live Chat:
-                            </span>
-                            <span className="font-medium text-slate-900 dark:text-white">
-                              Within 5 minutes
-                            </span>
-                          </div>
-                        </div>
-                      </div>
+                      {cards.map((card, index) => (
+                        <motion.div
+                          key={index}
+                          initial={{ opacity: 0, x: 20 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          transition={{ delay: index * 0.1 }}
+                          className="bg-white dark:bg-slate-800 p-6 rounded-xl hover:shadow-md transition-all"
+                        >
+                          <h3 className="text-base font-medium text-slate-900 dark:text-white mb-3 flex items-center gap-2">
+                            {card.icon}
+                            {card.title}
+                          </h3>
+                          {card.description && (
+                            <p className="text-sm text-slate-600 dark:text-slate-400 mb-3">
+                              {card.description}
+                            </p>
+                          )}
+                          {card.details}
+                        </motion.div>
+                      ))}
                     </div>
                   </div>
                 </motion.div>

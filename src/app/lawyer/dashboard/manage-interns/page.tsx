@@ -32,6 +32,7 @@ import {
   Eye,
   Phone,
   DollarSign,
+  RefreshCcw,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
@@ -277,69 +278,60 @@ export default function ManageInternsPage() {
   };
 
   return (
-    <div
-      className={`flex flex-col h-full relative border border-slate-200 dark:border-slate-800 rounded-xl shadow-sm bg-white dark:bg-slate-900 overflow-hidden max-w-7xl mx-auto ${
-        isModalOpen && "blur-md"
-      }`}
-    >
-      <div className="relative">
-        {/* Background Pattern */}
-        <div className="absolute inset-0 opacity-20">
+      <div
+        className={`flex flex-col h-full relative border border-slate-200 dark:border-slate-800 rounded-lg shadow-sm bg-white dark:bg-slate-900 overflow-hidden ${
+          isModalOpen && "blur-md"
+        }`}
+      >
+        <div className="relative">
+
           <div
-            className="w-full h-full"
-            style={{
-              backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fillRule='evenodd'%3E%3Cg fill='%23f59e0b' fillOpacity='0.05'%3E%3Ccircle cx='30' cy='30' r='2'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
-            }}
-          ></div>
-        </div>
-        <div className="relative z-10">
-          {/* Header */}
-          <div className="relative overflow-hidden bg-gradient-to-br from-amber-900 via-amber-950 to-amber-900">
+            className={cn(
+              "relative overflow-hidden bg-gradient-to-br from-amber-900 via-amber-950 to-amber-900 transition-all duration-300"
+            )}
+          >
             <div className="absolute inset-0 bg-gradient-to-r from-amber-600/20 via-slate-900/20 to-amber-600/20"></div>
             <div className="relative px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
-              <div className="max-w-7xl mx-auto">
-                <div className="flex items-center justify-between gap-4">
-                  <div className="flex items-center gap-3">
-                    <div className="p-2 bg-white/10 backdrop-blur-sm rounded-xl">
-                      <GraduationCap className="h-5 w-5 sm:h-6 sm:w-6 text-white" />
-                    </div>
-                    <div>
-                      <h1 className="text-lg sm:text-xl font-bold text-white tracking-tight">
-                        Manage Interns
-                      </h1>
-                      <p className="text-amber-100 text-sm font-medium">
-                        Manage your legal interns and track progress
-                      </p>
-                    </div>
+              <div className="flex items-center justify-between gap-4">
+                <div className="flex items-center gap-3">
+                  <div className="p-2 bg-white/10 backdrop-blur-sm rounded-xl">
+                    <GraduationCap className="h-5 w-5 sm:h-6 sm:w-6 text-white" />
                   </div>
-
-                  <div className="flex items-center gap-2">
-                    <Button
-                      asChild
-                      className="hidden sm:flex text-white bg-transparent border-white border hover:bg-white hover:text-amber-950 transition-colors duration-200 text-sm"
-                    >
-                      <Link href="/lawyer/dashboard/add-internships">
-                        <Plus className="h-4 w-4 mr-2" />
-                        Add Internships
-                      </Link>
-                    </Button>
-                    <Button
-                      asChild
-                      className="bg-white text-amber-950 hover:bg-white/90 shadow-lg font-medium text-sm transition-colors duration-200"
-                    >
-                      <Link href="/lawyer/dashboard/hire-interns">
-                        <Users className="h-4 w-4 mr-2" />
-                        Hire Interns
-                      </Link>
-                    </Button>
+                  <div>
+                    <h1 className="text-lg sm:text-xl font-bold text-white tracking-tight">
+                      Manage Interns
+                    </h1>
+                    <p className="text-amber-100 text-sm font-medium">
+                      One stop solution for your intern management
+                    </p>
                   </div>
+                </div>
+                <div className="flex gap-3">
+                  <Button
+                    asChild
+                    className="flex justify-between text-white bg-transparent border-white border hover:bg-white hover:text-amber-950 transition"
+                  >
+                    <Link href="/lawyer/dashboard/add-internships">
+                      <Plus className="stroke-3" />
+                      Add Internship
+                    </Link>
+                  </Button>
+                  <Button
+                    asChild
+                    className="flex justify-between text-white bg-transparent border-white border hover:bg-white hover:text-amber-950 transition"
+                  >
+                    <Link href="/lawyer/dashboard/hire-interns">
+                      <GraduationCap className="stroke-3" />
+                      Hire Interns
+                    </Link>
+                  </Button>{" "}
                 </div>
               </div>
             </div>
           </div>
 
           {/* Stats Section */}
-          <div className="px-4 sm:px-6 lg:px-8 -mt-4 relative z-10">
+          <div className="px-4 sm:px-6 lg:px-8 -mt-[9px] relative z-10">
             <div className="max-w-7xl mx-auto">
               <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
                 <Card className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm border-white/20 dark:border-slate-700/50 shadow-lg hover:shadow-xl transition-all duration-300 transform translate-y-3 hover:-translate-y-3">
@@ -435,7 +427,7 @@ export default function ManageInternsPage() {
 
           {/* Content Section */}
           <div className="px-4 sm:px-6 lg:px-8 pb-8">
-            <div className="max-w-7xl mx-auto space-y-8">
+            <div className=" space-y-8">
               <div>
                 <div className="flex items-center justify-between mb-4">
                   <h2 className="text-lg font-semibold text-slate-900 dark:text-white">
@@ -450,7 +442,7 @@ export default function ManageInternsPage() {
                       initial={{ opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ duration: 0.25, delay: index * 0.04 }}
-                      className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:shadow-md transition-shadow p-4 flex items-center justify-between"
+                      className="rounded-xl  bg-white dark:bg-slate-800 hover:shadow-md transition-shadow p-4 flex items-center justify-between"
                     >
                       <div className="flex flex-col gap-1">
                         <div className="flex-1 min-w-0">
@@ -680,6 +672,5 @@ export default function ManageInternsPage() {
           </DialogContent>
         </Dialog>
       </div>
-    </div>
   );
 }

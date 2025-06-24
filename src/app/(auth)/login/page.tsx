@@ -22,6 +22,7 @@ import {
   CheckCircle,
   ArrowLeft,
   Loader2,
+  ShieldQuestion,
 } from "lucide-react";
 import { toast } from "sonner";
 import {
@@ -34,6 +35,7 @@ import {
 } from "@/lib/helper";
 import { apiClient } from "@/lib/api";
 import { OTPInput } from "@/components/shared/otp-input";
+import { fetchRoleFromToken } from "@/lib/authenticate";
 
 type UserType = "student" | "lawyer" | "consumer";
 type LoginMethod = "otp" | "password";
@@ -116,21 +118,25 @@ export default function EnhancedAuthPage() {
   });
 
   // Check for existing authentication on mount
-  useEffect(() => {
-    const checkAuth = async () => {
-      try {
-        const response = await apiClient.refreshTokens();
-        if (response.success) {
-          console.log("🔐 User already authenticated, redirecting...");
-          router.push("/dashboard");
-        }
-      } catch (error) {
-        console.log("🔓 No existing authentication found");
-      }
-    };
+  // useEffect(() => {
+  //   const checkAuth = async () => {
+  //     try {
+  //       const response = await apiClient.refreshTokens();
+  //       console.log("1");
+  //       console.log(response);
 
-    checkAuth();
-  }, [router]);
+  //       return response.data;
+  //     } catch (error) {
+  //       // console.error("Exception while calling refreshTokens:", error);
+  //       return {
+  //         success: false,
+  //         message: "Unexpected error occurred.",
+  //         code: 500,
+  //       };
+  //     }
+  //   };
+  //   checkAuth();
+  // }, []);
 
   // API Functions
   const sendOTP = async (emailOrPhone: string, isSignup = false) => {
@@ -204,12 +210,19 @@ export default function EnhancedAuthPage() {
       const response = await apiClient.login(payload);
 
       if (response.success) {
-        showSuccessToast("Login Successful", "Welcome back!");
-        setTimeout(
-          () => router.push(`/${response.data?.user.role}/dashboard`),
-          1000
-        );
-        return true;
+        if (response.code == 200 && response.data && response.data.role) {
+          showSuccessToast("Login Successful", "Welcome back!");
+          router.push(`/${response.data.role}`);
+          return true;
+        } else if (
+          response.code == 2001 &&
+          response.data &&
+          response.data.role
+        ) {
+          showSuccessToast("Already Logged In", "Welcome!");
+          router.push(`/${response.data.role}`);
+          return true;
+        }
       } else {
         showErrorToast(
           "Login Failed",
@@ -268,6 +281,17 @@ export default function EnhancedAuthPage() {
           1000
         );
         return true;
+        // if (response.success) {
+        //   if (response.code == 200 && response.data && response.data.role) {
+        //     showSuccessToast("Login Successful", "Welcome back!");
+        //     router.push(`/${response.data.role}`);
+        //     return true;
+        //   }
+        //   else if(response.code == 2001 && response.data && response.data.role) {
+        //     showSuccessToast("Already Logged In", "Welcome!");
+        //     router.push(`/${response.data.role}`);
+        //     return true;
+        //   }
       } else {
         showErrorToast(
           "Verification Failed",
@@ -323,10 +347,7 @@ export default function EnhancedAuthPage() {
 
       if (response.success) {
         showSuccessToast("Account Created", "Welcome to Xegality!");
-        setTimeout(
-          () => router.push(`/${response.data?.user.role}/dashboard`),
-          1000
-        );
+        router.push(`/${payload.role}`);
         return true;
       } else {
         showErrorToast(
@@ -499,7 +520,7 @@ export default function EnhancedAuthPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 flex items-center justify-center p-4 relative overflow-hidden">
+    <div className="min-h-screen bg-transparent flex items-center justify-center p-4 relative overflow-hidden">
       {/* Background decorative elements */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute -top-40 -right-40 w-80 h-80 bg-gradient-to-br from-blue-400/20 to-purple-600/20 rounded-full blur-3xl animate-pulse"></div>
@@ -522,20 +543,20 @@ export default function EnhancedAuthPage() {
         </div>
 
         {/* Main Card */}
-        <Card className="bg-white/80 backdrop-blur-xl shadow-2xl shadow-slate-200/50 border border-white/20 overflow-hidden animate-fade-in-up delay-200">
+        <Card className="bg-white/80 backdrop-blur-xl shadow-2xl rounded-4xl shadow-slate-200/50 border border-white/20 overflow-hidden animate-fade-in-up delay-200">
           {/* Tabs Header */}
-          <div className="p-6 pb-0">
-            <div className="bg-slate-100/80 rounded-2xl p-1.5 backdrop-blur-sm">
+          <div className="p-6 pt-2 pb-0">
+            <div className="bg-gray-400/10 rounded-2xl p-1.5 backdrop-blur-sm">
               <div className="grid grid-cols-2 gap-1">
                 <button
                   onClick={() => {
                     setIsLogin(true);
                     resetStates();
                   }}
-                  className={`px-4 py-3 rounded-xl font-medium transition-all duration-300 text-sm sm:text-base ${
+                  className={`px-4 py-3 rounded-[14px] font-medium transition-all duration-300 text-sm sm:text-base ${
                     isLogin
                       ? "bg-white text-slate-900 shadow-lg shadow-slate-200/50 transform scale-[1.02]"
-                      : "text-slate-600 hover:text-slate-900 hover:bg-white/50"
+                      : "text-slate-600 hover:text-slate-900 cursor-pointer"
                   }`}
                 >
                   Login
@@ -548,7 +569,7 @@ export default function EnhancedAuthPage() {
                   className={`px-4 py-3 rounded-xl font-medium transition-all duration-300 text-sm sm:text-base ${
                     !isLogin
                       ? "bg-white text-slate-900 shadow-lg shadow-slate-200/50 transform scale-[1.02]"
-                      : "text-slate-600 hover:text-slate-900 hover:bg-white/50"
+                      : "text-slate-600 hover:text-slate-900 cursor-pointer"
                   }`}
                 >
                   Sign Up
@@ -558,27 +579,14 @@ export default function EnhancedAuthPage() {
           </div>
 
           {/* Content */}
-          <CardContent className="p-6 pt-4">
+          <CardContent>
             {isLogin ? (
               // LOGIN FLOW
               <div className="space-y-6">
                 {loginStep === "initial" && (
                   <div className="space-y-6 animate-slide-in-right">
-                    <div className="text-center">
-                      <h2 className="text-2xl font-bold text-slate-900 mb-2">
-                        Welcome Back
-                      </h2>
-                      <p className="text-slate-600">Sign in to your account</p>
-                    </div>
-
                     <form onSubmit={handleLoginInitial} className="space-y-4">
                       <div className="space-y-2">
-                        <Label
-                          htmlFor="emailOrPhone"
-                          className="text-slate-700 font-medium"
-                        >
-                          Email or Phone Number
-                        </Label>
                         <div className="relative group">
                           <Mail className="absolute left-4 top-1/2 transform -translate-y-1/2 text-slate-400 h-5 w-5 group-focus-within:text-blue-500 transition-colors" />
                           <Input
@@ -591,7 +599,7 @@ export default function EnhancedAuthPage() {
                               }))
                             }
                             placeholder="Enter email or phone"
-                            className="pl-12 h-12 bg-slate-50/50 border-slate-200 rounded-xl focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all duration-200"
+                            className="pl-12 h-12 focus-visible:ring-0 focus-visible:border-blue-500/50 rounded-xl transition-all duration-200"
                             required
                           />
                         </div>
@@ -599,10 +607,39 @@ export default function EnhancedAuthPage() {
 
                       <Button
                         type="submit"
-                        className="w-full h-12 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold rounded-xl shadow-lg shadow-blue-500/25 hover:shadow-xl hover:shadow-blue-500/30 transform hover:scale-[1.02] transition-all duration-200"
+                        className="w-full h-12 bg-gradient-to-r from-blue-600 to-purple-600  text-white font-semibold rounded-xl shadow-none hover:shadow-xl transform hover:scale-105 transition-all duration-400"
                       >
                         Continue
                         <ArrowRight className="ml-2 h-4 w-4" />
+                      </Button>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        onClick={handleGoogleLogin}
+                        disabled={isLoading}
+                        className="w-full h-12 border-0 shadow-none hover:bg-blue-600/10 bg-transparent rounded-xl transition-all duration-200 disabled:transform-none"
+                      >
+                        <svg className="w-5 h-5 mr-3" viewBox="0 0 24 24">
+                          <path
+                            fill="#4285F4"
+                            d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
+                          />
+                          <path
+                            fill="#34A853"
+                            d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
+                          />
+                          <path
+                            fill="#FBBC05"
+                            d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"
+                          />
+                          <path
+                            fill="#EA4335"
+                            d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
+                          />
+                        </svg>
+                        <span className="font-medium">
+                          Continue with Google
+                        </span>
                       </Button>
                     </form>
                   </div>
@@ -610,27 +647,16 @@ export default function EnhancedAuthPage() {
 
                 {loginStep === "method-selection" && (
                   <div className="space-y-6 animate-slide-in-left">
-                    <div className="text-center">
-                      <h2 className="text-xl font-bold text-slate-900 mb-2">
-                        Choose Login Method
-                      </h2>
-                      <div className="inline-flex items-center px-3 py-1 bg-slate-100 rounded-full">
-                        <span className="text-sm font-medium text-slate-900 truncate max-w-[200px]">
-                          {loginData.emailOrPhone}
-                        </span>
-                      </div>
-                    </div>
-
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                       <button
                         type="button"
                         onClick={() => handleLoginMethodSelect("otp")}
                         disabled={isLoading}
-                        className="flex items-center justify-center gap-2 p-4 border-2 border-slate-200 rounded-xl hover:border-blue-500 hover:bg-blue-50 transition-all duration-200 group disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="flex items-center justify-center gap-2 p-4 border-0 rounded-xl hover:border-blue-500 hover:bg-blue-50 transition-all duration-200 group disabled:opacity-50 disabled:cursor-not-allowed"
                       >
                         <Phone className="h-5 w-5 text-slate-600 group-hover:text-blue-600" />
                         <span className="font-medium text-slate-700 group-hover:text-blue-700">
-                          Login with OTP
+                          OTP
                         </span>
                       </button>
                       <button
@@ -640,43 +666,27 @@ export default function EnhancedAuthPage() {
                         className="flex items-center justify-center gap-2 p-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl shadow-lg shadow-blue-500/25 hover:shadow-xl hover:shadow-blue-500/30 transform hover:scale-[1.02] transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
                       >
                         <Lock className="h-5 w-5" />
-                        <span className="font-medium">Login with Password</span>
+                        <span className="font-medium">Password</span>
                       </button>
                     </div>
-
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      onClick={goBack}
-                      className="w-full h-12 text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-xl transition-all duration-200"
-                    >
-                      <ArrowLeft className="mr-2 h-4 w-4" />
-                      Back
-                    </Button>
+                    <div className="flex items-center justify-center">
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        onClick={goBack}
+                        className="w-full h-12 text-sky-600 hover:text-sky-600 hover:bg-sky-600/10 rounded-xl transition-all duration-200"
+                      >
+                        <ArrowLeft className="mr-2 h-4 w-4" />
+                        Back
+                      </Button>
+                    </div>
                   </div>
                 )}
 
                 {loginStep === "form" && (
                   <div className="space-y-6 animate-slide-in-right">
-                    <div className="text-center">
-                      <h2 className="text-xl font-bold text-slate-900 mb-2">
-                        Enter Password
-                      </h2>
-                      <div className="inline-flex items-center px-3 py-1 bg-slate-100 rounded-full">
-                        <span className="text-sm font-medium text-slate-900 truncate max-w-[200px]">
-                          {loginData.emailOrPhone}
-                        </span>
-                      </div>
-                    </div>
-
                     <form onSubmit={handleLoginComplete} className="space-y-4">
                       <div className="space-y-2">
-                        <Label
-                          htmlFor="password"
-                          className="text-slate-700 font-medium"
-                        >
-                          Password
-                        </Label>
                         <div className="relative group">
                           <Lock className="absolute left-4 top-1/2 transform -translate-y-1/2 text-slate-400 h-5 w-5 group-focus-within:text-blue-500 transition-colors" />
                           <Input
@@ -739,7 +749,7 @@ export default function EnhancedAuthPage() {
                   <div className="space-y-6 animate-slide-in-left">
                     <div className="text-center">
                       <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-green-500 to-emerald-600 rounded-2xl mb-4 shadow-lg shadow-green-500/25">
-                        <CheckCircle className="w-8 h-8 text-white" />
+                        <ShieldQuestion className="w-8 h-8 text-white" />
                       </div>
                       <h2 className="text-xl font-bold text-slate-900 mb-2">
                         Enter Verification Code
@@ -806,60 +816,24 @@ export default function EnhancedAuthPage() {
                     </form>
                   </div>
                 )}
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={handleGoogleLogin}
-                  disabled={isLoading}
-                  className="w-full h-12 border-2 border-slate-200 hover:border-slate-300 hover:bg-slate-50 rounded-xl transition-all duration-200 hover:scale-[1.02] disabled:transform-none"
-                >
-                  <svg className="w-5 h-5 mr-3" viewBox="0 0 24 24">
-                    <path
-                      fill="#4285F4"
-                      d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
-                    />
-                    <path
-                      fill="#34A853"
-                      d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
-                    />
-                    <path
-                      fill="#FBBC05"
-                      d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"
-                    />
-                    <path
-                      fill="#EA4335"
-                      d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
-                    />
-                  </svg>
-                  <span className="font-medium">Continue with Google</span>
-                </Button>
               </div>
             ) : (
               // SIGNUP FLOW
               <div className="space-y-6">
                 {signupStep === "initial" && (
                   <div className="space-y-6 animate-slide-in-right">
-                    <div className="text-center">
-                      <h2 className="text-2xl font-bold text-slate-900 mb-2">
-                        Choose Your Role
-                      </h2>
-                      <p className="text-slate-600">
-                        Select what best describes you
-                      </p>
-                    </div>
-
                     <div className="space-y-3">
                       {USER_TYPES.map((userType, index) => (
                         <button
                           key={userType.type}
                           type="button"
                           onClick={() => handleUserTypeSelect(userType.type)}
-                          className="w-full p-4 rounded-2xl border-2 border-slate-200 hover:border-slate-300 transition-all duration-300 hover:scale-[1.02] hover:shadow-lg group animate-fade-in-up bg-white/50 hover:bg-white"
+                          className="w-full p-4 pr-5 cursor-pointer rounded-4xl border-0 transition-all duration-300 hover:scale-[1.02] hover:shadow-lg group animate-fade-in-up bg-white/50 hover:bg-white"
                           style={{ animationDelay: `${index * 100}ms` }}
                         >
                           <div className="flex items-center gap-4">
                             <div
-                              className={`w-12 h-12 rounded-xl ${userType.color} flex items-center justify-center group-hover:scale-110 transition-transform duration-200 shadow-lg`}
+                              className={`w-12 h-12 rounded-xl ${userType.color} flex items-center justify-center group-hover:rounded-4xl transition-all duration-500 shadow-lg`}
                             >
                               <userType.icon className="h-6 w-6 text-white" />
                             </div>
@@ -882,10 +856,7 @@ export default function EnhancedAuthPage() {
                 {signupStep === "form" && (
                   <div className="space-y-6 animate-slide-in-left">
                     <div className="text-center">
-                      <h2 className="text-2xl font-bold text-slate-900 mb-2">
-                        Create Account
-                      </h2>
-                      <div className="inline-flex items-center px-3 py-1 bg-slate-100 rounded-full">
+                      <div className="inline-flex items-center px-3 py-1 rounded-full">
                         <span className="text-sm text-slate-600">
                           Signing up as:{" "}
                         </span>
@@ -900,12 +871,6 @@ export default function EnhancedAuthPage() {
 
                     <form onSubmit={handleSignupSubmit} className="space-y-4">
                       <div className="space-y-2">
-                        <Label
-                          htmlFor="name"
-                          className="text-slate-700 font-medium"
-                        >
-                          Full Name
-                        </Label>
                         <div className="relative group">
                           <User className="absolute left-4 top-1/2 transform -translate-y-1/2 text-slate-400 h-5 w-5 group-focus-within:text-blue-500 transition-colors" />
                           <Input
@@ -918,19 +883,13 @@ export default function EnhancedAuthPage() {
                               }))
                             }
                             placeholder="Enter your full name"
-                            className="pl-12 h-12 bg-slate-50/50 border-slate-200 rounded-xl focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all duration-200"
+                            className="pl-12 h-12 focus-visible:ring-0 focus-visible:border-blue-500/50 rounded-xl transition-all duration-200"
                             required
                           />
                         </div>
                       </div>
 
                       <div className="space-y-2">
-                        <Label
-                          htmlFor="signupEmailOrPhone"
-                          className="text-slate-700 font-medium"
-                        >
-                          Email or Phone Number
-                        </Label>
                         <div className="relative group">
                           <Mail className="absolute left-4 top-1/2 transform -translate-y-1/2 text-slate-400 h-5 w-5 group-focus-within:text-blue-500 transition-colors" />
                           <Input
@@ -943,19 +902,13 @@ export default function EnhancedAuthPage() {
                               }))
                             }
                             placeholder="Enter email or phone"
-                            className="pl-12 h-12 bg-slate-50/50 border-slate-200 rounded-xl focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all duration-200"
+                            className="pl-12 h-12 focus-visible:ring-0 focus-visible:border-blue-500/50 rounded-xl transition-all duration-200"
                             required
                           />
                         </div>
                       </div>
 
                       <div className="space-y-2">
-                        <Label
-                          htmlFor="signupPassword"
-                          className="text-slate-700 font-medium"
-                        >
-                          Password
-                        </Label>
                         <div className="relative group">
                           <Lock className="absolute left-4 top-1/2 transform -translate-y-1/2 text-slate-400 h-5 w-5 group-focus-within:text-blue-500 transition-colors" />
                           <Input
@@ -969,14 +922,14 @@ export default function EnhancedAuthPage() {
                               }))
                             }
                             placeholder="Create a password (min. 6 characters)"
-                            className="pl-12 pr-12 h-12 bg-slate-50/50 border-slate-200 rounded-xl focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all duration-200"
+                            className="pl-12 h-12 focus-visible:ring-0 focus-visible:border-blue-500/50 rounded-xl transition-all duration-200"
                             required
                             minLength={6}
                           />
                           <button
                             type="button"
                             onClick={() => setShowPassword(!showPassword)}
-                            className="absolute right-4 top-1/2 transform -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors"
+                            className="absolute right-4 top-1/2 transform -translate-y-1/2 text-slate-400 group-focus-within:text-blue-500 transition-colors cursor-pointer"
                           >
                             {showPassword ? (
                               <EyeOff className="h-5 w-5" />
@@ -991,7 +944,7 @@ export default function EnhancedAuthPage() {
                         <Button
                           type="submit"
                           disabled={isLoading}
-                          className="w-full h-12 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 disabled:from-slate-400 disabled:to-slate-500 text-white font-semibold rounded-xl shadow-lg shadow-blue-500/25 hover:shadow-xl hover:shadow-blue-500/30 transform hover:scale-[1.02] transition-all duration-200 disabled:transform-none disabled:shadow-none"
+                          className="w-full h-12 bg-gradient-to-r from-blue-600 to-purple-600  text-white font-semibold rounded-xl shadow-none hover:shadow-xl transform hover:scale-105 transition-all duration-400"
                         >
                           {isLoading ? (
                             <div className="flex items-center gap-2">
@@ -1006,23 +959,12 @@ export default function EnhancedAuthPage() {
                           )}
                         </Button>
 
-                        <div className="relative">
-                          <div className="absolute inset-0 flex items-center">
-                            <div className="w-full border-t border-slate-200" />
-                          </div>
-                          <div className="relative flex justify-center text-sm">
-                            <span className="px-4 bg-white text-slate-500 font-medium">
-                              or
-                            </span>
-                          </div>
-                        </div>
-
                         <Button
                           type="button"
                           variant="outline"
                           onClick={handleGoogleLogin}
                           disabled={isLoading}
-                          className="w-full h-12 border-2 border-slate-200 hover:border-slate-300 hover:bg-slate-50 rounded-xl transition-all duration-200 hover:scale-[1.02] disabled:transform-none"
+                          className="w-full h-12 border-0 shadow-none hover:bg-blue-600/10 bg-transparent rounded-xl transition-all duration-200 disabled:transform-none"
                         >
                           <svg className="w-5 h-5 mr-3" viewBox="0 0 24 24">
                             <path
@@ -1052,7 +994,7 @@ export default function EnhancedAuthPage() {
                         type="button"
                         variant="ghost"
                         onClick={goBack}
-                        className="w-full h-12 text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-xl transition-all duration-200"
+                        className="w-full h-12 text-sky-600 hover:text-sky-600 hover:bg-sky-600/10 rounded-xl transition-all duration-200"
                       >
                         <ArrowLeft className="mr-2 h-4 w-4" />
                         Back
@@ -1139,13 +1081,6 @@ export default function EnhancedAuthPage() {
             )}
           </CardContent>
         </Card>
-
-        {/* Footer */}
-        <div className="text-center mt-8 animate-fade-in-up delay-500">
-          <p className="text-slate-500 text-sm">
-            🔒 Secure • 🔐 Encrypted • ✅ Trusted by 10,000+ users
-          </p>
-        </div>
       </div>
 
       {/* Custom CSS for animations */}

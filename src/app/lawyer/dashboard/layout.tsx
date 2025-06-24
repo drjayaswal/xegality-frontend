@@ -10,7 +10,7 @@ export default function DashboardLayout({
   return (
     <SidebarProvider className="bg-amber-700/6">
       <AppSidebar />
-      <main className="md:m-2 md:ml-0.5 w-full min-h-full md:max-h-[calc(100svh-16px)] bg-[#e1ebea] rounded-lg overflow-scroll shadow-md ">
+      <main className="md:m-2 md:ml-0.5 w-full min-h-full md:max-h-[calc(100svh-16px)] bg-white rounded-lg shadow-md ">
         <SidebarToggleButton className="text-amber-700 hover:bg-amber-700 bg-amber-700/20" />
         {children}
       </main>

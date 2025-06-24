@@ -7,7 +7,9 @@ export default function LawyerLayout({
   return (
     <>
       <Header />
-      <main className="mx-auto bg-emerald-700/6">{children}</main>
+      <main className="mx-auto bg-emerald-700/6">
+        {children}
+      </main>
       <Footer />
     </>
   );

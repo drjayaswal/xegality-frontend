@@ -201,7 +201,7 @@ export default function Appointments() {
   };
 
   return (
-    <div className=" h-full dark:bg-black bg-gray-50 shadow-xl border-[1.5px] rounded-lg">
+    <div className=" h-full shadow-xl border-[1.5px] rounded-lg">
       <div className="w-full h-full rounded-md bg-amber-700/5 overflow-hidden flex flex-col relative">
         {/* Header */}
         <div className="relative h-24 overflow-hidden">

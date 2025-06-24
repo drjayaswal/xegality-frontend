@@ -16,7 +16,7 @@ interface SelectServiceProps {
   onSelectService?: (service: string) => void;
 }
 
-export default function SelectService({ onSelectService }: SelectServiceProps) {
+export default function SelectService() {
   const popularServices = [
     {
       name: "Xegality AI",
@@ -70,7 +70,7 @@ export default function SelectService({ onSelectService }: SelectServiceProps) {
             whileHover={{ scale: 1.03 }}
           >
             <Card
-              onClick={() => onSelectService?.(service.value)}
+              // onClick={() => onSelectService?.(service.value)}
               className="group cursor-pointer hover:shadow-xl transition-all border border-muted bg-background rounded-2xl"
             >
               <CardContent className="p-6 flex flex-col h-full">

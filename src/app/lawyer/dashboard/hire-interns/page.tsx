@@ -389,7 +389,7 @@ export default function ManageInternshipApplicationsPage() {
   );
 
   return (
-    <div className="min-h-screen bg-amber-700/05 w-full p-6 rounded-2xl shadow-lg border-[1.5px]">
+    <div className="h-full overflow-scroll bg-white w-full p-6 rounded-2xl shadow-lg border-[1.5px]">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="mb-8">

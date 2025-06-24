@@ -1,7 +1,7 @@
 "use client";
 
 import type React from "react";
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, Suspense } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -39,7 +39,7 @@ interface UploadedFile {
   uploadedAt: Date;
 }
 
-export default function XegalityAI() {
+function XegalityAIContent() {
   const searchParams = useSearchParams();
   const { query, isProcessing, setQuery, setIsProcessing, clearQuery } =
     useQueryStore();
@@ -592,5 +592,13 @@ transition-all duration-150"
         </div>
       </div>
     </div>
+  );
+}
+
+export default function XegalityAI() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <XegalityAIContent />
+    </Suspense>
   );
 }

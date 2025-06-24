@@ -28,6 +28,7 @@ import {
   Loader2,
   Plus,
   RefreshCcw,
+  ShieldBan,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
@@ -94,7 +95,7 @@ export default function HireAnInternPageUpdated() {
   const [isSearchFocused, setIsSearchFocused] = useState(false);
   const [showInterestedSuccess, setShowInterestedSuccess] = useState(false);
   const searchInputRef = useRef<HTMLInputElement>(null);
-
+  const lastSearchedQueryRef = useRef<string>("");
   const [internships, setInternships] = useState<InternshipData[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -162,15 +163,17 @@ export default function HireAnInternPageUpdated() {
 
   const handleSearch = async () => {
     try {
-      const response = await apiClient.searchInternships(searchQuery);
-      console.log(response);
-      if (response.success) {
-        setInternships(response.data || []);
-      } else {
-        throw new Error(response.message || "Failed to fetch internships");
+      const trimmedQuery = searchQuery.trim();
+      if (trimmedQuery && trimmedQuery !== lastSearchedQueryRef.current) {
+        lastSearchedQueryRef.current = trimmedQuery;
+        const response = await apiClient.searchInternships(searchQuery);
+        if (response.success) {
+          setInternships(response.data || []);
+        } else {
+          throw new Error(response.message || "Failed to fetch internships");
+        }
       }
     } catch (err) {
-      
       const errorMessage =
         err instanceof Error ? err.message : "An unexpected error occurred";
       setError(errorMessage);
@@ -205,7 +208,7 @@ export default function HireAnInternPageUpdated() {
   const skeletonItems = Array.from({ length: 6 }, (_, i) => i);
 
   return (
-    <div className="flex flex-col relative border border-slate-200 dark:border-slate-800 rounded-xl shadow-sm bg-white dark:bg-slate-900 overflow-hidden max-w-7xl mx-auto">
+    <div className="flex w-full h-full flex-col relative border border-slate-200 dark:border-slate-800 rounded-xl shadow-sm bg-white dark:bg-slate-900 overflow-hidden">
       {/* Header */}
       <div
         className={cn(
@@ -217,39 +220,71 @@ export default function HireAnInternPageUpdated() {
         <div className="relative px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
           <div className="flex items-center justify-between gap-4">
             <div className="flex items-center gap-3">
-              <div className="p-2 bg-white/10 backdrop-blur-sm rounded-xl">
-                <GraduationCap className="h-5 w-5 sm:h-6 sm:w-6 text-white" />
-              </div>
-              <div>
-                <h1 className="text-lg sm:text-xl font-bold text-white tracking-tight">
-                  Internship Opportunities
-                </h1>
-                <p className="text-amber-100 text-sm font-medium">
-                  Discover legal internships from top firms
-                </p>
-              </div>
+              {loading ? (
+                <>
+                  <div className="p-2 bg-white/10 backdrop-blur-sm rounded-xl">
+                    <Skeleton className="h-5 w-5 sm:h-6 sm:w-6 rounded-md" />
+                  </div>
+                  <div className="space-y-2">
+                    <Skeleton className="h-5 sm:h-6 w-40 sm:w-60 rounded-md" />
+                    <Skeleton className="h-4 w-48 sm:w-64 rounded-md" />
+                  </div>
+                </>
+              ) : (
+                <>
+                  <div className="p-2 bg-white/10 backdrop-blur-sm rounded-xl">
+                    <GraduationCap className="h-5 w-5 sm:h-6 sm:w-6 text-white" />
+                  </div>
+                  <div>
+                    <h1 className="text-lg sm:text-xl font-bold text-white tracking-tight">
+                      Internship Opportunities
+                    </h1>
+                  </div>
+                </>
+              )}{" "}
             </div>
             <div className="flex gap-3">
-              <Button
-                asChild
-                className="flex justify-between text-white bg-transparent border-white border hover:bg-white hover:text-amber-950 transition"
-              >
-                <Link href="/lawyer/dashboard/add-internships">
+              {loading ? (
+                <Button className="flex justify-between text-white bg-transparent border-transparent border opacity-30 hover:bg-transparent transition cursor-not-allowed">
                   <Plus className="stroke-3" />
                   Add Internship
-                </Link>
-              </Button>
-
-              <Button
-                className="flex justify-between text-white bg-transparent border-0 hover:bg-white hover:text-amber-950 transition"
-                onClick={handleRefresh}
-                disabled={refreshing}
-              >
-                <RefreshCcw
-                  className={cn("stroke-3", refreshing && "animate-spin")}
-                />
-                Refresh
-              </Button>
+                </Button>
+              ) : (
+                <Button
+                  asChild
+                  className="flex justify-between text-white bg-transparent border-white border hover:bg-white hover:text-amber-950 transition"
+                >
+                  <Link href="/lawyer/dashboard/add-internships">
+                    <Plus className="stroke-3" />
+                    Add Internship
+                  </Link>
+                </Button>
+              )}
+              {loading ? (
+                <Button
+                  className="flex justify-between text-white bg-transparent border-0 hover:bg-white hover:text-amber-950 transition"
+                  disabled={true}
+                >
+                  <RefreshCcw
+                    className={cn(
+                      "stroke-3",
+                      (refreshing || loading) && "animate-spin"
+                    )}
+                  />
+                  Refreshing
+                </Button>
+              ) : (
+                <Button
+                  className="flex justify-between text-white bg-transparent border-0 hover:bg-white hover:text-amber-950 transition"
+                  onClick={handleRefresh}
+                  disabled={refreshing}
+                >
+                  <RefreshCcw
+                    className={cn("stroke-3", refreshing && "animate-spin")}
+                  />
+                  Refresh
+                </Button>
+              )}
             </div>
           </div>
         </div>
@@ -259,7 +294,7 @@ export default function HireAnInternPageUpdated() {
       <div className="px-4 sm:px-6 lg:px-8 -mt-4 relative z-10">
         <div
           className={cn(
-            "bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 p-4 sm:p-6 transition-all duration-300",
+            "bg-white dark:bg-slate-800 rounded-xl border-0 translate-y-5 dark:border-slate-700 p-4 sm:p-6 transition-all duration-300",
             isSearchFocused
               ? "shadow-2xl shadow-amber-800/30 -translate-y-2"
               : "shadow-lg shadow-amber-800/20"
@@ -268,27 +303,28 @@ export default function HireAnInternPageUpdated() {
           <div className="space-y-4">
             <div className="relative">
               <div className="relative w-full">
-                {/* Search Icon */}
                 <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none">
                   <Search className="h-4 w-4 text-slate-400" />
                 </div>
-                {/* Input Field */}
-                <Input
-                  ref={searchInputRef}
-                  placeholder="Search internships by title, firm, department, or description..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  onFocus={() => setIsSearchFocused(true)}
-                  onBlur={() => setIsSearchFocused(false)}
-                  className="pl-10 pr-20 py-2.5 text-sm bg-transparent border-amber-500 dark:border-slate-700 rounded-lg focus-visible:ring-0 focus-visible:border-amber-700 border-2 transition-all duration-200"
-                />
+                {loading ? (
+                  <Skeleton className="h-9 w-full" />
+                ) : (
+                  <Input
+                    ref={searchInputRef}
+                    placeholder="Search internships by title, firm, department, or description..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    onFocus={() => setIsSearchFocused(true)}
+                    onBlur={() => setIsSearchFocused(false)}
+                    className="pl-10 pr-20 py-2.5 text-sm bg-transparent border-amber-700/30 dark:border-slate-700 rounded-lg focus-visible:ring-0 focus-visible:border-amber-700 border-2 transition-all duration-200"
+                  />
+                )}
                 {searchQuery && (
                   <div className="absolute right-2 top-1/2 -translate-y-1/2 flex rounded-md shadow-sm overflow-hidden">
                     <Button
                       variant="ghost"
                       size="sm"
                       onClick={() => {
-                        alert("Searching...");
                         handleSearch();
                       }}
                       className="h-6 px-2 py-0 text-xs font-medium text-amber-800 bg-white hover:bg-amber-800 hover:text-white dark:bg-transparent dark:hover:bg-slate-700 rounded-none rounded-l-md"
@@ -322,10 +358,7 @@ export default function HireAnInternPageUpdated() {
                   variant="outline"
                   onClick={() => setShowFilters(!showFilters)}
                   className={cn(
-                    "flex items-center gap-2 rounded-full border transition-colors duration-200 text-xs px-3 py-1.5 h-auto",
-                    showFilters
-                      ? "bg-amber-600 hover:bg-amber-700 hover:text-white text-white shadow-md border-amber-600"
-                      : "border-slate-300 dark:border-slate-600 hover:bg-transparent hover:border-amber-400 hover:text-amber-600"
+                    "flex items-center gap-2 transition-colors duration-200 text-xs h-auto bg-transparent border-0 shadow-none dark:border-slate-600 rounded-lg "
                   )}
                 >
                   <Filter className="h-4 w-4" />
@@ -344,7 +377,7 @@ export default function HireAnInternPageUpdated() {
                       setSortBy(value as InternshipFilters["sort_by"])
                     }
                   >
-                    <SelectTrigger className="w-40 bg-transparent border border-slate-300 dark:border-slate-600 rounded-lg text-xs">
+                    <SelectTrigger className="w-40 bg-transparent border-0 shadow-none dark:border-slate-600 rounded-lg text-xs">
                       <SelectValue placeholder="Sort by" />
                     </SelectTrigger>
                     <SelectContent>
@@ -372,7 +405,7 @@ export default function HireAnInternPageUpdated() {
                     value={locationFilter}
                     onValueChange={setLocationFilter}
                   >
-                    <SelectTrigger className="text-xs">
+                    <SelectTrigger className="w-40 bg-transparent border-0 shadow-none dark:border-slate-600 rounded-lg text-xs">
                       <SelectValue placeholder="Location" />
                     </SelectTrigger>
                     <SelectContent>
@@ -389,7 +422,7 @@ export default function HireAnInternPageUpdated() {
                     value={departmentFilter}
                     onValueChange={setDepartmentFilter}
                   >
-                    <SelectTrigger className="text-xs">
+                    <SelectTrigger className="w-40 bg-transparent border-0 shadow-none dark:border-slate-600 rounded-lg text-xs">
                       <SelectValue placeholder="Department" />
                     </SelectTrigger>
                     <SelectContent>
@@ -415,7 +448,7 @@ export default function HireAnInternPageUpdated() {
                     value={compensationFilter}
                     onValueChange={setCompensationFilter}
                   >
-                    <SelectTrigger className="text-xs">
+                    <SelectTrigger className="w-40 bg-transparent border-0 shadow-none dark:border-slate-600 rounded-lg text-xs">
                       <SelectValue placeholder="Compensation" />
                     </SelectTrigger>
                     <SelectContent>
@@ -430,7 +463,7 @@ export default function HireAnInternPageUpdated() {
                   </Select>
 
                   <Select value={remoteFilter} onValueChange={setRemoteFilter}>
-                    <SelectTrigger className="text-xs">
+                    <SelectTrigger className="w-40 bg-transparent border-0 shadow-none dark:border-slate-600 rounded-lg text-xs">
                       <SelectValue placeholder="Work Type" />
                     </SelectTrigger>
                     <SelectContent>
@@ -459,7 +492,7 @@ export default function HireAnInternPageUpdated() {
               <div className="mt-6 flex items-center justify-between">
                 <h2 className="text-lg flex items-center justify-center gap-1 font-semibold text-slate-900 dark:text-white">
                   {loading ? (
-                    <span>Searching Internships...</span>
+                    <span>Searching...</span>
                   ) : (
                     <span>
                       {searchQuery ? "Search Results" : "All Internships"}(
@@ -496,7 +529,7 @@ export default function HireAnInternPageUpdated() {
                       initial={{ opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ duration: 0.25, delay: index * 0.04 }}
-                      className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:shadow-md transition-shadow p-4 flex items-center justify-between"
+                      className="rounded-xl dark:border-slate-700 bg-white dark:bg-slate-800 hover:shadow-md transition-shadow p-4 flex items-center justify-between"
                     >
                       <div className="flex flex-col gap-1">
                         <h3 className="text-sm font-medium text-slate-900 dark:text-white line-clamp-1">
@@ -564,7 +597,7 @@ export default function HireAnInternPageUpdated() {
                           )}
 
                           <Badge className="text-[10px] bg-gray-100 text-gray-700 dark:bg-gray-800/30 dark:text-gray-400">
-                            {internship.applicants_till_now || 0} Applicants
+                            {internship.applicants_till_now} Applicants
                           </Badge>
                         </div>
                       </div>
@@ -582,28 +615,54 @@ export default function HireAnInternPageUpdated() {
                         >
                           {getDaysUntilDeadline(
                             internship.application_deadline
+                          ) > 0 &&
+                            `
+                          ${getDaysUntilDeadline(
+                            internship.application_deadline
                           )}
                           d left
+                          `}
                         </span>
-                        <Button
-                          size="sm"
-                          onClick={() => handleInterested(internship.id)}
-                          className="mr-2 hover:bg-amber-100 bg-amber-50 hover:text-amber-800 text-amber-700 px-2 py-1 text-xs rounded-lg"
-                        >
-                          ⭐ Interested
-                        </Button>
-                        <Button
-                          size="sm"
-                          onClick={() => handleApply(internship.id)}
-                          className="flex justify-between hover:bg-amber-700 bg-amber-600/30 hover:text-white text-amber-800 px-3 py-1 text-xs rounded-lg"
-                        >
-                          <PenTool className="rotate-270" />
-                          <Link
-                            href={`/lawyer/dashboard/internships/${internship.id}`}
+                        {getDaysUntilDeadline(internship.application_deadline) >
+                        0 ? (
+                          <>
+                            <Button
+                              size="sm"
+                              onClick={() => handleApply(internship.id)}
+                              disabled={
+                                getDaysUntilDeadline(
+                                  internship.application_deadline
+                                ) < 0
+                              }
+                              className="flex justify-between hover:bg-amber-700 bg-amber-600/30 hover:text-white text-amber-800 px-3 py-1 text-xs rounded-lg"
+                            >
+                              <PenTool className="rotate-270" />
+                              <Link
+                                href={`/lawyer/dashboard/internships/${internship.id}`}
+                              >
+                                Apply
+                              </Link>
+                            </Button>
+                          </>
+                        ) : (
+                          <Button
+                            size="sm"
+                            onClick={() => handleApply(internship.id)}
+                            disabled={
+                              getDaysUntilDeadline(
+                                internship.application_deadline
+                              ) < 0
+                            }
+                            className="flex justify-between hover:bg-amber-700 bg-amber-600/30 hover:text-white text-amber-800 px-3 py-1 text-xs rounded-lg"
                           >
-                            Apply
-                          </Link>
-                        </Button>
+                            <ShieldBan />
+                            <Link
+                              href={`/lawyer/dashboard/internships/${internship.id}`}
+                            >
+                              Expired
+                            </Link>
+                          </Button>
+                        )}
                       </div>
                     </motion.div>
                   ))

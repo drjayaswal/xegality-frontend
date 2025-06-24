@@ -1,201 +1,253 @@
 "use client";
 
 import type React from "react";
-
 import { useState, useMemo } from "react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { Input } from "@/components/ui/input";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Textarea } from "@/components/ui/textarea";
+import { Badge } from "@/components/ui/badge";
+import { motion, AnimatePresence } from "framer-motion";
 import {
-  CreditCard,
   Clock,
-  DollarSign,
   Download,
   FileText,
   Search,
+  ChevronRight,
   ChevronDown,
-  ChevronUp,
   CheckCircle2,
   AlertCircle,
   Plus,
   X,
-  Landmark,
+  Send,
+  User,
+  Receipt,
+  Eye,
+  Trash2,
+  Copy,
+  DollarSign,
+  Save,
 } from "lucide-react";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
 
 interface Invoice {
   id: string;
   name: string;
+  email: string;
   amount: number;
   time: Date;
+  dueDate: Date;
   description: string;
+  status: "paid" | "pending" | "overdue" | "draft";
+  items: InvoiceItem[];
+  notes?: string;
 }
 
-interface PaymentMethod {
+interface InvoiceItem {
   id: string;
-  type: "card" | "bank";
-  name: string;
-  last4: string;
-  expiryDate?: string;
-  isDefault: boolean;
+  description: string;
+  quantity: number;
+  rate: number;
+  amount: number;
 }
 
 export default function InvoiceManagement() {
-  const [activeTab, setActiveTab] = useState<"invoices" | "payments">(
+  const tabs = [
+    { id: "invoices", label: "All Invoices", icon: FileText },
+    { id: "create", label: "Create Invoice", icon: Plus },
+    { id: "drafts", label: "Drafts", icon: Clock },
+  ];
+
+  const [activeTab, setActiveTab] = useState<"invoices" | "create" | "drafts">(
     "invoices"
   );
+  const activeIndex = tabs.findIndex((tab) => tab.id === activeTab);
+  const tabCount = tabs.length;
+  const indicatorWidth = 100 / tabCount;
+
   const [searchQuery, setSearchQuery] = useState("");
   const [filterStatus, setFilterStatus] = useState<
-    "all" | "paid" | "pending" | "overdue"
+    "all" | "paid" | "pending" | "overdue" | "draft"
   >("all");
   const [expandedInvoice, setExpandedInvoice] = useState<string | null>(null);
-  const [selectedInvoice, setSelectedInvoice] = useState<Invoice | null>(null);
-  const [showNewInvoiceModal, setShowNewInvoiceModal] = useState(false);
-  const [showInvoiceDetailModal, setShowInvoiceDetailModal] = useState(false);
+  const [editingInvoice, setEditingInvoice] = useState<string | null>(null);
+  const [showSuccessMessage, setShowSuccessMessage] = useState(false);
+  const [successMessage, setSuccessMessage] = useState("");
 
   const [invoiceList, setInvoiceList] = useState<Invoice[]>([
     {
       id: "INV-2023-006",
       name: "Thomas Nguyen",
+      email: "thomas.nguyen@email.com",
       amount: 980.0,
       time: new Date(2023, 6, 12),
+      dueDate: new Date(2023, 7, 12),
       description: "Employment contract drafting and legal consultation",
+      status: "paid",
+      items: [
+        {
+          id: "1",
+          description: "Legal consultation",
+          quantity: 4,
+          rate: 200,
+          amount: 800,
+        },
+        {
+          id: "2",
+          description: "Document drafting",
+          quantity: 1,
+          rate: 180,
+          amount: 180,
+        },
+      ],
+      notes: "Payment received via bank transfer",
     },
     {
       id: "INV-2023-007",
       name: "Ashley Patel",
+      email: "ashley.patel@email.com",
       amount: 1340.0,
       time: new Date(2023, 7, 3),
+      dueDate: new Date(2023, 8, 3),
       description: "Business formation and incorporation documentation",
+      status: "pending",
+      items: [
+        {
+          id: "1",
+          description: "Business formation",
+          quantity: 1,
+          rate: 1200,
+          amount: 1200,
+        },
+        {
+          id: "2",
+          description: "Legal review",
+          quantity: 1,
+          rate: 140,
+          amount: 140,
+        },
+      ],
     },
     {
       id: "INV-2023-008",
       name: "Christopher Brown",
+      email: "chris.brown@email.com",
       amount: 1750.0,
       time: new Date(2023, 3, 28),
+      dueDate: new Date(2023, 4, 28),
       description: "Civil litigation representation and pre-trial filings",
+      status: "overdue",
+      items: [
+        {
+          id: "1",
+          description: "Litigation representation",
+          quantity: 8,
+          rate: 200,
+          amount: 1600,
+        },
+        {
+          id: "2",
+          description: "Court filings",
+          quantity: 1,
+          rate: 150,
+          amount: 150,
+        },
+      ],
     },
     {
-      id: "INV-2023-009",
-      name: "Natalie Kim",
-      amount: 1120.0,
-      time: new Date(2023, 2, 15),
-      description: "Will preparation and estate planning legal services",
-    },
-    {
-      id: "INV-2023-010",
-      name: "Brian Thompson",
-      amount: 630.0,
-      time: new Date(2023, 1, 22),
-      description: "Small claims court filing and legal representation",
-    },
-    {
-      id: "INV-2023-011",
-      name: "Isabella Garcia",
-      amount: 1420.0,
-      time: new Date(2023, 10, 9),
-      description: "Immigration visa petition filing and legal review",
-    },
-    {
-      id: "INV-2023-012",
-      name: "Andrew Davis",
-      amount: 890.0,
-      time: new Date(2023, 9, 5),
-      description: "Real estate closing legal review and documentation",
-    },
-    {
-      id: "INV-2023-013",
-      name: "Sophia Martinez",
-      amount: 1600.0,
-      time: new Date(2023, 8, 18),
-      description: "Intellectual property infringement case consultation",
-    },
-    {
-      id: "INV-2023-014",
-      name: "Ethan Walker",
-      amount: 720.0,
-      time: new Date(2023, 6, 30),
-      description: "Contract negotiation and liability assessment",
-    },
-    {
-      id: "INV-2023-015",
-      name: "Olivia Hernandez",
-      amount: 2000.0,
-      time: new Date(2023, 7, 21),
-      description: "Securities compliance audit and legal opinion",
+      id: "DRAFT-001",
+      name: "Maria Rodriguez",
+      email: "maria.rodriguez@email.com",
+      amount: 750.0,
+      time: new Date(),
+      dueDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
+      description: "Contract review and negotiation",
+      status: "draft",
+      items: [
+        {
+          id: "1",
+          description: "Contract review",
+          quantity: 3,
+          rate: 250,
+          amount: 750,
+        },
+      ],
     },
   ]);
 
   const [newInvoiceForm, setNewInvoiceForm] = useState({
     name: "",
+    email: "",
     amount: "",
     description: "",
-    time: "",
+    dueDate: "",
+    items: [
+      { id: "1", description: "", quantity: 1, rate: 0, amount: 0 },
+    ] as InvoiceItem[],
+    notes: "",
   });
-
-  const paymentMethods: PaymentMethod[] = [
-    {
-      id: "pm-1",
-      type: "card",
-      name: "Visa ending in",
-      last4: "4242",
-      expiryDate: "05/25",
-      isDefault: true,
-    },
-    {
-      id: "pm-2",
-      type: "bank",
-      name: "Bank Of Baro",
-      last4: "6789",
-      isDefault: false,
-    },
-  ];
 
   // Dashboard statistics
   const stats = useMemo(() => {
-    const totalAmount = invoiceList.reduce((sum, inv) => sum + inv.amount, 0);
-
-    const invoicesByMonth: Record<string, number> = {};
-    invoiceList.forEach((inv) => {
-      const monthYear = `${inv.time.getMonth() + 1}/${inv.time.getFullYear()}`;
-      invoicesByMonth[monthYear] = (invoicesByMonth[monthYear] || 0) + 1;
-    });
+    const totalAmount = invoiceList
+      .filter((inv) => inv.status !== "draft")
+      .reduce((sum, inv) => sum + inv.amount, 0);
+    const paidAmount = invoiceList
+      .filter((inv) => inv.status === "paid")
+      .reduce((sum, inv) => sum + inv.amount, 0);
+    const pendingAmount = invoiceList
+      .filter((inv) => inv.status === "pending")
+      .reduce((sum, inv) => sum + inv.amount, 0);
+    const overdueAmount = invoiceList
+      .filter((inv) => inv.status === "overdue")
+      .reduce((sum, inv) => sum + inv.amount, 0);
+    const draftCount = invoiceList.filter(
+      (inv) => inv.status === "draft"
+    ).length;
 
     return {
       totalAmount,
-      invoiceCount: invoiceList.length,
+      paidAmount,
+      pendingAmount,
+      overdueAmount,
+      draftCount,
+      invoiceCount: invoiceList.filter((inv) => inv.status !== "draft").length,
       clientCount: new Set(invoiceList.map((inv) => inv.name)).size,
-      invoicesByMonth,
     };
   }, [invoiceList]);
 
   const filteredInvoices = useMemo(() => {
-    return invoiceList.filter((invoice) => {
+    let filtered = invoiceList;
+
+    if (activeTab === "drafts") {
+      filtered = invoiceList.filter((invoice) => invoice.status === "draft");
+    } else if (activeTab === "invoices") {
+      filtered = invoiceList.filter((invoice) => invoice.status !== "draft");
+    }
+
+    return filtered.filter((invoice) => {
       const matchesSearch =
         invoice.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        invoice.id.toLowerCase().includes(searchQuery.toLowerCase());
-      const matchesFilter = true; // Remove status filtering since we don't have status anymore
+        invoice.id.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        invoice.email.toLowerCase().includes(searchQuery.toLowerCase());
+      const matchesFilter =
+        filterStatus === "all" || invoice.status === filterStatus;
       return matchesSearch && matchesFilter;
     });
-  }, [invoiceList, searchQuery]);
+  }, [invoiceList, searchQuery, filterStatus, activeTab]);
 
   const getStatusColor = (status: string) => {
     switch (status) {
       case "paid":
-        return "bg-green-500/20 text-green-700 border-green-500/30";
+        return "bg-green-50 text-green-700 border-green-200 dark:bg-green-900/20 dark:text-green-300";
       case "pending":
-        return "bg-yellow-500/20 text-yellow-700 border-yellow-500/30";
+        return "bg-yellow-50 text-yellow-700 border-yellow-200 dark:bg-yellow-900/20 dark:text-yellow-300";
       case "overdue":
-        return "bg-red-500/20 text-red-700 border-red-500/30";
+        return "bg-red-50 text-red-700 border-red-200 dark:bg-red-900/20 dark:text-red-300";
+      case "draft":
+        return "bg-slate-50 text-slate-700 border-slate-200 dark:bg-slate-900/20 dark:text-slate-300";
       default:
-        return "bg-gray-500/20 text-gray-700 border-gray-500/30";
+        return "bg-slate-50 text-slate-700 border-slate-200 dark:bg-slate-900/20 dark:text-slate-300";
     }
   };
 
@@ -207,6 +259,8 @@ export default function InvoiceManagement() {
         return <Clock className="h-4 w-4 text-yellow-600" />;
       case "overdue":
         return <AlertCircle className="h-4 w-4 text-red-600" />;
+      case "draft":
+        return <FileText className="h-4 w-4 text-slate-600" />;
       default:
         return null;
     }
@@ -231,50 +285,97 @@ export default function InvoiceManagement() {
     setExpandedInvoice(expandedInvoice === id ? null : id);
   };
 
-  const handleNewInvoiceSubmit = (e: React.FormEvent) => {
+  const handleNewInvoiceSubmit = (e: React.FormEvent, isDraft = false) => {
     e.preventDefault();
-
     if (
       !newInvoiceForm.name ||
-      !newInvoiceForm.amount ||
-      !newInvoiceForm.description ||
-      !newInvoiceForm.time
+      !newInvoiceForm.email ||
+      !newInvoiceForm.description
     ) {
       return;
     }
 
+    const totalAmount = newInvoiceForm.items.reduce(
+      (sum, item) => sum + item.amount,
+      0
+    );
+
     const newInvoice: Invoice = {
-      id: `INV-${new Date().getFullYear()}-${String(
-        invoiceList.length + 1
-      ).padStart(3, "0")}`,
+      id: isDraft
+        ? `DRAFT-${String(stats.draftCount + 1).padStart(3, "0")}`
+        : `INV-${new Date().getFullYear()}-${String(
+            invoiceList.length + 1
+          ).padStart(3, "0")}`,
       name: newInvoiceForm.name,
-      amount: Number.parseFloat(newInvoiceForm.amount),
-      time: new Date(newInvoiceForm.time),
+      email: newInvoiceForm.email,
+      amount: totalAmount,
+      time: new Date(),
+      dueDate: new Date(newInvoiceForm.dueDate),
       description: newInvoiceForm.description,
+      status: isDraft ? "draft" : "pending",
+      items: newInvoiceForm.items,
+      notes: newInvoiceForm.notes,
     };
 
     setInvoiceList([newInvoice, ...invoiceList]);
     setNewInvoiceForm({
       name: "",
+      email: "",
       amount: "",
       description: "",
-      time: "",
+      dueDate: "",
+      items: [{ id: "1", description: "", quantity: 1, rate: 0, amount: 0 }],
+      notes: "",
     });
-    setShowNewInvoiceModal(false);
+    setSuccessMessage(
+      isDraft ? "Draft saved successfully!" : "Invoice created successfully!"
+    );
+    setShowSuccessMessage(true);
+    setTimeout(() => setShowSuccessMessage(false), 3000);
+    setActiveTab("invoices");
   };
 
   const handleFormChange = (field: string, value: string) => {
     setNewInvoiceForm((prev) => ({ ...prev, [field]: value }));
   };
 
-  const markAsPaid = (invoiceId: string) => {
-    setInvoiceList((prev) =>
-      prev.map((invoice) =>
-        invoice.id === invoiceId
-          ? { ...invoice, status: "paid" as const }
-          : invoice
-      )
-    );
+  const addInvoiceItem = () => {
+    const newItem: InvoiceItem = {
+      id: String(newInvoiceForm.items.length + 1),
+      description: "",
+      quantity: 1,
+      rate: 0,
+      amount: 0,
+    };
+    setNewInvoiceForm((prev) => ({
+      ...prev,
+      items: [...prev.items, newItem],
+    }));
+  };
+
+  const updateInvoiceItem = (
+    index: number,
+    field: keyof InvoiceItem,
+    value: string | number
+  ) => {
+    const updatedItems = [...newInvoiceForm.items];
+    updatedItems[index] = { ...updatedItems[index], [field]: value };
+
+    if (field === "quantity" || field === "rate") {
+      updatedItems[index].amount =
+        updatedItems[index].quantity * updatedItems[index].rate;
+    }
+
+    setNewInvoiceForm((prev) => ({ ...prev, items: updatedItems }));
+  };
+
+  const removeInvoiceItem = (index: number) => {
+    if (newInvoiceForm.items.length > 1) {
+      setNewInvoiceForm((prev) => ({
+        ...prev,
+        items: prev.items.filter((_, i) => i !== index),
+      }));
+    }
   };
 
   const deleteInvoice = (invoiceId: string) => {
@@ -284,482 +385,667 @@ export default function InvoiceManagement() {
     if (expandedInvoice === invoiceId) {
       setExpandedInvoice(null);
     }
+    setSuccessMessage("Invoice deleted successfully!");
+    setShowSuccessMessage(true);
+    setTimeout(() => setShowSuccessMessage(false), 3000);
   };
 
-  const viewInvoiceDetails = (invoice: Invoice) => {
-    setSelectedInvoice(invoice);
-    setShowInvoiceDetailModal(true);
+  const duplicateInvoice = (invoice: Invoice) => {
+    const newInvoice: Invoice = {
+      ...invoice,
+      id: `INV-${new Date().getFullYear()}-${String(
+        invoiceList.length + 1
+      ).padStart(3, "0")}`,
+      time: new Date(),
+      status: "draft",
+    };
+    setInvoiceList([newInvoice, ...invoiceList]);
+    setSuccessMessage("Invoice duplicated as draft!");
+    setShowSuccessMessage(true);
+    setTimeout(() => setShowSuccessMessage(false), 3000);
+  };
+
+  const updateInvoiceStatus = (
+    invoiceId: string,
+    newStatus: Invoice["status"]
+  ) => {
+    setInvoiceList((prev) =>
+      prev.map((invoice) =>
+        invoice.id === invoiceId ? { ...invoice, status: newStatus } : invoice
+      )
+    );
+    setSuccessMessage(`Invoice status updated to ${newStatus}!`);
+    setShowSuccessMessage(true);
+    setTimeout(() => setShowSuccessMessage(false), 3000);
   };
 
   return (
-    <div className="w-full min-h-full bg-gradient-to-br from-amber-50 to-orange-100 dark:from-gray-900 dark:to-gray-800">
-      <div className="container mx-auto px-4 py-6 max-w-7xl">
-        {/* Header */}
-        <div className="mb-6">
-          <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl border border-amber-200/50 dark:border-gray-700/50 p-6 shadow-lg">
-            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+    <div className="flex flex-col h-full relative border border-slate-200 dark:border-slate-800 rounded-xl shadow-sm bg-amber-700/5 overflow-hidden">
+      {/* Header */}
+      <div
+        className={cn(
+          "relative overflow-hidden bg-gradient-to-br from-amber-900 via-amber-950 to-amber-900 transition-all duration-300"
+        )}
+      >
+        <div className="absolute inset-0 bg-gradient-to-r from-amber-600/20 via-slate-900/20 to-amber-600/20"></div>
+        <div className="relative px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
+          <div className="flex items-center justify-between gap-4">
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-white/10 backdrop-blur-sm rounded-xl">
+                <Receipt className="h-5 w-5 sm:h-6 sm:w-6 text-white" />
+              </div>
               <div>
-                <h1 className="text-xl sm:text-3xl font-bold text-gray-900 dark:text-white">
+                <h1 className="text-lg sm:text-xl font-bold text-white tracking-tight">
                   Invoice Management
                 </h1>
-                <p className="text-gray-600 dark:text-gray-300 mt-1">
-                  Manage your invoices and payment methods
+                <p className="text-amber-100 text-sm font-medium">
+                  Create, manage, and track your invoices
                 </p>
               </div>
-              <div className="flex items-center gap-4">
-                <div className="text-right">
-                  <p className="text-sm text-gray-500 dark:text-gray-400">
-                    Total Outstanding
-                  </p>
-                  <p className="text-xl font-semibold text-amber-600">
-                    {formatCurrency(stats.totalAmount)}
-                  </p>
-                </div>
-              </div>
+            </div>
+            <div className="text-right">
+              <p className="text-amber-100 text-sm">Total Revenue</p>
+              <p className="text-white text-lg sm:text-xl font-bold">
+                {formatCurrency(stats.totalAmount)}
+              </p>
             </div>
           </div>
-        </div>
-
-        {/* Tabs */}
-        <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl border border-amber-200/50 dark:border-gray-700/50 shadow-lg overflow-hidden">
-          <Tabs
-            defaultValue="invoices"
-            value={activeTab}
-            onValueChange={(value) => setActiveTab(value as any)}
-          >
-            <TabsList className="grid grid-cols-2 w-full p-1 cursor-pointer bg-transparent">
-              <TabsTrigger
-                value="invoices"
-                className="text-md cursor-pointer data-[state=active]:bg-amber-700/20 data-[state=inactive]:hover:bg-amber-700/5 py-3 dark:data-[state=active]:bg-amber-900/20 data-[state=active]:text-amber-700 rounded-none rounded-tl-lg"
-              >
-                <FileText className="h-4 scale-150 w-4 mr-2" />
-                Invoices
-              </TabsTrigger>
-              <TabsTrigger
-                value="payments"
-                className="text-md cursor-pointer data-[state=active]:bg-amber-700/20 py-3 dark:data-[state=active]:bg-amber-900/20 data-[state=inactive]:hover:bg-amber-700/5 data-[state=active]:text-amber-700 rounded-none rounded-tr-lg"
-              >
-                <CreditCard className="h-4 scale-150 w-4 mr-2" />
-                Payments
-              </TabsTrigger>
-            </TabsList>
-
-            <TabsContent value="invoices" className="p-6">
-              <div className="space-y-6">
-                {/* Search and Filter */}
-                <div className="flex flex-col lg:flex-row gap-4 mb-6 p-5">
-                  <div className="relative flex-1">
-                    <Search className="absolute left-3 top-4 transform -translate-y-1/2 h-5 w-5 text-amber-600" />
-                    <Input
-                      placeholder="Search invoices..."
-                      value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
-                      className="pl-10 pr-20 py-2.5 text-sm bg-transparent dark:bg-slate-900 border-amber-700/20 dark:border-slate-700 rounded-lg focus-visible:ring-0 focus-visible:border-amber-600 border-2 transition-all duration-200"
-                    />
-                  </div>
-                  <div className="flex flex-col sm:flex-row gap-4 items-stretch sm:items-center">
-                    <Button
-                      className="bg-amber-600 hover:bg-amber-700 text-white duration-200 shadow-lg hover:shadow-xl transform hover:scale-105 transition-all"
-                      onClick={() => setShowNewInvoiceModal(true)}
-                    >
-                      <Plus className="h-4 w-4 mr-2" /> New Invoice
-                    </Button>
-                  </div>
-                </div>
-
-                {filteredInvoices.length > 0 ? (
-                  <div className="space-y-2">
-                    {filteredInvoices.map((invoice, index) => (
-                      <div key={invoice.id}>
-                        <div
-                          className={cn(
-                            "cursor-pointer rounded-xl border border-gray-200 bg-white/50 dark:bg-gray-900/30 backdrop-blur-md",
-                            "transition-all duration-300 hover:shadow-md hover:bg-white/80 dark:hover:bg-gray-900/50",
-                            "animate-in fade-in slide-in-from-bottom-4",
-                            expandedInvoice === invoice.id &&
-                              "border-b-0 rounded-bl-none rounded-br-none hover:shadow-none"
-                          )}
-                          style={{
-                            animationDelay: `${index * 80}ms`,
-                            animationFillMode: "both",
-                          }}
-                          onClick={() => toggleInvoiceExpand(invoice.id)}
-                        >
-                          <div className="p-4 flex justify-between items-center gap-4">
-                            {/* Left Side */}
-                            <div className="flex items-center gap-3 min-w-0">
-                              <div className="relative">
-                                <div className="w-10 h-10 bg-amber-700/20 rounded-lg flex items-center justify-center shadow-sm">
-                                  <FileText className="w-5 h-5 text-amber-700 dark:text-amber-400" />
-                                </div>
-                              </div>
-                              <div className="min-w-0">
-                                <p className="text-sm text-gray-600 dark:text-gray-300 truncate">
-                                  {invoice.name}
-                                </p>
-                                <p className="text-xs text-gray-500 dark:text-gray-400">
-                                  {formatDate(invoice.time)}
-                                </p>
-                              </div>
-                            </div>
-
-                            {/* Right Side */}
-                            <div className="text-right space-y-1">
-                              <div className="p-1 rounded-full bg-amber-100/60 dark:bg-amber-900/30 inline-block transition-transform duration-300">
-                                {expandedInvoice === invoice.id ? (
-                                  <ChevronUp className="h-4 w-4 text-amber-600 dark:text-amber-400" />
-                                ) : (
-                                  <ChevronDown className="h-4 w-4 text-amber-600 dark:text-amber-400" />
-                                )}
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-
-                        {expandedInvoice === invoice.id && (
-                          <div className="-mt-1 p-4 rounded-xl rounded-tl-none rounded-tr-none bg-white/80 dark:bg-gray-900/50 border border-gray-200 shadow-sm transition-all animate-in fade-in-50 slide-in-from-top-2 duration-300">
-                            <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-6 text-sm">
-                              {/* Left: Description & Timeline */}
-                              <div className="flex-1 p-4 rounded-lg">
-                                <div className="space-y-1 mb-3">
-                                  <h4 className="flex items-center gap-2 text-amber-700 dark:text-amber-400 font-semibold">
-                                    <Clock className="w-4 h-4" /> Created
-                                  </h4>
-                                  <p className="text-gray-800 dark:text-white">
-                                    {formatDate(invoice.time)}
-                                  </p>
-                                </div>
-                                <div className="space-y-1">
-                                  <h4 className="flex items-center gap-2 text-amber-700 dark:text-amber-400 font-semibold">
-                                    <FileText className="w-4 h-4" /> Description
-                                  </h4>
-                                  <p className="text-gray-700 dark:text-gray-300">
-                                    {invoice.description}
-                                  </p>
-                                </div>
-                              </div>
-
-                              {/* Center: Payment Summary */}
-                              <div className="flex-1 p-4 rounded-lg bg-amber-700/10 dark:from-gray-800 dark:to-amber-900/10 border border-amber-100/50 dark:border-amber-800/30">
-                                <h4 className="flex items-center gap-2 text-amber-700 dark:text-amber-400 font-semibold mb-2">
-                                  <DollarSign className="w-4 h-4" /> Payment
-                                  Summary
-                                </h4>
-                                <div className="space-y-1 text-sm">
-                                  <div className="flex justify-between text-gray-600 dark:text-gray-400">
-                                    <span>Subtotal</span>
-                                    <span>
-                                      {formatCurrency(invoice.amount * 0.9)}
-                                    </span>
-                                  </div>
-                                  <div className="flex justify-between text-gray-600 dark:text-gray-400">
-                                    <span>Tax (10%)</span>
-                                    <span>
-                                      {formatCurrency(invoice.amount * 0.1)}
-                                    </span>
-                                  </div>
-                                  <div className="pt-2 mt-2 border-t border-amber-200/50 dark:border-amber-700/30 font-semibold flex justify-between">
-                                    <span>Total</span>
-                                    <span className="text-amber-700 dark:text-amber-400 font-bold">
-                                      {formatCurrency(invoice.amount)}
-                                    </span>
-                                  </div>
-                                </div>
-                              </div>
-
-                              {/* Right: Actions */}
-                              <div className="flex flex-col gap-2 md:w-40">
-                                <Button
-                                  className="bg-amber-500/10 text-amber-700 hover:bg-amber-600 hover:text-white dark:bg-amber-900/20 dark:hover:bg-amber-700/90 dark:hover:text-white border border-amber-500 dark:border-amber-700 font-semibold shadow-sm hover:shadow-md transition-all"
-                                  onClick={(e) => e.stopPropagation()}
-                                >
-                                  <Download className="w-4 h-4 mr-2" />
-                                  Download PDF
-                                </Button>
-                                <Button
-                                  className="bg-red-500/10 text-red-700 hover:bg-red-600 hover:text-white dark:bg-red-900/20 dark:hover:bg-red-700/90 dark:hover:text-white border border-red-500 dark:border-red-700 font-semibold shadow-sm hover:shadow-md transition-all"
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    deleteInvoice(invoice.id);
-                                  }}
-                                >
-                                  <X className="w-4 h-4 mr-2" />
-                                  Delete Invoice
-                                </Button>
-                              </div>
-                            </div>
-                          </div>
-                        )}
-                      </div>
-                    ))}
-                  </div>
-                ) : (
-                  <div className="text-center py-16 rounded-xl border-amber-600 border-dotted border-2 bg-muted/30 dark:bg-muted/10">
-                    <FileText className="h-14 w-14 mx-auto text-amber-600 mb-3" />
-                    <h3 className="text-lg font-semibold text-foreground">
-                      {searchQuery
-                        ? "No invoices found"
-                        : "You don't have any invoices yet."}
-                    </h3>
-                  </div>
-                )}
-              </div>
-            </TabsContent>
-
-            <TabsContent value="payments" className="p-6">
-              <div className="space-y-6">
-                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6 py-2 mx-3">
-                  <h2 className="text-2xl font-semibold text-gray-900 dark:text-white">
-                    Your Payment Methods
-                  </h2>
-                  <Button className="bg-amber-600 hover:bg-amber-700 text-white transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105">
-                    <Plus className="h-4 w-4 mr-2" /> Add Payment Method
-                  </Button>
-                </div>
-
-                <div className="space-y-4 overflow-hidden">
-                  {paymentMethods.map((method, index) => (
-                    <div
-                      key={method.id}
-                      className={cn(
-                        "p-6 shadow-none transition-all duration-300 transform",
-                        "animate-in fade-in slide-in-from-bottom-4"
-                      )}
-                      style={{
-                        animationDelay: `${index * 100}ms`,
-                        animationFillMode: "both",
-                      }}
-                    >
-                      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-                        <div className="flex items-center gap-4">
-                          <div className="w-12 h-12 bg-amber-700/30 rounded-xl flex items-center justify-center">
-                            {method.type === "card" ? (
-                              <CreditCard className="h-6 w-6 text-amber-700" />
-                            ) : (
-                              <Landmark className="h-6 w-6 text-amber-700" />
-                            )}
-                          </div>
-                          <div>
-                            <div className="flex flex-col sm:flex-row sm:items-center gap-2">
-                              <h3 className="font-semibold text-gray-900 dark:text-white text-lg">
-                                {method.name} •••• {method.last4}
-                              </h3>
-                              {method.isDefault && (
-                                <span className="px-3 py-1 bg-amber-600 text-white text-xs rounded-full font-medium w-fit">
-                                  Default
-                                </span>
-                              )}
-                            </div>
-                            {method.expiryDate && (
-                              <p className="text-sm text-gray-600 dark:text-gray-300 mt-1">
-                                Expires {method.expiryDate}
-                              </p>
-                            )}
-                          </div>
-                        </div>
-
-                        <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
-                          {!method.isDefault && (
-                            <Button
-                              size="sm"
-                              className="bg-amber-700/30 text-amber-700 hover:bg-amber-700 hover:text-white dark:bg-amber-900/30 dark:text-amber-400 transition-colors duration-200 shadow-none"
-                            >
-                              Set as Default
-                            </Button>
-                          )}
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            className="text-red-500 bg-transparent border-0 shadow-none hover:bg-red-500 hover:text-white transition-colors duration-200"
-                          >
-                            Remove
-                          </Button>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </TabsContent>
-          </Tabs>
         </div>
       </div>
 
-      {/* New Invoice Modal */}
-      {showNewInvoiceModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-          {/* Backdrop */}
-          <div
-            className="absolute inset-0 bg-black/50 backdrop-blur-sm animate-in fade-in duration-200"
-            onClick={() => setShowNewInvoiceModal(false)}
+      <div className="relative px-4 sm:px-6 lg:px-8 pt-6 pb-2">
+        <div className="relative flex rounded-lg p-1 overflow-hidden">
+          {/* Sliding indicator */}
+          <motion.div
+            className="absolute top-1 bottom-1 bg-amber-800 dark:bg-slate-700 rounded-md shadow-sm"
+            style={{
+              width: `calc(${indicatorWidth}% - 8px)`,
+              left: "4px",
+            }}
+            animate={{
+              x: `calc(${activeIndex * 100}% + ${activeIndex * 4}px)`,
+            }}
+            transition={{
+              type: "spring",
+              stiffness: 300,
+              damping: 30,
+            }}
           />
 
-          {/* Modal */}
-          <div className="relative bg-white dark:bg-gray-800 rounded-2xl shadow-2xl border border-gray-200 dark:border-gray-700 w-full max-w-md animate-in zoom-in-95 fade-in duration-200">
-            <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700">
-              <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
-                Create New Invoice
-              </h2>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => setShowNewInvoiceModal(false)}
-                className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+          {tabs.map((tab) => {
+            const Icon = tab.icon;
+            const isActive = activeTab === tab.id;
+            return (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id as typeof activeTab)}
+                className={cn(
+                  "flex-1 relative z-10 py-2 px-3 text-center text-sm font-medium transition-colors duration-200 rounded-md",
+                  isActive
+                    ? "text-white"
+                    : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
+                )}
               >
-                <X className="h-5 w-5" />
-              </Button>
-            </div>
-
-            <form onSubmit={handleNewInvoiceSubmit} className="p-6 space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                  Name *
-                </label>
-                <Input
-                  type="text"
-                  value={newInvoiceForm.name}
-                  onChange={(e) => handleFormChange("name", e.target.value)}
-                  placeholder="Enter name"
-                  className="w-full transition-colors duration-200"
-                  required
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                  Amount *
-                </label>
-                <Input
-                  type="number"
-                  step="0.01"
-                  value={newInvoiceForm.amount}
-                  onChange={(e) => handleFormChange("amount", e.target.value)}
-                  placeholder="0.00"
-                  className="w-full transition-colors duration-200"
-                  required
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                  Time *
-                </label>
-                <Input
-                  type="datetime-local"
-                  value={newInvoiceForm.time}
-                  onChange={(e) => handleFormChange("time", e.target.value)}
-                  className="w-full transition-colors duration-200"
-                  required
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                  Description *
-                </label>
-                <textarea
-                  value={newInvoiceForm.description}
-                  onChange={(e) =>
-                    handleFormChange("description", e.target.value)
-                  }
-                  placeholder="Enter description"
-                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-amber-500 dark:bg-gray-700 dark:text-white transition-colors duration-200 resize-none"
-                  rows={3}
-                  required
-                />
-              </div>
-
-              <div className="flex gap-3 pt-4">
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={() => setShowNewInvoiceModal(false)}
-                  className="flex-1 transition-colors duration-200"
-                >
-                  Cancel
-                </Button>
-                <Button
-                  type="submit"
-                  className="flex-1 bg-amber-600 hover:bg-amber-700 text-white transition-colors duration-200"
-                >
-                  Create Invoice
-                </Button>
-              </div>
-            </form>
-          </div>
+                <div className="flex items-center justify-center gap-2">
+                  <Icon className="h-4 w-4" />
+                  <span>{tab.label}</span>
+                </div>
+              </button>
+            );
+          })}
         </div>
-      )}
-      {/* Invoice Detail Modal */}
-      <Dialog
-        open={showInvoiceDetailModal}
-        onOpenChange={setShowInvoiceDetailModal}
-      >
-        <DialogContent className="sm:max-w-lg">
-          {selectedInvoice && (
-            <>
-              <DialogHeader>
-                <DialogTitle className="flex items-center gap-2">
-                  <FileText className="h-5 w-5 text-amber-600" />
-                  Invoice #{selectedInvoice.id}
-                </DialogTitle>
-                <DialogDescription>
-                  Created on {formatDate(selectedInvoice.time)}
-                </DialogDescription>
-              </DialogHeader>
+      </div>
 
-              <div className="space-y-4">
-                <div className="flex justify-between items-center">
-                  <div>
-                    <h3 className="font-medium text-lg">
-                      {selectedInvoice.name}
-                    </h3>
-                  </div>
-                </div>
-
-                <div className="border-t border-b py-4 space-y-2">
-                  <h4 className="font-medium">Description</h4>
-                  <p className="text-sm">{selectedInvoice.description}</p>
-                </div>
-
-                <div className="space-y-2">
-                  <div className="flex justify-between text-sm">
-                    <span className="text-muted-foreground">Subtotal</span>
-                    <span>{formatCurrency(selectedInvoice.amount * 0.9)}</span>
-                  </div>
-                  <div className="flex justify-between text-sm">
-                    <span className="text-muted-foreground">Tax (10%)</span>
-                    <span>{formatCurrency(selectedInvoice.amount * 0.1)}</span>
-                  </div>
-                  <div className="flex justify-between font-medium text-lg pt-2 border-t">
-                    <span>Total</span>
-                    <span className="text-amber-700 dark:text-amber-400">
-                      {formatCurrency(selectedInvoice.amount)}
-                    </span>
-                  </div>
-                </div>
-
-                <div className="flex justify-between items-center">
-                  <div className="text-sm">
-                    <p className="text-muted-foreground">Due Date</p>
-                    <p className="font-medium">
-                      {formatDate(selectedInvoice.time)}
-                    </p>
+      {/* Content */}
+      <div className="flex-1 min-h-0">
+        <ScrollArea className="h-full">
+          <div className="px-4 sm:px-6 lg:px-8 pb-6 min-h-full">
+            <AnimatePresence mode="wait">
+              {(activeTab === "invoices" || activeTab === "drafts") && (
+                <motion.div
+                  key={activeTab}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -20 }}
+                  transition={{ duration: 0.3 }}
+                  className="space-y-6"
+                >
+                  {/* Search and Filter */}
+                  <div className="flex flex-col sm:flex-row gap-4 mt-5">
+                    <div className="relative flex-1">
+                      <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-amber-700" />
+                      <Input
+                        placeholder="Search invoices..."
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        className="pl-10  border-amber-700/40 focus-visible:ring-0 focus-visible:border-amber-700"
+                      />
+                    </div>
+                    <div className="flex gap-2">
+                      {activeTab === "invoices" && (
+                        <select
+                          value={filterStatus}
+                          onChange={(e) =>
+                            setFilterStatus(e.target.value as any)
+                          }
+                          className="px-3 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-md text-sm focus:outline-none focus:border-amber-500"
+                        >
+                          <option value="all">All Status</option>
+                          <option value="paid">Paid</option>
+                          <option value="pending">Pending</option>
+                          <option value="overdue">Overdue</option>
+                        </select>
+                      )}
+                      <Button
+                        onClick={() => setActiveTab("create")}
+                        className="bg-amber-800 hover:bg-amber-700 text-white"
+                      >
+                        <Plus className="h-4 w-4 mr-2" />
+                        New Invoice
+                      </Button>
+                    </div>
                   </div>
 
-                  <div className="flex gap-2">
-                    <Button
-                      size="sm"
-                      className="bg-amber-600 hover:bg-amber-700 text-white"
-                    >
-                      <Download className="h-4 w-4 mr-1" /> PDF
-                    </Button>
+                  {/* Invoice List */}
+                  <div className="space-y-3">
+                    {filteredInvoices.length > 0 ? (
+                      filteredInvoices.map((invoice, index) => (
+                        <motion.div
+                          key={invoice.id}
+                          initial={{ opacity: 0, y: 20 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ delay: index * 0.05 }}
+                          className="bg-transparent dark:bg-slate-800 rounded-xl overflow-hidden"
+                        >
+                          <div
+                            className="p-4 flex justify-between items-center cursor-pointer hover:bg-amber-700/10 dark:hover:bg-slate-700/50 transition-colors"
+                            onClick={() => toggleInvoiceExpand(invoice.id)}
+                          >
+                            <div className="flex items-center gap-3 flex-1">
+                              <div className="p-1.5 bg-gradient-to-br from-amber-700 to-amber-800 text-white rounded-lg">
+                                <Receipt className="h-4 w-4" />
+                              </div>
+                              <div className="flex-1">
+                                <div className="flex items-center gap-2 mb-1">
+                                  <h3 className="text-sm font-medium text-slate-900 dark:text-white">
+                                    {invoice.name}
+                                  </h3>
+                                </div>
+                                <div className="flex items-center gap-4 text-xs text-slate-500">
+                                  <span>{invoice.id}</span>
+                                  <span>{invoice.email}</span>
+                                  <span>{formatDate(invoice.time)}</span>
+                                  <span className="font-medium text-amber-600">
+                                    {formatCurrency(invoice.amount)}
+                                  </span>
+                                </div>
+                              </div>
+                            </div>
+                            <div className="ml-4">
+                              {expandedInvoice === invoice.id ? (
+                                <ChevronDown className="h-4 w-4 text-black" />
+                              ) : (
+                                <ChevronRight className="h-4 w-4 text-black" />
+                              )}
+                            </div>
+                          </div>
+
+                          <AnimatePresence>
+                            {expandedInvoice === invoice.id && (
+                              <motion.div
+                                initial={{ height: 0, opacity: 0 }}
+                                animate={{ height: "auto", opacity: 1 }}
+                                exit={{ height: 0, opacity: 0 }}
+                                transition={{ duration: 0.3 }}
+                                className="overflow-hidden"
+                              >
+                                <div className="px-4 pb-4 pt-0 border-t border-amber-700 dark:border-slate-700">
+                                  <div className="pt-4 space-y-4">
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                      <div>
+                                        <h4 className="text-sm font-medium text-slate-900 dark:text-white mb-2">
+                                          Description
+                                        </h4>
+                                        <p className="text-sm text-slate-600 dark:text-slate-300">
+                                          {invoice.description}
+                                        </p>
+                                      </div>
+                                      <div>
+                                        <h4 className="text-sm font-medium text-slate-900 dark:text-white mb-2">
+                                          Due Date
+                                        </h4>
+                                        <p className="text-sm text-slate-600 dark:text-slate-300">
+                                          {formatDate(invoice.dueDate)}
+                                        </p>
+                                      </div>
+                                    </div>
+
+                                    {/* Invoice Items */}
+                                    <div>
+                                      <h4 className="text-sm font-medium text-slate-900 dark:text-white mb-2">
+                                        Items
+                                      </h4>
+                                      <div className="space-y-2">
+                                        {invoice.items.map((item) => (
+                                          <div
+                                            key={item.id}
+                                            className="flex justify-between items-center text-sm font-bold bg-amber-700/10 rounded-lg px-4 p-2"
+                                          >
+                                            <span className="text-slate-600 dark:text-slate-400">
+                                              {item.description}
+                                            </span>
+                                            <span className="text-slate-900 dark:text-white">
+                                              {item.quantity} ×{" "}
+                                              {formatCurrency(item.rate)} ={" "}
+                                              {formatCurrency(item.amount)}
+                                            </span>
+                                          </div>
+                                        ))}
+                                      </div>
+                                    </div>
+
+                                    {invoice.notes && (
+                                      <div>
+                                        <h4 className="text-sm font-medium text-slate-900 dark:text-white mb-2">
+                                          Notes
+                                        </h4>
+                                        <p className="text-sm text-slate-600 dark:text-slate-300 font-bold bg-amber-700/10 rounded-lg px-4 py-2">
+                                          {invoice.notes}
+                                        </p>
+                                      </div>
+                                    )}
+
+                                    <div className="flex justify-between items-center pt-2">
+                                      <div className="flex gap-2">
+                                        {invoice.status !== "paid" && (
+                                          <select
+                                            value={invoice.status}
+                                            onChange={(e) =>
+                                              updateInvoiceStatus(
+                                                invoice.id,
+                                                e.target
+                                                  .value as Invoice["status"]
+                                              )
+                                            }
+                                            className="px-2 py-1 text-xs bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded focus:outline-none focus:border-amber-500"
+                                          >
+                                            <option value="draft">Draft</option>
+                                            <option value="pending">
+                                              Pending
+                                            </option>
+                                            <option value="paid">Paid</option>
+                                            <option value="overdue">
+                                              Overdue
+                                            </option>
+                                          </select>
+                                        )}
+                                      </div>
+                                      <div className="flex gap-2">
+                                        <Button
+                                          size="sm"
+                                          variant="outline"
+                                          onClick={() =>
+                                            duplicateInvoice(invoice)
+                                          }
+                                          className="px-2 py-1 text-xs bg-transparent border-0 shadow-none hover:bg-amber-700 hover:text-white"
+                                        >
+                                          <Copy className="h-4 w-4 mr-1" />
+                                          Duplicate
+                                        </Button>
+                                        <Button
+                                          size="sm"
+                                          variant="outline"
+                                          className="px-2 py-1 text-xs bg-transparent border-0 shadow-none hover:bg-amber-700 hover:text-white"
+                                        >
+                                          <Eye className="h-4 w-4 mr-1" />
+                                          View
+                                        </Button>
+                                        <Button
+                                          size="sm"
+                                          variant="outline"
+                                          className="px-2 py-1 text-xs bg-transparent border-0 text-emerald-500 shadow-none hover:bg-emerald-600 hover:text-white"
+                                        >
+                                          <Download className="h-4 w-4 mr-1" />
+                                          PDF
+                                        </Button>
+                                        <Button
+                                          size="sm"
+                                          variant="outline"
+                                          className="px-2 py-1 text-xs bg-transparent text-red-500 border-0 shadow-none hover:bg-red-600 hover:text-white"
+                                          onClick={(e) => {
+                                            e.stopPropagation();
+                                            deleteInvoice(invoice.id);
+                                          }}
+                                        >
+                                          <Trash2 className="h-4 w-4 mr-1" />
+                                          Delete
+                                        </Button>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                              </motion.div>
+                            )}
+                          </AnimatePresence>
+                        </motion.div>
+                      ))
+                    ) : (
+                      <div className="text-center py-66 rounded-xl border-amber-600 border-dotted border-2 bg-muted/30 dark:bg-muted/10">
+                        <FileText className="h-14 w-14 mx-auto text-amber-600 mb-3" />
+                        <h3 className="text-lg font-semibold text-foreground">
+                          {searchQuery
+                            ? "No invoices found"
+                            : activeTab === "drafts"
+                            ? "No drafts yet"
+                            : "No invoices yet"}
+                        </h3>
+                        <p className="text-muted-foreground mt-1">
+                          {activeTab === "drafts"
+                            ? "Create a new invoice and save it as draft"
+                            : "Create your first invoice to get started"}
+                        </p>
+                      </div>
+                    )}
                   </div>
-                </div>
-              </div>
-            </>
-          )}
-        </DialogContent>
-      </Dialog>
+                </motion.div>
+              )}
+
+              {activeTab === "create" && (
+                <motion.div
+                  key="create"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -20 }}
+                  transition={{ duration: 0.3 }}
+                  className="space-y-6"
+                >
+                  <div className="pt-5">
+                    <h2 className="text-lg font-semibold text-slate-900 dark:text-white mb-6">
+                      Create New Invoice
+                    </h2>
+
+                    <form className="space-y-6">
+                      {/* Client Information */}
+                      <div className=" rounded-xl p-6">
+                        <h3 className="font-medium text-slate-900 dark:text-white mb-4 flex items-center gap-2">
+                          <User className="h-4 w-4 text-amber-600" />
+                          Client Information
+                        </h3>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <div>
+                            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                              Client Name *
+                            </label>
+                            <Input
+                              type="text"
+                              value={newInvoiceForm.name}
+                              onChange={(e) =>
+                                handleFormChange("name", e.target.value)
+                              }
+                              placeholder="Enter client name"
+                              className="border-amber-700/40 focus-visible:ring-0 focus-visible:border-amber-700"
+                              required
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                              Email Address *
+                            </label>
+                            <Input
+                              type="email"
+                              value={newInvoiceForm.email}
+                              onChange={(e) =>
+                                handleFormChange("email", e.target.value)
+                              }
+                              placeholder="client@email.com"
+                              className="border-amber-700/40 focus-visible:ring-0 focus-visible:border-amber-700"
+                              required
+                            />
+                          </div>
+                        </div>
+                      </div>
+                      {/* Invoice Details */}
+                      <div className=" rounded-xl p-6">
+                        <h3 className="font-medium text-slate-900 dark:text-white mb-4 flex items-center gap-2">
+                          <FileText className="h-4 w-4 text-amber-600" />
+                          Invoice Details
+                        </h3>
+                        <div className="space-y-4">
+                          <div>
+                            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                              Description *
+                            </label>
+                            <Input
+                              type="text"
+                              value={newInvoiceForm.description}
+                              onChange={(e) =>
+                                handleFormChange("description", e.target.value)
+                              }
+                              placeholder="Brief description of services"
+                              className="border-amber-700/40 focus-visible:ring-0 focus-visible:border-amber-700"
+                              required
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                              Due Date *
+                            </label>
+                            <Input
+                              type="date"
+                              value={newInvoiceForm.dueDate}
+                              onChange={(e) =>
+                                handleFormChange("dueDate", e.target.value)
+                              }
+                              className="border-amber-700/40 focus-visible:ring-0 focus-visible:border-amber-700"
+                              required
+                            />
+                          </div>
+                        </div>
+                      </div>
+                      {/* Invoice Items */}
+                      <div className="rounded-xl p-6">
+                        <div className="flex justify-between items-center mb-4">
+                          <h3 className="font-medium text-slate-900 dark:text-white flex items-center gap-2">
+                            <DollarSign className="h-4 w-4 text-amber-600" />
+                            Invoice Items
+                          </h3>
+                          <Button
+                            type="button"
+                            size="sm"
+                            variant="outline"
+                            onClick={addInvoiceItem}
+                            className="bg-transparent text-amber-700 border-0 shadow-none hover:bg-amber-700 hover:text-white"
+                          >
+                            <Plus className="h-4 w-4 mr-1" />
+                            Add Item
+                          </Button>
+                        </div>
+                        <div className="space-y-3">
+                          {newInvoiceForm.items.map((item, index) => (
+                            <div
+                              key={item.id}
+                              className="grid grid-cols-12 gap-3 items-end"
+                            >
+                              <div className="col-span-5">
+                                <label className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1">
+                                  Description
+                                </label>
+                                <Input
+                                  type="text"
+                                  value={item.description}
+                                  onChange={(e) =>
+                                    updateInvoiceItem(
+                                      index,
+                                      "description",
+                                      e.target.value
+                                    )
+                                  }
+                                  placeholder="Service description"
+                                  className="border-amber-700/40 focus-visible:ring-0 focus-visible:border-amber-700"
+                                />
+                              </div>
+                              <div className="col-span-2">
+                                <label className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1">
+                                  Qty
+                                </label>
+                                <Input
+                                  type="number"
+                                  value={item.quantity}
+                                  onChange={(e) =>
+                                    updateInvoiceItem(
+                                      index,
+                                      "quantity",
+                                      Number(e.target.value)
+                                    )
+                                  }
+                                  className="border-amber-700/40 focus-visible:ring-0 focus-visible:border-amber-700"
+                                />
+                              </div>
+                              <div className="col-span-2">
+                                <label className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1">
+                                  Rate
+                                </label>
+                                <Input
+                                  type="number"
+                                  step="0.01"
+                                  value={item.rate}
+                                  onChange={(e) =>
+                                    updateInvoiceItem(
+                                      index,
+                                      "rate",
+                                      Number(e.target.value)
+                                    )
+                                  }
+                                  className="border-amber-700/40 focus-visible:ring-0 focus-visible:border-amber-700"
+                                />
+                              </div>
+                              <div className="col-span-2">
+                                <label className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1">
+                                  Amount
+                                </label>
+                                <Input
+                                  type="text"
+                                  value={formatCurrency(item.amount)}
+                                  readOnly
+                                  className="border-amber-700/40 focus-visible:ring-0 focus-visible:border-amber-700"
+                                />
+                              </div>
+                              <div className="col-span-1">
+                                <Button
+                                  type="button"
+                                  size="sm"
+                                  variant="outline"
+                                  onClick={() => removeInvoiceItem(index)}
+                                  disabled={newInvoiceForm.items.length === 1}
+                                  className="text-red-600 hover:text-red-700"
+                                >
+                                  <X className="h-4 w-4" />
+                                </Button>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                        <div className="mt-4 pt-4 border-t border-slate-200 dark:border-slate-700">
+                          <div className="flex justify-between items-center">
+                            <span className="font-medium text-slate-900 dark:text-white">
+                              Total Amount:
+                            </span>
+                            <span className="text-lg font-bold text-amber-600">
+                              {formatCurrency(
+                                newInvoiceForm.items.reduce(
+                                  (sum, item) => sum + item.amount,
+                                  0
+                                )
+                              )}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                      {/* Notes */}
+                      <div className=" rounded-xl p-6">
+                        <h3 className="font-medium text-slate-900 dark:text-white mb-4">
+                          Additional Notes
+                        </h3>
+                        <Textarea
+                          value={newInvoiceForm.notes}
+                          onChange={(e) =>
+                            handleFormChange("notes", e.target.value)
+                          }
+                          placeholder="Any additional notes or terms..."
+                          className="border-amber-700/40 focus-visible:ring-0 focus-visible:border-amber-700"
+                          rows={3}
+                        />
+                      </div>
+                      {/* Actions */}
+                      <div className="flex flex-col sm:flex-row gap-3 pt-6">
+                        <Button
+                          type="button"
+                          variant="outline"
+                          onClick={() => setActiveTab("invoices")}
+                          className="flex-1 border-0 hover:bg-gray-700 hover:text-white dark:bg-transparent shadow-none border-gray-700/10 dark:border-gray-600 text-white dark:text-gray-400 bg-gray-700/50 dark:hover:bg-gray-800/30 transition"
+                        >
+                          Cancel
+                        </Button>
+
+                        <Button
+                          type="button"
+                          variant="outline"
+                          onClick={(e) => handleNewInvoiceSubmit(e, true)}
+                          className="flex-1 border-0 hover:bg-amber-700 hover:text-white dark:bg-transparent shadow-none border-amber-700/10 dark:border-amber-600 text-white dark:text-amber-400 bg-amber-700/50 dark:hover:bg-amber-800/30 transition"
+                        >
+                          <Save className="h-4 w-4 mr-2" />
+                          Save as Draft
+                        </Button>
+
+                        <Button
+                          type="button"
+                          onClick={(e) => handleNewInvoiceSubmit(e, false)}
+                          className="flex-1 bg-amber-700 hover:bg-amber-800 text-white shadow-md transition"
+                        >
+                          <Send className="h-4 w-4 mr-2" />
+                          Create Invoice
+                        </Button>
+                      </div>{" "}
+                    </form>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+        </ScrollArea>
+      </div>
+
+      {/* Success Message */}
+      <AnimatePresence>
+        {showSuccessMessage && (
+          <motion.div
+            initial={{ opacity: 0, y: 50, scale: 0.9 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 50, scale: 0.9 }}
+            className="fixed bottom-4 right-4 bg-white dark:bg-slate-800 rounded-xl shadow-2xl border border-amber-200 dark:border-amber-800 p-4 flex items-center gap-3 z-50 max-w-sm"
+          >
+            <div className="w-8 h-8 bg-amber-100 dark:bg-amber-900/30 rounded-lg flex items-center justify-center">
+              <CheckCircle2 className="h-5 w-5 text-amber-600 dark:text-amber-400" />
+            </div>
+            <div className="flex-1">
+              <h4 className="font-medium text-slate-900 dark:text-white text-sm">
+                Success!
+              </h4>
+              <p className="text-xs text-slate-600 dark:text-slate-400">
+                {successMessage}
+              </p>
+            </div>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setShowSuccessMessage(false)}
+              className="h-6 w-6 p-0 rounded-full hover:bg-slate-100 dark:hover:bg-slate-700"
+            >
+              <X className="h-3 w-3" />
+            </Button>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

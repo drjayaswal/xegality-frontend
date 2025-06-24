@@ -516,7 +516,8 @@ export default function Clients() {
   }, [inputValue]);
 
   return (
-    <div className="w-full border-[1.5px] h-[815px] dark:bg-black bg-gray-50 rounded-lg">
+
+    <div className="w-full border-[1.5px] h-full dark:bg-black bg-gray-50 rounded-lg">
       <div className="w-full h-full rounded-lg overflow-hidden flex relative">
         <input
           ref={fileInputRef}
@@ -554,7 +555,7 @@ export default function Clients() {
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     className={cn(
-                      "bg-transparent rounded-2xl text-left focus-visible:ring-0 border-2 border-amber-700/40 focus-visible:scale-105 focus-visible:border-amber-700/40 transition-all duration-150 dark:placeholder:text-white/40 placeholder:text-black/40",
+                      "bg-transparent rounded-2xl text-left focus-visible:ring-0 border-2 border-amber-700/40 focus-visible:scale-105 focus-visible:border-amber-700 transition-all duration-150 dark:placeholder:text-white/40 placeholder:text-black/40",
                       searchQuery != "" ? "text-center" : "text-left"
                     )}
                   />
@@ -594,8 +595,8 @@ export default function Clients() {
                         className={cn(
                           "px-4 py-3 rounded-[36px] cursor-pointer transition-all duration-200 mb-2 relative",
                           selectedConversation === conversation.id
-                            ? "bg-gray-50/30 backdrop-blur-lg shadow-lg shadow-amber-800"
-                            : "hover:bg-gray-50/20 backdrop-blur-sm m-1 shadow-amber-800"
+                            ? "bg-gray-50/30 backdrop-blur-lg shadow-lg"
+                            : "hover:bg-gray-50/20 backdrop-blur-sm m-1"
                         )}
                         whileHover={{ scale: 1.01 }}
                         whileTap={{ scale: 0.98 }}

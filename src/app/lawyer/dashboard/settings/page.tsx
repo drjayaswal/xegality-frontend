@@ -606,7 +606,7 @@ export default function SettingsLite() {
   }, []);
 
   return (
-    <div className="w-full h-full rounded-2xl overflow-hidden flex flex-col relative">
+    <div className="w-full h-full bg-amber-700/5 rounded-2xl overflow-hidden flex flex-col relative">
       {/* Header with simplified animation */}
       <div className="relative h-24 overflow-hidden bg-amber-700/05">
         <div className="absolute inset-0 flex items-center justify-center">

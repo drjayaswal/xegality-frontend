@@ -44,6 +44,8 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
 import { usePathname } from "next/navigation";
+import { useRouter } from "next/navigation";
+import { Button } from "@/components/ui/button";
 
 // Main menu items from previous page
 const services = [
@@ -111,6 +113,26 @@ const dropdown_menu_items = [
 
 export function AppSidebar() {
   const pathname = usePathname();
+  const router = useRouter();
+  const handle_logout = async () => {
+    try {
+      const res = await fetch("http://localhost:4000/api/auth/logout", {
+        method: "GET",
+        credentials: "include",
+      });
+
+      const data = await res.json();
+
+      if (res.ok) {
+        // The server should handle cookie deletion
+        router.push("/login");
+      } else {
+        console.error("Logout failed:", data);
+      }
+    } catch (err) {
+      console.error("Logout error:", err);
+    }
+  };
 
   return (
     <Sidebar collapsible="icon" variant="floating" className="bg-transparent">
@@ -275,11 +297,14 @@ export function AppSidebar() {
                 ))}
                 <DropdownMenuSeparator />
 
-                <Link href={""} className="">
-                  <DropdownMenuItem className="cursor-pointer focus:bg-red-500/5 focus:text-red-600">
-                    <LogOut className="group-hover:text-red-600" /> Log out
-                  </DropdownMenuItem>
-                </Link>
+                <DropdownMenuItem
+                  className="cursor-pointer focus:bg-red-700/5 focus:text-red-700"
+                  onClick={() => {
+                    handle_logout();
+                  }}
+                >
+                  <LogOut className="group-hover:text-red-600" /> Log out
+                </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           </SidebarMenuItem>

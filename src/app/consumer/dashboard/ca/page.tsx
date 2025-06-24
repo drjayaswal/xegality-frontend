@@ -170,14 +170,14 @@ export default function Dashboard() {
               </div>
 
               <Tabs defaultValue="details" className="mt-4">
-                <TabsList className="bg-white shadow-lg rounded-full py-5 px-1.5 gap-5">
-                  <TabsTrigger value="details" className="data-[state=active]:bg-accent-violet/5 data-[state=active]:text-accent-violet rounded-full py-3.5 px-3 ">
+                <TabsList className="bg-white shadow-lg rounded-full px-1.5 gap-5">
+                  <TabsTrigger value="details" className="data-[state=active]:bg-accent-violet/5 data-[state=active]:text-accent-violet rounded-full ">
                     Application Details
                   </TabsTrigger>
-                  <TabsTrigger value="timeline" className="data-[state=active]:bg-accent-violet/5 data-[state=active]:text-accent-violet rounded-full py-3.5 px-3 ">
+                  <TabsTrigger value="timeline" className="data-[state=active]:bg-accent-violet/5 data-[state=active]:text-accent-violet rounded-full ">
                     Timeline
                   </TabsTrigger>
-                  <TabsTrigger value="documents" className="data-[state=active]:bg-accent-violet/5 data-[state=active]:text-accent-violet rounded-full py-3.5 px-3 ">
+                  <TabsTrigger value="documents" className="data-[state=active]:bg-accent-violet/5 data-[state=active]:text-accent-violet rounded-full">
                     Documents
                   </TabsTrigger>
                 </TabsList>
